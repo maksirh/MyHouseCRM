@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 
 class Roles(models.Model):
@@ -31,4 +31,3 @@ class User(AbstractUser):
     phone_number = models.CharField()
     viber = models.CharField()
     telegram = models.CharField()
-

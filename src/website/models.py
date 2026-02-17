@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import ForeignKey, ManyToManyField
 from phonenumber_field.modelfields import PhoneNumberField
 
+
 class SeoBlock(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
@@ -11,18 +12,18 @@ class SeoBlock(models.Model):
 class InfoItems(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
-    image = models.ImageField(upload_to='images/')
+    image = models.ImageField(upload_to="images/")
 
 
 class Banners(models.Model):
     title = models.CharField(max_length=100)
-    image1 = models.ImageField(upload_to='images/')
-    image2 = models.ImageField(upload_to='images/')
-    image3 = models.ImageField(upload_to='images/')
+    image1 = models.ImageField(upload_to="images/")
+    image2 = models.ImageField(upload_to="images/")
+    image3 = models.ImageField(upload_to="images/")
 
 
 class Gallery(models.Model):
-    image = models.ImageField(upload_to='images/')
+    image = models.ImageField(upload_to="images/")
 
 
 class ContactsPage(models.Model):
@@ -39,7 +40,7 @@ class ContactsPage(models.Model):
 class AboutUsPage(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
-    director_photo = models.ImageField(upload_to='images/')
+    director_photo = models.ImageField(upload_to="images/")
     gallery = ManyToManyField(Gallery)
     additional_title = models.CharField(max_length=100)
     additional_description = models.TextField()
@@ -58,4 +59,3 @@ class MainPage(models.Model):
 class ServicePage(models.Model):
     service = ManyToManyField(InfoItems)
     seo_block = ForeignKey(SeoBlock, on_delete=models.CASCADE)
-

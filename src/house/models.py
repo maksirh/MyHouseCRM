@@ -1,18 +1,20 @@
 from django.db import models
-from django.db.models import ManyToManyField, ForeignKey
+from django.db.models import ForeignKey, ManyToManyField
+
+from src.crm.models import PersonalAccount, Tariffs
 from src.user.models import User
-from src.crm.models import Tariffs, PersonalAccount
 
 
 class House(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField()
-    main_image = models.ImageField(upload_to='images/')
-    image1 = models.ImageField(upload_to='images/')
-    image2 = models.ImageField(upload_to='images/')
-    image3 = models.ImageField(upload_to='images/')
-    image4 = models.ImageField(upload_to='images/')
+    main_image = models.ImageField(upload_to="images/")
+    image1 = models.ImageField(upload_to="images/")
+    image2 = models.ImageField(upload_to="images/")
+    image3 = models.ImageField(upload_to="images/")
+    image4 = models.ImageField(upload_to="images/")
     users = ManyToManyField(User)
+
 
 class Section(models.Model):
     name = models.CharField(max_length=100)
@@ -25,7 +27,7 @@ class Floor(models.Model):
 
 
 class Apartments(models.Model):
-    personal_account  = models.OneToOneField(PersonalAccount, on_delete=models.CASCADE)
+    personal_account = models.OneToOneField(PersonalAccount, on_delete=models.CASCADE)
     number = models.IntegerField()
     area = models.FloatField()
     house = models.ForeignKey(House, on_delete=models.CASCADE)

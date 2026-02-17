@@ -1,7 +1,8 @@
 from django.db import models
-from django.db.models import ManyToManyField, ForeignKey
+from django.db.models import ForeignKey, ManyToManyField
+
 from src.house.models import Apartments
-from src.user.models import User, Roles
+from src.user.models import Roles, User
 
 
 class Tariffs(models.Model):
@@ -42,11 +43,7 @@ class Counter(models.Model):
 
 
 class CounterReadings(models.Model):
-    STATUSES = (
-        ("N", 'Нове'),
-        ("T", 'Враховано'),
-        ("Z", "Нуль")
-    )
+    STATUSES = (("N", "Нове"), ("T", "Враховано"), ("Z", "Нуль"))
     counter = ForeignKey(Counter, on_delete=models.CASCADE)
     meter = models.FloatField()
     status = models.CharField(choices=STATUSES, max_length=2)
@@ -59,11 +56,7 @@ class ServiceReceipts(models.Model):
 
 
 class Receipts(models.Model):
-    STATUSES = (
-        ("P", 'Оплачена'),
-        ("N", 'Неоплачена'),
-        ("P", 'Частково оплачена')
-    )
+    STATUSES = (("P", "Оплачена"), ("N", "Неоплачена"), ("P", "Частково оплачена"))
     service_receipt = ManyToManyField(ServiceReceipts)
     apartment = ForeignKey(Apartments, on_delete=models.CASCADE)
     number = models.IntegerField()
@@ -74,12 +67,10 @@ class Receipts(models.Model):
 
 
 class Article(models.Model):
-    ARTICLE_TYPES = (
-        ("I", "Прихід"),
-        ("E", "Витрата")
-    )
+    ARTICLE_TYPES = (("I", "Прихід"), ("E", "Витрата"))
     name = models.CharField()
     article = models.CharField(choices=ARTICLE_TYPES, max_length=2)
+
 
 class CashBox(models.Model):
     personal_account = ForeignKey(PersonalAccount, on_delete=models.CASCADE)
@@ -99,16 +90,10 @@ class Message(models.Model):
 
 
 class CallMaster(models.Model):
-    STATUSES = (
-        ("N", "Нове"),
-        ("W", "В роботі"),
-        ("C", "Виконано")
-    )
+    STATUSES = (("N", "Нове"), ("W", "В роботі"), ("C", "Виконано"))
     status = models.CharField(choices=STATUSES, max_length=2)
     apartment = ForeignKey(Apartments, on_delete=models.CASCADE)
     master_type = ForeignKey(Roles, on_delete=models.CASCADE)
     master = ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-
-
