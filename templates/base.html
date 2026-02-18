@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title %}CRM-система МІЙ ДІМ 24{% endblock %}</title>
+
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+    <meta name="csrf-param" content="_csrf">
+    <link href="{% static 'css/fontawesome-all.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/slick.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'js/simplelightbox/simplelightbox.min.css' %}" rel="stylesheet">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-64276279-2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-64276279-2');
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menuBtn" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">
+                    <img src="{% static 'img/logo.svg' %}" alt="Demo CRM 24">
+                </a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="menuBtn">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="active"><a href="/">Головна</a></li>
+                    <li><a href="#">О нас</a></li>
+                    <li><a href="#">Услуги</a></li>
+                    <li><a href="#">Умови придбання</a></li>
+                    <li><a href="#">Контакты</a></li>
+                    <li><a href="#"><i class="fas fa-sign-in-alt"></i> Вхід</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% block content %}
+    {% endblock %}
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 text-center">
+                    <p class="text-muted">Розроблено <a href="https://avada-media.ua/">AVADA-MEDIA</a>.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static '/assets/137cc266/jquery.js' %}"></script>
+    <script src="{% static '/assets/4da2ea81/yii.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/slick.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/simplelightbox/simple-lightbox.min.js' %}"></script>
+</body>
+</html>

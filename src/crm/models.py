@@ -82,11 +82,13 @@ class CashBox(models.Model):
 
 
 class Message(models.Model):
-    sender = ForeignKey(User, on_delete=models.CASCADE)
+    sender = ForeignKey(User, on_delete=models.CASCADE, related_name="sent_message")
     title = models.TextField()
     text = models.TextField()
     date = models.DateTimeField()
-    recipient = ForeignKey(User, on_delete=models.CASCADE)
+    recipient = ForeignKey(
+        User, on_delete=models.CASCADE, related_name="received_message"
+    )
 
 
 class CallMaster(models.Model):

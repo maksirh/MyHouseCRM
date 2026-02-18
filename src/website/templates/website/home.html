@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Головна - Мій Дім 24{% endblock %}
+
+{% block content %}
+    <div class="slider">
+        <div>
+            <div class="slideTitle hidden-xs">Слідкуйте за ЖК "Шевченківський"</div>
+            <img src="#" class="img-responsive" alt="">
+        </div>
+        </div>
+
+    <div class="info">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-7 col-md-8">
+                    <div class="page-header">
+                        <h1>Стежте за ЖК "Шевченківський"</h1>
+                    </div>
+                    <div class="box">
+                        <p>Житловий комплекс "Шевченківський" – частина нового житлового кварталу...</p>
+
+                        <h2>Інфраструктура</h2>
+                        <p>Житловий комплекс Family Tower...</p>
+
+                        <div class="row" style="margin-top: 20px;">
+                             <div class="col-xs-4">
+                                <a href="/about" class="btn btn-primary">Докладніше</a>
+                             </div>
+                             <div class="col-xs-8">
+                                <img src="{% static 'img/appstore.png' %}" class="img-responsive imgStore" alt="App Store">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-5 col-md-4">
+                    <div class="page-header">
+                        <h3>Контакти</h3>
+                    </div>
+                    <div class="box">
+                        <p><i class="fas fa-user-circle"></i> Геннадій Шнеле</p>
+                        </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -41,10 +41,12 @@ class AboutUsPage(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
     director_photo = models.ImageField(upload_to="images/")
-    gallery = ManyToManyField(Gallery)
+    gallery = ManyToManyField(Gallery, related_name="about_us_main_gallery")
     additional_title = models.CharField(max_length=100)
     additional_description = models.TextField()
-    additional_gallery = ManyToManyField(Gallery)
+    additional_gallery = ManyToManyField(
+        Gallery, related_name="about_us_additional_gallery"
+    )
     seo_bloc = ForeignKey(SeoBlock, on_delete=models.CASCADE)
 
 
