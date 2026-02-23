@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Про нас - Мій Дім 24{% endblock %}
+
+{% block content %}
+    <div class="breadcrumbs">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <ol class="breadcrumb">
+                        <li><a href="{% url 'website:home_page' %}">Головна</a></li>
+                        <li class="active">Про нас</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box clearfix">
+                        <div class="page-header">
+                            <h1>Наша місія</h1>
+                        </div>
+
+                        <img src="{% static 'img/about_image.png' %}" class="img-responsive imgFloatRight" alt="Про нас" style="max-width: 250px;">
+
+                        <p>
+                            Компанія-забудовник не тільки створила цей об'єкт для своїх покупців, а й після закінчення будівництва взяла на себе всі послуги із забезпечення зручного проживання своїх мешканців. Для цього було організовано керуючу компанію «Морська симфонія», яка здійснює комплексне обслуговування комунальної сфери життєдіяльності своїх клієнтів.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery g1">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 col-md-3 item">
+                    <a href="{% static 'img/gallery1.jpg' %}" class="big">
+                        <img src="{% static 'img/gallery1.jpg' %}" alt="Офіс" class="img-responsive img-thumbnail">
+                    </a>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3 item">
+                    <a href="{% static 'img/gallery2.jpg' %}" class="big">
+                        <img src="{% static 'img/gallery2.jpg' %}" alt="Команда" class="img-responsive img-thumbnail">
+                    </a>
+                </div>
+                </div>
+        </div>
+    </div>
+
+    <div class="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box clearfix">
+                        <div class="page-header">
+                            <h3>Ми надаємо такі послуги</h3>
+                        </div>
+                        <p>
+                            <b>Головне бажання</b> нашої керуючої компанії - це підтримка комфортних умов для мешканців, оперативне реагування на їхні прохання та побажання.
+                        </p>
+                        <p>
+                            До додаткових послуг керуючої компанії також належать: цілодобова охорона прибудинкової території та паркінгу, прибирання території та вивіз сміття, обслуговування пірсу та пляжу. Також за бажання мешканці будинку можуть замовити будь-які будівельно-ремонтні роботи від штатної бригади компанії.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery g2">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 col-md-3 item">
+                    <a href="{% static 'img/gallery3.jpg' %}" class="big">
+                        <img src="{% static 'img/gallery3.jpg' %}" alt="Паркінг" class="img-responsive img-thumbnail">
+                    </a>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3 item">
+                    <a href="{% static 'img/gallery4.jpg' %}" class="big">
+                        <img src="{% static 'img/gallery4.jpg' %}" alt="Охорона" class="img-responsive img-thumbnail">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="documents">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <div class="page-header">
+                            <h3>Документи</h3>
+                        </div>
+
+                        <div class="media">
+                            <div class="media-left">
+                                <div class="media-object">
+                                    <i class="far fa-file-pdf fa-3x"></i>
+                                </div>
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading">Ліцензія на діяльність</h4>
+                                <a href="#" download class="btn btn-default btn-xs">
+                                    <i class="fa fa-download" aria-hidden="true"></i> Скачати
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="media">
+                            <div class="media-left">
+                                <div class="media-object">
+                                    <i class="far fa-file-image fa-3x"></i>
+                                </div>
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading">Сертифікат якості</h4>
+                                <a href="#" download class="btn btn-default btn-xs">
+                                    <i class="fa fa-download" aria-hidden="true"></i> Скачати
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (window.jQuery) {
+                jQuery(function ($) {
+                    $('.g1 .item a').simpleLightbox({ captionsData: 'alt' });
+                    $('.g2 .item a').simpleLightbox({ captionsData: 'alt' });
+                });
+            }
+        });
+    </script>
+{% endblock %}

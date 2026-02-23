@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "src.house",
     "src.website",
     "phonenumber_field",
+    "src.core.adminlte",
 ]
 
 MIDDLEWARE = [
