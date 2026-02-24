@@ -51,10 +51,12 @@ class AboutUsPage(models.Model):
 
 
 class MainPage(models.Model):
-    title = models.CharField(max_length=100)
-    banner = ForeignKey(Banners, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100, null=True, blank=True)
+    slide1 = models.ImageField(upload_to="sliders/", null=True, blank=True)
+    slide2 = models.ImageField(upload_to="sliders/", null=True, blank=True)
+    slide3 = models.ImageField(upload_to="sliders/", null=True, blank=True)
     contact = ForeignKey(ContactsPage, on_delete=models.CASCADE)
-    info_card = ForeignKey(InfoItems, on_delete=models.CASCADE)
+    info_card = ManyToManyField(InfoItems, null=True, blank=True)
     seo_block = ForeignKey(SeoBlock, on_delete=models.CASCADE)
 
 
