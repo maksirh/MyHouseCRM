@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Про нас - Мій Дім 24{% endblock %}
+{% block title %}{% if about_page.seo_block %}{{ about_page.seo_block.title }}{% else %}Про нас - Мій Дім 24{% endif %}{% endblock %}
 
 {% block content %}
     <div class="breadcrumbs">
@@ -23,70 +23,68 @@
                 <div class="col-xs-12">
                     <div class="box clearfix">
                         <div class="page-header">
-                            <h1>Наша місія</h1>
+                            <h1>{{ about_page.title }}</h1>
                         </div>
 
-                        <img src="{% static 'img/about_image.png' %}" class="img-responsive imgFloatRight" alt="Про нас" style="max-width: 250px;">
+                        {% if about_page.director_photo %}
+                            <img src="{{ about_page.director_photo.url }}" class="img-responsive imgFloatRight" alt="Фото директора" style="max-width: 250px; border-radius: 5px; margin-left: 20px; margin-bottom: 20px;">
+                        {% endif %}
 
-                        <p>
-                            Компанія-забудовник не тільки створила цей об'єкт для своїх покупців, а й після закінчення будівництва взяла на себе всі послуги із забезпечення зручного проживання своїх мешканців. Для цього було організовано керуючу компанію «Морська симфонія», яка здійснює комплексне обслуговування комунальної сфери життєдіяльності своїх клієнтів.
-                        </p>
+                        <div style="font-size: 16px; line-height: 1.6;">
+                            {{ about_page.description|safe }}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="gallery g1">
+    <div class="gallery g1" style="margin-top: 30px;">
         <div class="container">
             <div class="row">
-                <div class="col-xs-12 col-sm-6 col-md-3 item">
-                    <a href="{% static 'img/gallery1.jpg' %}" class="big">
-                        <img src="{% static 'img/gallery1.jpg' %}" alt="Офіс" class="img-responsive img-thumbnail">
-                    </a>
-                </div>
-                <div class="col-xs-12 col-sm-6 col-md-3 item">
-                    <a href="{% static 'img/gallery2.jpg' %}" class="big">
-                        <img src="{% static 'img/gallery2.jpg' %}" alt="Команда" class="img-responsive img-thumbnail">
-                    </a>
-                </div>
-                </div>
+                {% for image in about_page.gallery.all %}
+                    <div class="col-xs-12 col-sm-6 col-md-3 item" style="margin-bottom: 20px;">
+                        <a href="{{ image.image.url }}" class="big">
+                            <img src="{{ image.image.url }}" alt="Фото галереї {{ forloop.counter }}" class="img-responsive img-thumbnail" style="height: 200px; width: 100%; object-fit: cover;">
+                        </a>
+                    </div>
+                {% empty %}
+                    <div class="col-xs-12 text-center text-muted">
+                        <p>Фотографії в галереї поки що відсутні.</p>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
-    <div class="about">
+    <div class="about" style="margin-top: 40px;">
         <div class="container">
             <div class="row">
                 <div class="col-xs-12">
                     <div class="box clearfix">
                         <div class="page-header">
-                            <h3>Ми надаємо такі послуги</h3>
+                            <h3>{{ about_page.additional_title }}</h3>
                         </div>
-                        <p>
-                            <b>Головне бажання</b> нашої керуючої компанії - це підтримка комфортних умов для мешканців, оперативне реагування на їхні прохання та побажання.
-                        </p>
-                        <p>
-                            До додаткових послуг керуючої компанії також належать: цілодобова охорона прибудинкової території та паркінгу, прибирання території та вивіз сміття, обслуговування пірсу та пляжу. Також за бажання мешканці будинку можуть замовити будь-які будівельно-ремонтні роботи від штатної бригади компанії.
-                        </p>
+
+                        <div style="font-size: 16px; line-height: 1.6;">
+                            {{ about_page.additional_description|safe }}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="gallery g2">
+    <div class="gallery g2" style="margin-top: 30px; margin-bottom: 50px;">
         <div class="container">
             <div class="row">
-                <div class="col-xs-12 col-sm-6 col-md-3 item">
-                    <a href="{% static 'img/gallery3.jpg' %}" class="big">
-                        <img src="{% static 'img/gallery3.jpg' %}" alt="Паркінг" class="img-responsive img-thumbnail">
-                    </a>
-                </div>
-                <div class="col-xs-12 col-sm-6 col-md-3 item">
-                    <a href="{% static 'img/gallery4.jpg' %}" class="big">
-                        <img src="{% static 'img/gallery4.jpg' %}" alt="Охорона" class="img-responsive img-thumbnail">
-                    </a>
-                </div>
+                {% for image in about_page.additional_gallery.all %}
+                    <div class="col-xs-12 col-sm-6 col-md-3 item" style="margin-bottom: 20px;">
+                        <a href="{{ image.image.url }}" class="big">
+                            <img src="{{ image.image.url }}" alt="Додаткове фото {{ forloop.counter }}" class="img-responsive img-thumbnail" style="height: 200px; width: 100%; object-fit: cover;">
+                        </a>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -113,21 +111,6 @@
                                 </a>
                             </div>
                         </div>
-
-                        <div class="media">
-                            <div class="media-left">
-                                <div class="media-object">
-                                    <i class="far fa-file-image fa-3x"></i>
-                                </div>
-                            </div>
-                            <div class="media-body">
-                                <h4 class="media-heading">Сертифікат якості</h4>
-                                <a href="#" download class="btn btn-default btn-xs">
-                                    <i class="fa fa-download" aria-hidden="true"></i> Скачати
-                                </a>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </div>

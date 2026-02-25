@@ -4,45 +4,142 @@
 {% block title %}Головна - Мій Дім 24{% endblock %}
 
 {% block content %}
-    <div class="slider">
-        <div>
-            <div class="slideTitle hidden-xs">Слідкуйте за ЖК "Шевченківський"</div>
-            <img src="#" class="img-responsive" alt="">
-        </div>
+    <div id="main-slider" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner" role="listbox">
+
+            {% if main_page.slide1 %}
+            <div class="item active">
+                <img src="{{ main_page.slide1.url }}" class="img-responsive" style="width: 100%; height: 500px; object-fit: cover;" alt="Слайд 1">
+                <div class="carousel-caption" style="bottom: 40%;">
+                    <div class="slideTitle hidden-xs" style="
+                        display: inline-block;
+                        background-color: rgba(110, 110, 110, 0.9);
+                        color: white;
+                        padding: 15px 40px;
+                        font-size: 3.5rem;
+                        font-weight: 500;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                        {{ main_page.title }}
+                    </div>
+                </div>
+            </div> {% endif %}
+
+            {% if main_page.slide2 %}
+            <div class="item {% if not main_page.slide1 %}active{% endif %}">
+                <img src="{{ main_page.slide2.url }}" class="img-responsive" style="width: 100%; height: 500px; object-fit: cover;" alt="Слайд 2">
+                <div class="carousel-caption" style="bottom: 40%;">
+                    <div class="slideTitle hidden-xs" style="
+                        display: inline-block;
+                        background-color: rgba(110, 110, 110, 0.9);
+                        color: white;
+                        padding: 15px 40px;
+                        font-size: 3.5rem;
+                        font-weight: 500;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                        {{ main_page.title }}
+                    </div>
+                </div>
+            </div> {% endif %}
+
+            {% if main_page.slide3 %}
+            <div class="item {% if not main_page.slide1 and not main_page.slide2 %}active{% endif %}">
+                <img src="{{ main_page.slide3.url }}" class="img-responsive" style="width: 100%; height: 500px; object-fit: cover;" alt="Слайд 3">
+                <div class="carousel-caption" style="bottom: 40%;">
+                    <div class="slideTitle hidden-xs" style="
+                        display: inline-block;
+                        background-color: rgba(110, 110, 110, 0.9);
+                        color: white;
+                        padding: 15px 40px;
+                        font-size: 3.5rem;
+                        font-weight: 500;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                        {{ main_page.title }}
+                    </div>
+                </div>
+            </div> {% endif %}
+
         </div>
 
-    <div class="info">
+        <a class="left carousel-control" href="#main-slider" role="button" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            <span class="sr-only">Попередній</span>
+        </a>
+        <a class="right carousel-control" href="#main-slider" role="button" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+            <span class="sr-only">Наступний</span>
+        </a>
+    </div>
+
+    <div class="info" style="margin-top: 40px;">
         <div class="container">
             <div class="row">
-                <div class="col-xs-12 col-sm-7 col-md-8">
-                    <div class="page-header">
-                        <h1>Стежте за ЖК "Шевченківський"</h1>
-                    </div>
-                    <div class="box">
-                        <p>Житловий комплекс "Шевченківський" – частина нового житлового кварталу...</p>
 
-                        <h2>Інфраструктура</h2>
-                        <p>Житловий комплекс Family Tower...</p>
+                <div class="col-xs-12 col-sm-8">
 
-                        <div class="row" style="margin-top: 20px;">
-                             <div class="col-xs-4">
-                                <a href="/about" class="btn btn-primary">Докладніше</a>
-                             </div>
-                             <div class="col-xs-8">
-                                <img src="{% static 'img/appstore.png' %}" class="img-responsive imgStore" alt="App Store">
-                                </div>
+                    {% for card in info_cards %}
+                        <div class="box" style="margin-bottom: 30px;">
+                            <h2>{{ card.title }}</h2>
+                            {% if card.image %}
+                                <img src="{{ card.image.url }}" class="img-responsive" style="margin-bottom: 15px; border-radius: 4px;" alt="{{ card.title }}">
+                            {% endif %}
+                            <p>{{ card.description }}</p>
                         </div>
+                    {% empty %}
+                        <div class="box">
+                            <p>Інформація поки що відсутня. Додайте інфо-картки в адмін-панелі.</p>
+                        </div>
+                    {% endfor %}
+
+                    <div class="row" style="margin-top: 20px; margin-bottom: 30px;">
+                         <div class="col-xs-4">
+                            <a href="/about" class="btn btn-primary">Докладніше</a>
+                         </div>
+                         <div class="col-xs-8">
+                            <img src="{% static 'img/appstore.png' %}" class="img-responsive imgStore" alt="App Store">
+                         </div>
                     </div>
                 </div>
 
-                <div class="col-xs-12 col-sm-5 col-md-4">
-                    <div class="page-header">
-                        <h3>Контакти</h3>
-                    </div>
-                    <div class="box">
-                        <p><i class="fas fa-user-circle"></i> Геннадій Шнеле</p>
-                        </div>
-                </div>
+                <div class="col-xs-12 col-sm-4">
+    <div class="page-header" style="margin-top: 0;">
+        <h3>Контакти</h3>
+    </div>
+    <div class="box" style="background: #f9f9f9; padding: 15px; border-radius: 4px;">
+
+        {% if contact %}
+            <p>
+                <i class="fas fa-user" style="width: 20px; color: #3c8dbc;"></i>
+                <strong>{{ contact.name }}</strong>
+            </p>
+
+            <p>
+                <i class="fas fa-map-marker-alt" style="width: 20px; color: #d9534f;"></i>
+                {{ contact.location }}
+            </p>
+
+            <p>
+                <i class="fas fa-phone" style="width: 20px; color: #00a65a;"></i>
+                <a href="tel:{{ contact.phone_number }}">{{ contact.phone_number }}</a>
+            </p>
+
+            <p>
+                <i class="fas fa-envelope" style="width: 20px; color: #f39c12;"></i>
+                <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+            </p>
+
+            <hr style="margin: 10px 0; border-top: 1px solid #ddd;">
+
+            <p class="text-muted"><small>{{ contact.title }}</small></p>
+
+        {% else %}
+            <p>Контакти ще не налаштовані.</p>
+        {% endif %}
+
+    </div>
+</div>
 
             </div>
         </div>

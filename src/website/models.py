@@ -10,9 +10,9 @@ class SeoBlock(models.Model):
 
 
 class InfoItems(models.Model):
-    title = models.CharField(max_length=100)
-    description = models.TextField()
-    image = models.ImageField(upload_to="images/")
+    title = models.CharField(max_length=100, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    image = models.ImageField(upload_to="images/", null=True, blank=True)
 
 
 class Banners(models.Model):
@@ -23,23 +23,23 @@ class Banners(models.Model):
 
 
 class Gallery(models.Model):
-    image = models.ImageField(upload_to="images/")
+    image = models.ImageField(upload_to="gallery/")
 
 
 class ContactsPage(models.Model):
-    name = models.CharField(max_length=100)
-    location = models.CharField(max_length=100)
-    title = models.CharField(max_length=100)
-    email = models.EmailField()
-    phone_number = PhoneNumberField(blank=True)
-    longitude = models.FloatField()
-    latitude = models.FloatField()
-    seo_block = ForeignKey(SeoBlock, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    location = models.CharField(max_length=100, null=True, blank=True)
+    title = models.CharField(max_length=100, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+    phone_number = PhoneNumberField(blank=True, null=True)
+    longitude = models.FloatField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    seo_block = ForeignKey(SeoBlock, on_delete=models.CASCADE, null=True, blank=True)
 
 
 class AboutUsPage(models.Model):
     title = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     director_photo = models.ImageField(upload_to="images/")
     gallery = ManyToManyField(Gallery, related_name="about_us_main_gallery")
     additional_title = models.CharField(max_length=100)
@@ -47,7 +47,7 @@ class AboutUsPage(models.Model):
     additional_gallery = ManyToManyField(
         Gallery, related_name="about_us_additional_gallery"
     )
-    seo_bloc = ForeignKey(SeoBlock, on_delete=models.CASCADE)
+    seo_block = ForeignKey(SeoBlock, on_delete=models.CASCADE, null=True, blank=True)
 
 
 class MainPage(models.Model):
@@ -55,9 +55,9 @@ class MainPage(models.Model):
     slide1 = models.ImageField(upload_to="sliders/", null=True, blank=True)
     slide2 = models.ImageField(upload_to="sliders/", null=True, blank=True)
     slide3 = models.ImageField(upload_to="sliders/", null=True, blank=True)
-    contact = ForeignKey(ContactsPage, on_delete=models.CASCADE)
+    contact = ForeignKey(ContactsPage, on_delete=models.CASCADE, null=True, blank=True)
     info_card = ManyToManyField(InfoItems, null=True, blank=True)
-    seo_block = ForeignKey(SeoBlock, on_delete=models.CASCADE)
+    seo_block = ForeignKey(SeoBlock, on_delete=models.CASCADE, null=True, blank=True)
 
 
 class ServicePage(models.Model):

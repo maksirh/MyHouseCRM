@@ -1,0 +1,198 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Редагування сторінки "Про нас"{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Редагування сторінки "Про нас"</h3>
+            </div>
+
+            <div class="box-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <h3 class="page-header">Інформація</h3>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label>Заголовок</label>
+                                {{ form.title }}
+                                <span class="text-danger">{{ form.title.errors }}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Короткий текст</label>
+                                {{ form.description }}
+                                <span class="text-danger">{{ form.description.errors }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h4>Фото директора</h4>
+                            {% if form.instance.director_photo %}
+                                <div style="margin-bottom: 15px;">
+                                    <img src="{{ form.instance.director_photo.url }}" class="img-responsive img-thumbnail" style="max-height: 250px;" alt="Фото директора">
+                                </div>
+                            {% endif %}
+                            <div class="form-group">
+                                <label>Рекомендований розмір: (250x310)</label>
+                                {{ form.director_photo }}
+                                <span class="text-danger">{{ form.director_photo.errors }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="page-header">Фотогалерея</h3>
+                    <div class="row" id="main-gallery-container">
+                        {{ main_gallery_formset.management_form }}
+
+                        {% for img_form in main_gallery_formset %}
+                            <div class="col-xs-6 col-sm-3 col-md-2 text-center" style="margin-bottom: 20px;">
+                                {% for hidden in img_form.hidden_fields %}{{ hidden }}{% endfor %}
+
+                                {% if img_form.instance.image %}
+                                    <img src="{{ img_form.instance.image.url }}" alt="Фото" class="img-thumbnail margin-bottom-15" style="height: 120px; width: 100%; object-fit: cover;">
+                                {% else %}
+                                    <div style="height: 120px; background: #f4f4f4; border: 1px dashed #ccc; margin-bottom: 15px; display: flex; align-items: center; justify-content: center;">
+                                        <span class="text-muted">Нове фото</span>
+                                    </div>
+                                {% endif %}
+
+                                {{ img_form.image }}
+
+                                {% if img_form.DELETE %}
+                                    <div class="checkbox text-danger margin-top-10">
+                                        <label>{{ img_form.DELETE }} <i class="fa fa-trash"></i> Видалити</label>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <button type="button" id="btn-add-main-photo" class="btn btn-success margin-bottom-15">
+                                <i class="fa fa-plus"></i> Додати фото
+                            </button>
+                        </div>
+                    </div>
+
+                    <h3 class="page-header" style="margin-top: 40px;">Додаткова інформація</h3>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label>Заголовок</label>
+                                {{ form.additional_title }}
+                                <span class="text-danger">{{ form.additional_title.errors }}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Короткий текст</label>
+                                {{ form.additional_description }}
+                                <span class="text-danger">{{ form.additional_description.errors }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="page-header">Додаткова фотогалерея</h3>
+                    <div class="row" id="add-gallery-container">
+                        {{ add_gallery_formset.management_form }}
+
+                        {% for img_form in add_gallery_formset %}
+                            <div class="col-xs-6 col-sm-3 col-md-2 text-center" style="margin-bottom: 20px;">
+                                {% for hidden in img_form.hidden_fields %}{{ hidden }}{% endfor %}
+
+                                {% if img_form.instance.image %}
+                                    <img src="{{ img_form.instance.image.url }}" alt="Фото" class="img-thumbnail margin-bottom-15" style="height: 120px; width: 100%; object-fit: cover;">
+                                {% else %}
+                                    <div style="height: 120px; background: #f4f4f4; border: 1px dashed #ccc; margin-bottom: 15px; display: flex; align-items: center; justify-content: center;">
+                                        <span class="text-muted">Нове фото</span>
+                                    </div>
+                                {% endif %}
+
+                                {{ img_form.image }}
+
+                                {% if img_form.DELETE %}
+                                    <div class="checkbox text-danger margin-top-10">
+                                        <label>{{ img_form.DELETE }} <i class="fa fa-trash"></i> Видалити</label>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <button type="button" id="btn-add-extra-photo" class="btn btn-success margin-bottom-15">
+                                <i class="fa fa-plus"></i> Додати фото
+                            </button>
+                        </div>
+                    </div>
+
+                    <h3 class="page-header" style="margin-top: 40px;">Налаштування SEO</h3>
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{ seo_block.as_p }}
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 30px;">
+                        <div class="col-xs-12 text-center">
+                            <div class="form-group">
+                                <a href="{% url 'adminlte:edit_about_us_page' %}" class="btn btn-default">Скасувати</a>
+                                <button type="submit" class="btn btn-primary">Зберегти</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="empty-main-gallery" style="display: none;">
+    <div class="col-xs-6 col-sm-3 col-md-2 text-center" style="margin-bottom: 20px;">
+        {% for hidden in main_gallery_formset.empty_form.hidden_fields %}{{ hidden }}{% endfor %}
+        <div style="height: 120px; background: #e8f5e9; border: 1px dashed #4caf50; margin-bottom: 15px; display: flex; align-items: center; justify-content: center;">
+            <span class="text-success"><i class="fa fa-camera"></i> Нове фото</span>
+        </div>
+        {{ main_gallery_formset.empty_form.image }}
+    </div>
+</div>
+
+<div id="empty-add-gallery" style="display: none;">
+    <div class="col-xs-6 col-sm-3 col-md-2 text-center" style="margin-bottom: 20px;">
+        {% for hidden in add_gallery_formset.empty_form.hidden_fields %}{{ hidden }}{% endfor %}
+        <div style="height: 120px; background: #e8f5e9; border: 1px dashed #4caf50; margin-bottom: 15px; display: flex; align-items: center; justify-content: center;">
+            <span class="text-success"><i class="fa fa-camera"></i> Нове фото</span>
+        </div>
+        {{ add_gallery_formset.empty_form.image }}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        function setupGalleryFormset(buttonId, containerId, emptyTemplateId, totalFormsInputId) {
+            const addBtn = document.getElementById(buttonId);
+            const container = document.getElementById(containerId);
+            const emptyTemplate = document.getElementById(emptyTemplateId).innerHTML;
+            const totalFormsInput = document.getElementById(totalFormsInputId);
+
+            addBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const currentFormCount = parseInt(totalFormsInput.value);
+                const newFormHtml = emptyTemplate.replace(/__prefix__/g, currentFormCount);
+                container.insertAdjacentHTML('beforeend', newFormHtml);
+                totalFormsInput.value = currentFormCount + 1;
+            });
+        }
+
+        setupGalleryFormset('btn-add-main-photo', 'main-gallery-container', 'empty-main-gallery', 'id_main_gallery-TOTAL_FORMS');
+
+        setupGalleryFormset('btn-add-extra-photo', 'add-gallery-container', 'empty-add-gallery', 'id_add_gallery-TOTAL_FORMS');
+    });
+</script>
+{% endblock %}

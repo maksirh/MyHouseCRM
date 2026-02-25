@@ -5,16 +5,69 @@
     {% csrf_token %}
 
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
             <div class="box box-primary">
                 <div class="box-header with-border"><h3 class="box-title">Головне</h3></div>
                 <div class="box-body">
-                    {{ form.as_p }}
-                </div>
+    <div class="form-group">
+        <label for="{{ form.title.id_for_label }}">Заголовок короткої інформації</label>
+        {{ form.title }}
+        <span class="text-danger">{{ form.title.errors }}</span>
+    </div>
+
+    <hr>
+    <h4>Слайдер</h4>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Слайд 1</label>
+                {% if form.instance.slide1 %}
+                    <div style="margin-bottom: 10px;">
+                        <img src="{{ form.instance.slide1.url }}" class="img-responsive" style="max-height: 200px; width: 100%; object-fit: cover;" alt="Slide 1">
+                    </div>
+                {% endif %}
+
+                {{ form.slide1 }}
+                <small class="text-muted">Рекомендований розмір: (1920x800)</small>
+                <span class="text-danger">{{ form.slide1.errors }}</span>
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Слайд 2</label>
+                {% if form.instance.slide2 %}
+                    <div style="margin-bottom: 10px;">
+                        <img src="{{ form.instance.slide2.url }}" class="img-responsive" style="max-height: 200px; width: 100%; object-fit: cover;" alt="Slide 2">
+                    </div>
+                {% endif %}
+                {{ form.slide2 }}
+                <small class="text-muted">Рекомендований розмір: (1920x800)</small>
+                <span class="text-danger">{{ form.slide2.errors }}</span>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Слайд 3</label>
+                {% if form.instance.slide3 %}
+                    <div style="margin-bottom: 10px;">
+                        <img src="{{ form.instance.slide3.url }}" class="img-responsive" style="max-height: 200px; width: 100%; object-fit: cover;" alt="Slide 3">
+                    </div>
+                {% endif %}
+
+                {{ form.slide3 }}
+                <small class="text-muted">Рекомендований розмір: (1920x800)</small>
+                <span class="text-danger">{{ form.slide3.errors }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
             <div class="box box-success">
                 <div class="box-header with-border"><h3 class="box-title">Контакти</h3></div>
                 <div class="box-body">
@@ -24,7 +77,7 @@
             <div class="box box-warning">
                 <div class="box-header with-border"><h3 class="box-title">SEO Налаштування</h3></div>
                 <div class="box-body">
-                    {{ seo_form.as_p }}
+                    {{ seo_block.as_p }}
                 </div>
             </div>
         </div>
@@ -37,11 +90,46 @@
             {{ info_formset.management_form }}
 
             {% for item_form in info_formset %}
-                <div class="info-card-form" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 10px;">
-                    {{ item_form.id }}
-                    {{ item_form.as_p }}
+    <div class="info-card-form" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px;">
+        <h4 style="margin-top: 0;">Картка {{ forloop.counter }}</h4>
+
+        {% for hidden in item_form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+
+        <div class="form-group">
+            <label>Заголовок картки</label>
+            {{ item_form.title }}
+            <span class="text-danger">{{ item_form.title.errors }}</span>
+        </div>
+
+        <div class="form-group">
+            <label>Опис</label>
+            {{ item_form.description }}
+            <span class="text-danger">{{ item_form.description.errors }}</span>
+        </div>
+
+        <div class="form-group">
+            <label>Зображення</label>
+            {% if item_form.instance.image %}
+                <div style="margin-bottom: 10px;">
+                    <img src="{{ item_form.instance.image.url }}" class="img-responsive" style="max-height: 120px; border-radius: 5px; border: 1px solid #ccc;" alt="Зображення картки">
                 </div>
-            {% endfor %}
+            {% endif %}
+
+            {{ item_form.image }}
+            <span class="text-danger">{{ item_form.image.errors }}</span>
+        </div>
+
+        {% if item_form.DELETE %}
+            <div class="checkbox text-danger" style="margin-top: 15px;">
+                <label>
+                    {{ item_form.DELETE }} <b>Видалити цю картку при збереженні</b>
+                </label>
+            </div>
+        {% endif %}
+    </div>
+{% endfor %}
 
         </div>
         <div class="box-footer">
@@ -68,7 +156,7 @@
         const addBtn = document.getElementById('add-card-btn');
         const container = document.getElementById('info-cards-container');
         const emptyFormTemplate = document.getElementById('empty-form').innerHTML;
-        const totalFormsInput = document.getElementById('id_info_card-TOTAL_FORMS');
+        const totalFormsInput = document.getElementById('id_form-TOTAL_FORMS');
 
         addBtn.addEventListener('click', function(e) {
             e.preventDefault();
