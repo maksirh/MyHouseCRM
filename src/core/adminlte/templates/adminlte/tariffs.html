@@ -1,0 +1,121 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Тарифы{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Тарифы</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li class="active">Тарифы</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="pull-right margin-bottom">
+                <a class="btn btn-success" href="{% url 'tariff_create' %}">Добавить тариф</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div id="w0" class="grid-view">
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-bordered table-hover table-striped linkedRow">
+                            <thead>
+                                <tr>
+                                    <th><a href="?sort=name">Название тарифа</a></th>
+                                    <th>Описание тарифа</th>
+                                    <th><a href="?sort=-updated_at">Дата редактирования</a></th>
+                                    <th style="width: 114px; min-width: 114px">&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tariff in tariffs %}
+                                    <tr data-href="{% url 'tariff_detail' tariff.id %}" data-key="{{ tariff.id }}">
+                                        <td>{{ tariff.name }}</td>
+                                        <td>{{ tariff.description|truncatechars:100 }}</td>
+                                        <td>{{ tariff.updated_at|date:"d.m.Y - H:i" }}</td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="{% url 'tariff_create' %}?tariff_id={{ tariff.id }}" title="Копировать" data-toggle="tooltip"><i class="fa fa-clone"></i></a>
+                                                <a class="btn btn-default btn-sm" href="{% url 'tariff_update' tariff.id %}" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="{% url 'tariff_delete' tariff.id %}" title="Удалить" data-toggle="tooltip" data-method="post" data-confirm="Вы уверены, что хотите удалить этот элемент?"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr data-href="/admin/tariff/262" data-key="262">
+                                        <td>Тариф 1</td>
+                                        <td>Тариф 1</td>
+                                        <td>05.02.2026 - 02:13</td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Копировать" data-toggle="tooltip"><i class="fa fa-clone"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr data-href="/admin/tariff/261" data-key="261">
+                                        <td>Зимний тариф</td>
+                                        <td>Очистка автомобиля всего за 550 грн. Десятая очистка в подарок. 1</td>
+                                        <td>05.02.2026 - 01:54</td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Копировать" data-toggle="tooltip"><i class="fa fa-clone"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr data-href="/admin/tariff/229" data-key="229">
+                                        <td>Большая семья</td>
+                                        <td>тариф для многодетных семей</td>
+                                        <td>19.03.2025 - 01:34</td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Копировать" data-toggle="tooltip"><i class="fa fa-clone"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr data-href="/admin/tariff/228" data-key="228">
+                                        <td>Льготный</td>
+                                        <td>тариф для участников Войны (УБД обязательно)</td>
+                                        <td>31.08.2025 - 08:05</td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Копировать" data-toggle="tooltip"><i class="fa fa-clone"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="box-footer clearfix">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+{% endblock %}

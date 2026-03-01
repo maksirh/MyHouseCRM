@@ -1,0 +1,194 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Показание счетчикa №{{ counter_record.uid|default:"07022601018" }} - Редактирование{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Показание счетчикa</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'counter_data_list' %}">Счетчики</a></li>
+        <li>
+            {% if counter_record.flat and counter_record.service %}
+                <a href="{% url 'counter_history' %}?flat_id={{ counter_record.flat.id }}&service_id={{ counter_record.service.id }}">
+                    Показания счетчиков, кв.{{ counter_record.flat.number }}
+                </a>
+            {% else %}
+                <a href="#">Показания счетчиков, кв.1</a>
+            {% endif %}
+        </li>
+        <li><a href="{% url 'counter_data_detail' counter_record.id|default:'1018' %}">Показание счетчикa №{{ counter_record.uid|default:"07022601018" }}</a></li>
+        <li class="active">Редактирование</li>
+    </ul>
+</section>
+
+<section class="content">
+    <form id="w0" action="{% url 'counter_data_update' counter_record.id|default:'1018' %}" method="post">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-xs-12 col-md-7 col-lg-6">
+                <div class="page-header-spec">
+                    <div class="form-group field-counterdata-uid required">
+                        <div class="input-group">
+                            <div class="input-group-addon">№</div>
+                            <input type="text" id="counterdata-uid" class="form-control" name="uid" value="{{ counter_record.uid|default:'07022601018' }}" aria-required="true">
+                        </div>
+                        <div class="help-block text-danger">{{ form.uid.errors }}</div>
+                    </div>
+
+                    <span class="label-mid">от</span>
+
+                    <div class="form-group field-counterdata-uid_date">
+                        <div class="input-group date">
+                            <span class="input-group-addon" title="Выбрать дату"><i class="glyphicon glyphicon-calendar"></i></span>
+                            <input type="text" id="counterdata-uid_date" class="form-control" name="uid_date" value="{{ counter_record.date|date:'d.m.Y'|default:'07.02.2026' }}">
+                        </div>
+                        <div class="help-block text-danger">{{ form.uid_date.errors }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="box-body">
+                <input type="hidden" id="counterdata-id" name="id" value="{{ counter_record.id|default:'1018' }}">
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <label for="house_id">Дом</label>
+                            <select id="house_id" class="form-control" name="house_id">
+                                <option value="">Выберите...</option>
+                                {% for house in houses %}
+                                    <option value="{{ house.id }}" {% if counter_record.flat.house.id == house.id %}selected{% endif %}>
+                                        {{ house.name }}
+                                    </option>
+                                {% empty %}
+                                    <option value="412" selected>Nan's House</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="section_id">Секция</label>
+                            <select id="section_id" class="form-control" name="section_id">
+                                <option value="">Выберите...</option>
+                                {% for section in sections %}
+                                    <option value="{{ section.id }}" {% if counter_record.flat.section.id == section.id %}selected{% endif %}>
+                                        {{ section.name }}
+                                    </option>
+                                {% empty %}
+                                    <option value="1326" selected>Секция Первая</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group field-counterdata-flat_id required">
+                            <label class="control-label" for="counterdata-flat_id">Квартира</label>
+                            <select id="counterdata-flat_id" class="form-control flat-select" name="flat_id" aria-required="true">
+                                <option value="">Выберите...</option>
+                                {% for flat in flats %}
+                                    <option value="{{ flat.id }}" {% if counter_record.flat.id == flat.id %}selected{% endif %}>
+                                        {{ flat.number }}
+                                    </option>
+                                {% empty %}
+                                    <option value="708" selected>1</option>
+                                {% endfor %}
+                            </select>
+                            <div class="help-block text-danger">{{ form.flat_id.errors }}</div>
+                        </div>
+
+                        <div class="form-group field-counterdata-service_id">
+                            <label class="control-label" for="counterdata-service_id">Счетчик</label>
+                            <select id="counterdata-service_id" class="form-control service-select" name="service_id">
+                                <option value="">Выберите...</option>
+                                {% for service in services %}
+                                    <option value="{{ service.id }}" {% if counter_record.service.id == service.id %}selected{% endif %}>
+                                        {{ service.name }} ({{ service.unit.name }})
+                                    </option>
+                                {% empty %}
+                                    <option value="126" selected>Электричество 1 (кВт.ч)</option>
+                                {% endfor %}
+                            </select>
+                            <div class="help-block text-danger">{{ form.service_id.errors }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group field-counterdata-status">
+                            <label class="control-label" for="counterdata-status">Статус</label>
+                            <select id="counterdata-status" class="form-control" name="status">
+                                <option value="">Выберите...</option>
+                                <option value="new" {% if counter_record.status == 'new' %}selected{% endif %}>Новое</option>
+                                <option value="included" {% if counter_record.status == 'included' %}selected{% endif %}>Учтено</option>
+                                <option value="paid" {% if counter_record.status == 'paid' or not counter_record %}selected{% endif %}>Учтено и оплачено</option>
+                                <option value="zero" {% if counter_record.status == 'zero' %}selected{% endif %}>Нулевое</option>
+                            </select>
+                            <div class="help-block text-danger">{{ form.status.errors }}</div>
+                        </div>
+
+                        <div class="form-group field-counterdata-amount_total">
+                            <label class="control-label" for="counterdata-amount_total">Показания счетчика</label>
+                            <input type="number" id="counterdata-amount_total" class="form-control" name="value" value="{{ counter_record.value|floatformat:1|default:'23.0' }}" step="0.1">
+                            <div class="help-block text-danger">{{ form.value.errors }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 text-right">
+                        <div class="form-group">
+                            <a href="{% url 'counter_data_list' %}" class="btn btn-default margin-bottom-15">Отменить</a>
+                            <button type="submit" class="btn btn-success margin-bottom-15" name="action_save">Сохранить</button>
+                            <button type="submit" class="btn btn-success margin-bottom-15 bg-green-active" name="action_save_add">Сохранить и добавить новые показания</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function () {
+    // AJAX оновлення Секцій та Квартир при зміні Будинку
+    $('#house_id').on('change', function() {
+        var houseId = $(this).val();
+        if(houseId) {
+            $.ajax({
+                url: "{% url 'ajax_get_lists_by_house' %}", // URL твого Django View
+                data: { 'house_id': houseId },
+                success: function(data) {
+                    // View повинна повертати JSON: {"sections": "<option>...</option>", "flats": "<option>...</option>"}
+                    $("select#section_id").html(data.sections);
+                    $("select#counterdata-flat_id").html(data.flats);
+                }
+            });
+        } else {
+            $("select#section_id").html('<option value="">Выберите...</option>');
+            $("select#counterdata-flat_id").html('<option value="">Выберите...</option>');
+        }
+    });
+
+    // AJAX оновлення Квартир при зміні Секції
+    $('#section_id').on('change', function() {
+        var sectionId = $(this).val();
+        var houseId = $('#house_id').val();
+        if(sectionId || houseId) {
+            $.ajax({
+                url: "{% url 'ajax_get_lists_by_house' %}",
+                data: { 'house_id': houseId, 'section_id': sectionId },
+                success: function(data) {
+                    $("select#counterdata-flat_id").html(data.flats);
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

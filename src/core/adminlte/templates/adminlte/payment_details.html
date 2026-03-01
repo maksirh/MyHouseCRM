@@ -1,0 +1,102 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Платежные реквизиты{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Платежные реквизиты</h1>
+</section>
+
+<section class="content">
+    <div class="box">
+        <div class="box-body">
+            <form id="w0" action="{% url 'pay_company_update' %}" method="post">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-xs-12 col-lg-7">
+                        <div class="nav-tabs-custom">
+                            <div class="tab-content">
+                                <div class="tab-pane clearfix active">
+                                    <div id="form-paycompany-rows">
+                                        {% for company in pay_companies %}
+                                            <div id="form-paycompany-{{ forloop.counter0 }}" class="row form-paycompany margin-bottom-15">
+                                                <div class="col-xs-12">
+                                                    <input type="hidden" id="paycompany-{{ forloop.counter0 }}-id" name="PayCompany[{{ forloop.counter0 }}][id]" value="{{ company.id }}">
+
+                                                    <div class="form-group">
+                                                        <label for="paycompany-{{ forloop.counter0 }}-name">Название компании</label>
+                                                        <input type="text" id="paycompany-{{ forloop.counter0 }}-name" class="form-control" name="PayCompany[{{ forloop.counter0 }}][name]" value="{{ company.name|default:'' }}">
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="paycompany-{{ forloop.counter0 }}-description">Информация</label>
+                                                        <textarea id="paycompany-{{ forloop.counter0 }}-description" class="form-control" name="PayCompany[{{ forloop.counter0 }}][description]" rows="5">{{ company.description|default:'' }}</textarea>
+                                                    </div>
+
+                                                    </div>
+                                            </div>
+                                        {% empty %}
+                                            <div id="form-paycompany-0" class="row form-paycompany margin-bottom-15">
+                                                <div class="col-xs-12">
+                                                    <input type="hidden" name="PayCompany[0][id]" value="1">
+
+                                                    <div class="form-group">
+                                                        <label>Название компании</label>
+                                                        <input type="text" class="form-control" name="PayCompany[0][name]" value="">
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Информация</label>
+                                                        <textarea class="form-control" name="PayCompany[0][description]" rows="5"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 text-center">
+                        <div class="form-group">
+                            <a href="{% url 'admin_home' %}" class="btn btn-default">Отменить</a>
+                            <button type="submit" class="btn btn-success">Сохранить</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+jQuery(function ($) {
+    var formIdPayCompanyNext = $('.form-paycompany').length || 1;
+
+    $(document).on('click', '.form-row-remove-btn', function(e){
+        if (confirm('Удалить?')) {
+            $(this).closest('.form-paycompany').remove();
+        }
+    });
+
+    $(document).on('click', '.form-row-add-paycompany-btn', function(e){
+        $.ajax({
+            url: "{% url 'ajax_get_pay_company_form' %}?form_id=" + formIdPayCompanyNext,
+            dataType: 'html',
+            success: function(html) {
+                $('#form-paycompany-rows').append(html);
+                formIdPayCompanyNext++;
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

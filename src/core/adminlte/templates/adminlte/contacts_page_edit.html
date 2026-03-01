@@ -1,0 +1,155 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Редактирование страницы "Контакты"{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Редактирование страницы</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li class="active">Редактирование страницы "Контакты"</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Редактирование страницы "Контакты"</h3>
+                </div>
+                <div class="box-body">
+                    <form id="w0" action="{% url 'website_contact_update' %}" method="post">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-xs-12 col-md-8">
+                                <h3 class="page-header">Контактная информация</h3>
+
+                                <div class="form-group field-websitecontactform-contacttitle">
+                                    <label class="control-label" for="websitecontactform-contacttitle">Заголовок</label>
+                                    <input type="text" id="websitecontactform-contacttitle" class="form-control" name="contactTitle" value="{{ contact_data.title|default:'Описание' }}">
+                                    <div class="help-block text-danger">{{ form.contactTitle.errors }}</div>
+                                </div>
+
+                                <div class="form-group field-websitecontactform-contactdescription">
+                                    <label class="control-label" for="websitecontactform-contactdescription">Краткий текст</label>
+                                    <textarea id="websitecontactform-contactdescription" class="compose-textarea form-control" name="contactDescription" placeholder="Текст сообщения">{{ contact_data.description|default:'<p><b>Разработчиком системы "Мой Дом 24" является компания AVADA-MEDIA</b></p>' }}</textarea>
+                                    <div class="help-block text-danger">{{ form.contactDescription.errors }}</div>
+                                </div>
+
+                                <div class="form-group field-websitecontactform-contacturlsite">
+                                    <label class="control-label" for="websitecontactform-contacturlsite">Ссылка на коммерческий сайт</label>
+                                    <input type="text" id="websitecontactform-contacturlsite" class="form-control" name="contactUrlSite" value="{{ contact_data.url_site|default:'https://avada-media.ua/moydom24/' }}">
+                                    <div class="help-block text-danger">{{ form.contactUrlSite.errors }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12 col-md-4">
+                                <h3 class="page-header">Контакты</h3>
+
+                                <div class="form-group field-websitecontactform-contactfullname">
+                                    <label class="control-label" for="websitecontactform-contactfullname">ФИО</label>
+                                    <input type="text" id="websitecontactform-contactfullname" class="form-control" name="contactFullname" value="{{ contact_data.fullname|default:'Геннадий Шнеле Пепе' }}">
+                                    <div class="help-block text-danger">{{ form.contactFullname.errors }}</div>
+                                </div>
+
+                                <div class="form-group field-websitecontactform-contactlocation">
+                                    <label class="control-label" for="websitecontactform-contactlocation">Локация</label>
+                                    <input type="text" id="websitecontactform-contactlocation" class="form-control" name="contactLocation" value="{{ contact_data.location|default:'Україна' }}">
+                                    <div class="help-block text-danger">{{ form.contactLocation.errors }}</div>
+                                </div>
+
+                                <div class="form-group field-websitecontactform-contactaddress">
+                                    <label class="control-label" for="websitecontactform-contactaddress">Адрес</label>
+                                    <input type="text" id="websitecontactform-contactaddress" class="form-control" name="contactAddress" value="{{ contact_data.address|default:'г. Киев Малиновский р-н, ул. Космонавтов, 32' }}">
+                                    <div class="help-block text-danger">{{ form.contactAddress.errors }}</div>
+                                </div>
+
+                                <div class="form-group field-websitecontactform-contactphone">
+                                    <label class="control-label" for="websitecontactform-contactphone">Телефон</label>
+                                    <input type="text" id="websitecontactform-contactphone" class="form-control" name="contactPhone" value="{{ contact_data.phone|default:'+380 (063) 673 45' }}">
+                                    <div class="help-block text-danger">{{ form.contactPhone.errors }}</div>
+                                </div>
+
+                                <div class="form-group field-websitecontactform-contactemail">
+                                    <label class="control-label" for="websitecontactform-contactemail">E-mail</label>
+                                    <input type="email" id="websitecontactform-contactemail" class="form-control" name="contactEmail" value="{{ contact_data.email|default:'shnelepepe@gmail.vatafa' }}">
+                                    <div class="help-block text-danger">{{ form.contactEmail.errors }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h3 class="page-header">Карта</h3>
+                                <div class="form-group field-websitecontactform-contactmapembedcode">
+                                    <label class="control-label" for="websitecontactform-contactmapembedcode">Код карты</label>
+                                    <textarea id="websitecontactform-contactmapembedcode" class="form-control" name="contactMapEmbedCode" rows="5" placeholder="Вставьте код карты сюда">{{ contact_data.map_code|default:'<style> .map-half-screen { width: 100%; height: 50vh; } .map-half-screen iframe { width: 100%; height: 100%; border: 0; } </style> <div class="map-half-screen"> <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d39709.66752793902!2d31.329484800000003!3d51.53423359999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46d537deca894461%3A0x92b539b9df6cdb08!2z0JrQu9Cw0LTQsdC40YnQtSAi0K_RhtC10LLQviI!5e0!3m2!1sru!2sua!4v1769553130557!5m2!1sru!2sua" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>' }}</textarea>
+                                    <div class="help-block text-danger">{{ form.contactMapEmbedCode.errors }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3 class="page-header">Настройки SEO</h3>
+
+                                <div class="form-group field-websitecontactform-contactmetatitle">
+                                    <label class="control-label" for="websitecontactform-contactmetatitle">Title</label>
+                                    <input type="text" id="websitecontactform-contactmetatitle" class="form-control" name="contactMetaTitle" value="{{ seo.title|default:'Title Title Title' }}">
+                                    <div class="help-block text-danger">{{ form.contactMetaTitle.errors }}</div>
+                                </div>
+
+                                <div class="form-group field-websitecontactform-contactmetadescription">
+                                    <label class="control-label" for="websitecontactform-contactmetadescription">Description</label>
+                                    <textarea id="websitecontactform-contactmetadescription" class="form-control" name="contactMetaDescription" rows="6">{{ seo.description|default:'Description Description Description' }}</textarea>
+                                    <div class="help-block text-danger">{{ form.contactMetaDescription.errors }}</div>
+                                </div>
+
+                                <div class="form-group field-websitecontactform-contactmetakeywords">
+                                    <label class="control-label" for="websitecontactform-contactmetakeywords">Keywords</label>
+                                    <textarea id="websitecontactform-contactmetakeywords" class="form-control" name="contactMetaKeywords" rows="6">{{ seo.keywords|default:'Keywords Keywords Keywords' }}</textarea>
+                                    <div class="help-block text-danger">{{ form.contactMetaKeywords.errors }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 text-center">
+                                <div class="form-group">
+                                    <a href="{% url 'website_contact' %}" class="btn btn-default">Отменить</a>
+                                    <button type="submit" class="btn btn-success">Сохранить</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function () {
+    $("textarea.compose-textarea").wysihtml5({
+        locale: 'ru-RU',
+        toolbar: {
+            "font-styles": true,
+            "emphasis": true,
+            "lists": true,
+            "html": false,
+            "link": true,
+            "image": false,
+            "color": false,
+            "blockquote": false,
+            "fa": true,
+            "size": 'none'
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Статьи приходов/расходов{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Статьи приходов/расходов</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li class="active">Статьи приходов/расходов</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="pull-right margin-bottom">
+                <a class="btn btn-success" href="{% url 'transaction_purpose_create' %}">Добавить статью</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div id="w0" class="grid-view">
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-bordered table-hover table-striped linkedRow">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th><a href="?sort=type">Приход/расход</a></th>
+                                    <th style="width: 80px; min-width: 80px">&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for purpose in transaction_purposes %}
+                                    <tr data-href="{% url 'transaction_purpose_update' purpose.id %}" data-key="{{ purpose.id }}">
+                                        <td>{{ purpose.name }}</td>
+                                        <td>
+                                            {% if purpose.type == 'income' %}
+                                                <span class="text text-green">Приход</span>
+                                            {% else %}
+                                                <span class="text text-red">Расход</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="{% url 'transaction_purpose_update' purpose.id %}" title="Редактировать" data-toggle="tooltip">
+                                                    <i class="fa fa-pencil"></i>
+                                                </a>
+
+                                                {% if purpose.is_used %}
+                                                    <button class="btn btn-default btn-sm disabled" onclick="alert('Этот элемент используется в системе. Его нельзя удалить.');" title="Удалить" data-toggle="tooltip">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                {% else %}
+                                                    <a class="btn btn-default btn-sm" href="{% url 'transaction_purpose_delete' purpose.id %}" title="Удалить" data-toggle="tooltip" data-method="post" data-confirm="Вы уверены, что хотите удалить этот элемент?">
+                                                        <i class="fa fa-trash"></i>
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr data-href="#">
+                                        <td>Зарплата дворнику</td>
+                                        <td><span class="text text-red">Расход</span></td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr data-href="#">
+                                        <td>Коммунальный платёж</td>
+                                        <td><span class="text text-green">Приход</span></td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr data-href="#">
+                                        <td>Всякое</td>
+                                        <td><span class="text text-green">Приход</span></td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <button class="btn btn-default btn-sm disabled" onclick="alert('Этот элемент используется в системе. Его нельзя удалить.');" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="box-footer clearfix">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+{% endblock %}

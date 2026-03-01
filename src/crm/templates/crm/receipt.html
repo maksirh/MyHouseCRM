@@ -1,0 +1,132 @@
+{% extends 'cabinet_base.html' %}
+{% load static %}
+
+{% block title %}Квитанции на оплату{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Квитанции на оплату</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'cabinet_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li class="active">Квитанции на оплату</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"></h3>
+                    <div class="box-tools">
+                        <a href="{% url 'cabinet_invoices' %}{% if request.GET.flat_id %}?flat_id={{ request.GET.flat_id }}{% endif %}" class="btn btn-default btn-sm">
+                            <span class="hidden-xs">Очистить</span><i class="fa fa-eraser visible-xs" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="w0" class="grid-view">
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-bordered table-hover table-striped linkedRow">
+                            <thead>
+                                <tr>
+                                    <th>№</th>
+                                    <th><a href="?sort=-date{% if request.GET.flat_id %}&flat_id={{ request.GET.flat_id }}{% endif %}">Дата</a></th>
+                                    <th>Статус</th>
+                                    <th>Сумма</th>
+                                </tr>
+                                <tr id="w0-filters" class="filters">
+                                    <form method="GET">
+                                        {% if request.GET.flat_id %}
+                                            <input type="hidden" name="flat_id" value="{{ request.GET.flat_id }}">
+                                        {% endif %}
+
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            <input type="text" id="invoicesearch-searchuiddate" class="form-control" name="date" value="{{ request.GET.date }}" placeholder="дд.мм.гггг">
+                                        </td>
+                                        <td>
+                                            <select id="invoicesearch-status" class="form-control" name="status">
+                                                <option value=""></option>
+                                                <option value="paid" {% if request.GET.status == 'paid' %}selected{% endif %}>Оплачена</option>
+                                                <option value="partially_paid" {% if request.GET.status == 'partially_paid' %}selected{% endif %}>Частично оплачена</option>
+                                                <option value="unpaid" {% if request.GET.status == 'unpaid' %}selected{% endif %}>Неоплачена</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button type="submit" style="display: none;"></button>
+                                        </td>
+                                    </form>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invoice in invoices %}
+                                    <tr data-href="{% url 'cabinet_invoice_detail' invoice.id %}" data-key="{{ invoice.id }}">
+                                        <td>{{ invoice.number }}</td>
+                                        <td>{{ invoice.date|date:"d.m.Y" }}</td>
+                                        <td>
+                                            {% if invoice.status == 'paid' %}
+                                                <small class="label label-success">Оплачена</small>
+                                            {% elif invoice.status == 'partially_paid' %}
+                                                <small class="label label-warning">Частично оплачена</small>
+                                            {% else %}
+                                                <small class="label label-danger">Неоплачена</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ invoice.total_amount|default:"0.00" }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4">
+                                            <div class="empty text-center" style="padding: 20px; color: #777;">Ничего не найдено.</div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if is_paginated %}
+                    <div class="box-footer clearfix">
+                        <ul class="pagination pagination-sm no-margin pull-right">
+                            {% if page_obj.has_previous %}
+                                <li><a href="?page={{ page_obj.previous_page_number }}{% if request.GET.flat_id %}&flat_id={{ request.GET.flat_id }}{% endif %}">&laquo;</a></li>
+                            {% else %}
+                                <li class="prev disabled"><span>&laquo;</span></li>
+                            {% endif %}
+
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="active"><span>{{ num }}</span></li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li><a href="?page={{ num }}{% if request.GET.flat_id %}&flat_id={{ request.GET.flat_id }}{% endif %}">{{ num }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li><a href="?page={{ page_obj.next_page_number }}{% if request.GET.flat_id %}&flat_id={{ request.GET.flat_id }}{% endif %}">&raquo;</a></li>
+                            {% else %}
+                                <li class="next disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+jQuery(function ($) {
+    // Ініціалізація Datepicker для поля "Дата"
+    $('#invoicesearch-searchuiddate').datepicker({
+        format: 'dd.mm.yyyy',
+        autoclose: true,
+        language: 'ru'
+    });
+});
+</script>
+{% endblock %}

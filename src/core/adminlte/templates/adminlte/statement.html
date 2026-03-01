@@ -1,0 +1,138 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if transaction.type == 'out' %}Расходная ведомость{% else %}Приходная ведомость{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>
+        {% if transaction.type == 'out' %}Расходная ведомость{% else %}Приходная ведомость{% endif %}
+    </h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'transaction_list' %}">Платежи</a></li>
+        <li class="active">
+            {% if transaction.type == 'out' %}Расходная ведомость{% else %}Приходная ведомость{% endif %} №{{ transaction.uid|default:"21022602704" }}
+        </li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12 col-md-7 col-lg-6">
+            <div class="page-header-spec">
+                <div class="form-group">
+                    <div class="input-group date">
+                        <div class="input-group-addon">
+                            №
+                        </div>
+                        <div class="form-control pull-right">{{ transaction.uid|default:"21022602704" }}</div>
+                    </div>
+                </div>
+                <span class="label-mid">от</span>
+                <div class="form-group">
+                    <div class="input-group date">
+                        <div class="input-group-addon">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </div>
+                        <div class="form-control pull-right">{{ transaction.date|date:"d.m.Y"|default:"21.02.2026" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">{% if transaction.type == 'out' %}Расходная ведомость{% else %}Приходная ведомость{% endif %}</h3>
+            <div class="box-tools">
+                <a href="/admin/account-transaction/create?account_transaction_id={{ transaction.id|default:'2705' }}" class="btn btn-default btn-sm">
+                    <span class="hidden-xs">Копировать</span><i class="fa fa-print visible-xs" aria-hidden="true"></i>
+                </a>
+
+                <a href="/admin/account-transaction/delete/{{ transaction.id|default:'2705' }}" class="btn btn-default btn-sm" data-method="post" data-confirm="Вы уверены, что хотите удалить этот элемент?">
+                    <span class="hidden-xs">Удалить</span><i class="fa fa-trash visible-xs" aria-hidden="true"></i>
+                </a>
+
+                <a href="/admin/account-transaction/update/{{ transaction.id|default:'2705' }}" class="btn btn-primary btn-sm">
+                    <span class="hidden-xs">Редактировать ведомость</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                </a>
+
+                <a href="/admin/account-transaction/export-one/{{ transaction.id|default:'2705' }}?export=xls" class="btn btn-default btn-sm">
+                    <span class="hidden-xs">Выгрузить в Excel</span><i class="fa fa-file-excel-o visible-xs" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <div class="box-body">
+            <table class="table table-bordered table-striped table-view">
+                <tbody>
+                    <tr>
+                        <td>Владелец квартиры</td>
+                        <td>
+                            {% if transaction.user %}
+                                <a href="{% url 'user_detail' transaction.user.id %}">{{ transaction.user }}</a>
+                            {% else %}
+                                <a href="#">{{ transaction_user_mock|default:"Nana1" }}</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Лицевой счет</td>
+                        <td>
+                            {% if transaction.account %}
+                                <a href="{% url 'account_detail' transaction.account.id %}">{{ transaction.account.uid }}</a>
+                            {% else %}
+                                <a href="#">{{ transaction_account_mock|default:"02022600716" }}</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Статья</td>
+                        <td>{{ transaction.purpose|default:"Приход тест" }}</td>
+                    </tr>
+                    <tr>
+                        <td>Квитанция</td>
+                        <td>
+                            {% if transaction.invoice %}
+                                <a href="{% url 'invoice_detail' transaction.invoice.id %}">{{ transaction.invoice.uid }}</a>
+                            {% else %}
+                                не указано
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Услуга</td>
+                        <td>{{ transaction.service|default:"" }}</td>
+                    </tr>
+                    <tr>
+                        <td>Менеджер</td>
+                        <td>
+                            {% if transaction.manager %}
+                                <a href="{% url 'admin_detail' transaction.manager.id %}">{{ transaction.manager }}</a>
+                            {% else %}
+                                <a href="#">{{ transaction_manager_mock|default:"Nana Nanovna" }}</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Сумма</td>
+                        <td>
+                            {% if transaction.type == 'out' %}
+                                <span class="text-red">-{{ transaction.amount|default:"100.00" }}</span>
+                            {% else %}
+                                <span class="text-green">{{ transaction.amount|default:"100.00" }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Комментарий</td>
+                        <td>{{ transaction.comment|default:"" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

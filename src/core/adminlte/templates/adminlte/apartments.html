@@ -1,0 +1,188 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Квартиры{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Квартиры</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li class="active">Квартиры</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="pull-right margin-bottom">
+                <a class="btn btn-success" href="{% url 'flat_create' %}">Добавить квартиру</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"></h3>
+                    <div class="box-tools">
+                        <a href="{% url 'flat_list' %}" class="btn btn-default btn-sm">
+                            <span class="hidden-xs">Очистить</span><i class="fa fa-eraser visible-xs" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="w0" class="grid-view">
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-bordered table-hover table-striped linkedRow">
+                            <thead>
+                                <tr>
+                                    <th style="width: 120px; min-width: 120px"><a href="?sort=number">№ квартиры</a></th>
+                                    <th style="min-width: 200px"><a href="?sort=house">Дом</a></th>
+                                    <th style="width: 160px; min-width: 65px"><a href="?sort=section">Секция</a></th>
+                                    <th style="width: 160px; min-width: 65px"><a href="?sort=floor">Этаж</a></th>
+                                    <th style="min-width: 200px"><a href="?sort=owner">Владелец</a></th>
+                                    <th style="width: 120px; min-width: 120px">Остаток (грн)</th>
+                                    <th style="width: 80px; min-width: 80px">&nbsp;</th>
+                                </tr>
+                                <tr id="w0-filters" class="filters">
+                                    <form method="GET">
+                                        <td><input type="text" class="form-control" name="number"></td>
+                                        <td>
+                                            <select class="form-control" name="house_id">
+                                                <option value=""></option>
+                                                <option value="1">ЖК "Башня Чкалов"</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="section_id">
+                                                <option value="">Выберите дом</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="floor_id">
+                                                <option value="">Выберите дом</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="user_id">
+                                                <option value=""></option>
+                                                <option value="1">Лисенко Павел</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="has_debt">
+                                                <option value=""></option>
+                                                <option value="1">Есть долг</option>
+                                                <option value="0">Нет долга</option>
+                                            </select>
+                                        </td>
+                                        <td>&nbsp;</td>
+                                    </form>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for flat in flats %}
+                                    <tr data-href="{% url 'flat_detail' flat.id %}" data-key="{{ flat.id }}">
+                                        <td>{{ flat.number }}</td>
+                                        <td>{{ flat.house.name|default:"<span class='not-set'>(не задано)</span>"|safe }}</td>
+                                        <td>{{ flat.section.name|default:"<span class='not-set'>(не задано)</span>"|safe }}</td>
+                                        <td>{{ flat.floor.name|default:"<span class='not-set'>(не задано)</span>"|safe }}</td>
+                                        <td>{{ flat.owner|default:"<span class='not-set'>(не задано)</span>"|safe }}</td>
+                                        <td>
+                                            {% if flat.account %}
+                                                {% if flat.account.balance > 0 %}
+                                                    <span class="text-green">{{ flat.account.balance }}</span>
+                                                {% elif flat.account.balance < 0 %}
+                                                    <span class="text-red">{{ flat.account.balance }}</span>
+                                                {% else %}
+                                                    <span class="text-default">{{ flat.account.balance }}</span>
+                                                {% endif %}
+                                            {% else %}
+                                                (нет счета)
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="{% url 'flat_update' flat.id %}" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="{% url 'flat_delete' flat.id %}" title="Удалить" data-toggle="tooltip" data-method="post" data-confirm="Вы уверены, что хотите удалить этот элемент?"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr data-href="/admin/flat/709" data-key="709">
+                                        <td>2</td>
+                                        <td>Nan's House</td>
+                                        <td>Секция 2</td>
+                                        <td>Этаж 2</td>
+                                        <td>Nana1</td>
+                                        <td><span class="text-default">0.00</span></td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr data-href="/admin/flat/708" data-key="708">
+                                        <td>1</td>
+                                        <td>Nan's House</td>
+                                        <td>Секция Первая</td>
+                                        <td>Этаж Первый</td>
+                                        <td>Nana1</td>
+                                        <td><span class="text-green">100.00</span></td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr data-href="/admin/flat/695" data-key="695">
+                                        <td>1</td>
+                                        <td>ЖК "Башня Чкалов"</td>
+                                        <td>Секция 2</td>
+                                        <td>Этаж 1</td>
+                                        <td><span class="not-set">(не задано)</span></td>
+                                        <td>(нет счета)</td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="box-footer clearfix">
+                        <ul class="pagination pagination-sm no-margin pull-right">
+                            <li class="prev disabled"><span>&laquo;</span></li>
+                            <li class="active"><a href="?page=1" data-page="0">1</a></li>
+                            <li><a href="?page=2" data-page="1">2</a></li>
+                            <li><a href="?page=3" data-page="2">3</a></li>
+                            <li><a href="?page=4" data-page="3">4</a></li>
+                            <li class="next"><a href="?page=2" data-page="1">&raquo;</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="box-footer">
+                    <div>Количество квартир: <span class="text-bold">{{ flats|length|default:"156" }}</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+{% endblock %}

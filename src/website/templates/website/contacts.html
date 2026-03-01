@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ seo.title|default:"Контакты" }}{% endblock %}
+{% block meta_description %}{{ seo.description|default:"" }}{% endblock %}
+{% block meta_keywords %}{{ seo.keywords|default:"" }}{% endblock %}
+
+{% block content %}
+<div class="breadcrumbs">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <ol class="breadcrumb">
+                    <li><a href="{% url 'home' %}">Главная</a></li>
+                    <li class="active">Контакты</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if contact_data.map_code %}
+    {{ contact_data.map_code|safe }}
+{% else %}
+    <style>
+        .map-half-screen { width: 100%; height: 50vh; }
+        .map-half-screen iframe { width: 100%; height: 100%; border: 0; }
+    </style>
+    <div class="map-half-screen">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d39709.66752793902!2d31.329484800000003!3d51.53423359999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46d537deca894461%3A0x92b539b9df6cdb08!2z0JrQu9Cw0LTQsdC40YnQtSAi0K_RhtC10LLQviI!5e0!3m2!1sru!2sua!4v1769553130557!5m2!1sru!2sua" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+{% endif %}
+
+<div class="contacts">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-7 col-md-8">
+                <div class="page-header">
+                    <h1>{{ contact_data.title|default:"Описание" }}</h1>
+                </div>
+                <div class="box service-description">
+                    {{ contact_data.description|safe }}
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-5 col-md-4">
+                <div class="page-header">
+                    <h3>Контакты</h3>
+                </div>
+                <div class="box">
+                    {% if contact_data.fullname %}
+                        <p><i class="fas fa-user-circle"></i> {{ contact_data.fullname }}</p>
+                    {% endif %}
+
+                    {% if contact_data.location %}
+                        <p><i class="fas fa-compass"></i> {{ contact_data.location }}</p>
+                    {% endif %}
+
+                    {% if contact_data.address %}
+                        <p><i class="fas fa-map-marker"></i> {{ contact_data.address }}</p>
+                    {% endif %}
+
+                    {% if contact_data.phone %}
+                        <p><i class="fas fa-phone"></i> <a href="tel:{{ contact_data.phone }}">{{ contact_data.phone }}</a></p>
+                    {% endif %}
+
+                    {% if contact_data.email %}
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:{{ contact_data.email }}">{{ contact_data.email }}</a></p>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

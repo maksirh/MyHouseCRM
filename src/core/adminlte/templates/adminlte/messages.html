@@ -1,0 +1,193 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Сообщения{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Сообщения</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li class="active">Сообщения</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="pull-right margin-bottom">
+                <a class="btn btn-success" href="{% url 'message_create' %}">Отправить сообщение</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title"></h3>
+            <div class="box-tools pull-right">
+                <div class="has-feedback">
+                    <form action="" method="get">
+                        <input type="text" name="search" value="{{ request.GET.search }}" class="form-control input-sm" placeholder="Поиск">
+                        <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="box-body no-padding">
+            <div id="w0" class="grid-view">
+                <div class="mailbox-controls">
+                    <button type="button" class="btn btn-default btn-sm checkbox-toggle" title="Выделить все">
+                        <i class="fa fa-square-o"></i>
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm delete-many" title="Удалить выбранные">
+                        <i class="fa fa-trash-o"></i>
+                    </button>
+                    <div class="pull-right"></div>
+                </div>
+
+                <div class="table-responsive mailbox-messages">
+                    <table class="table table-hover table-striped linkedRow">
+                        <thead>
+                            <tr>
+                                <th>&nbsp;</th>
+                                <th style="min-width: 200px">Получатели</th>
+                                <th>Текст</th>
+                                <th style="width: 135px; min-width: 135px">Дата</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for message in messages %}
+                                <tr data-href="{% url 'message_detail' message.id %}" data-key="{{ message.id }}">
+                                    <td><input type="checkbox" name="selection[]" value="{{ message.id }}"></td>
+                                    <td>
+                                        <a href="{% url 'message_detail' message.id %}">
+                                            {{ message.recipient_display|default:"Всем" }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <b>{{ message.subject|truncatechars:50 }}</b> - {{ message.text|striptags|truncatechars:100 }}
+                                    </td>
+                                    <td>{{ message.created_at|date:"d.m.Y - H:i" }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr data-href="/admin/message/699" data-key="699">
+                                    <td><input type="checkbox" name="selection[]" value="699"></td>
+                                    <td><a href="#">Всем</a></td>
+                                    <td><b>Иди Иди Иди Иди Иди Иди...</b> - Сюда Сюда...</td>
+                                    <td>18.02.2026 - 18:33</td>
+                                </tr>
+                                <tr data-href="/admin/message/698" data-key="698">
+                                    <td><input type="checkbox" name="selection[]" value="698"></td>
+                                    <td><a href="#">Nan's House, Секция Первая, Этаж Первый, кв.1</a></td>
+                                    <td><b>Иди</b> - Сюда</td>
+                                    <td>18.02.2026 - 18:32</td>
+                                </tr>
+                                <tr data-href="/admin/message/697" data-key="697">
+                                    <td><input type="checkbox" name="selection[]" value="697"></td>
+                                    <td><a href="#">Всем</a></td>
+                                    <td><b>1221</b> - 121221</td>
+                                    <td>08.02.2026 - 18:47</td>
+                                </tr>
+                                <tr data-href="/admin/message/691" data-key="691">
+                                    <td><input type="checkbox" name="selection[]" value="691"></td>
+                                    <td><a href="#">Шпиль</a></td>
+                                    <td><b>123</b> - 1123 123313</td>
+                                    <td>06.02.2026 - 22:29</td>
+                                </tr>
+                                <tr data-href="/admin/message/690" data-key="690">
+                                    <td><input type="checkbox" name="selection[]" value="690"></td>
+                                    <td><a href="#">Шпиль, кв.1</a></td>
+                                    <td><b>123</b> - 123</td>
+                                    <td>06.02.2026 - 22:23</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mailbox-controls">
+                    <button type="button" class="btn btn-default btn-sm checkbox-toggle" title="Выделить все">
+                        <i class="fa fa-square-o"></i>
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm delete-many" title="Удалить выбранные">
+                        <i class="fa fa-trash-o"></i>
+                    </button>
+                    <div class="pull-right">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% csrf_token %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function () {
+    // Логіка для виділення всіх чекбоксів (кнопка з квадратиком)
+    $(".checkbox-toggle").click(function () {
+        var clicks = $(this).data('clicks');
+        if (clicks) {
+            // Зняти виділення з усіх чекбоксів
+            $(".mailbox-messages input[type='checkbox']").prop("checked", false);
+            $(".checkbox-toggle > .fa").removeClass("fa-check-square-o").addClass('fa-square-o');
+        } else {
+            // Виділити всі чекбокси
+            $(".mailbox-messages input[type='checkbox']").prop("checked", true);
+            $(".checkbox-toggle > .fa").removeClass("fa-square-o").addClass('fa-check-square-o');
+        }
+        $(this).data("clicks", !clicks);
+
+        // Синхронізуємо нижню та верхню кнопку
+        $(".checkbox-toggle").data("clicks", !clicks);
+    });
+
+    // Масове видалення повідомлень
+    $('body').on('click', '.delete-many', function(e) {
+        e.preventDefault();
+        var ids = [];
+        $('input[name="selection[]"]:checked').each(function() {
+            ids.push($(this).val());
+        });
+
+        if (ids.length > 0) {
+            if (confirm('Данные будут удалены. Продолжить?')) {
+                var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+
+                $.ajax({
+                    url: "{% url 'ajax_delete_messages' %}",
+                    data: {
+                        'ids': ids,
+                        'csrfmiddlewaretoken': csrfToken
+                    },
+                    type: 'post',
+                    success: function (data) {
+                        console.log('SUCCESS', data);
+                        location.reload();
+                    },
+                    error: function (data) {
+                        console.log('ERROR', data);
+                        alert("Произошла ошибка при удалении.");
+                    }
+                });
+            }
+        } else {
+            alert('Пожалуйста, выберите хотя бы одно сообщение для удаления.');
+        }
+    });
+
+    $('tr.linkedRow td').click(function(e) {
+        if (e.target.type !== 'checkbox') {
+            var href = $(this).parent().data('href');
+            if (href) {
+                window.location = href;
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

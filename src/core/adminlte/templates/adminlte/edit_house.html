@@ -1,0 +1,330 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}{{ house.name|default:"Дом 2" }} - Редактирование{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>{{ house.name|default:"Дом 2" }}</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'house_list' %}">Дома</a></li>
+        <li><a href="{% url 'house_detail' house.id|default:'414' %}">{{ house.name|default:"Дом 2" }}</a></li>
+        <li class="active">Редактирование</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="box">
+        <div class="box-body">
+            <form id="w0" action="{% url 'house_update' house.id|default:'414' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %} <div class="row">
+                    <div class="col-xs-12 col-lg-4">
+                        <div class="form-group field-houseform-name">
+                            <label class="control-label" for="houseform-name">Название</label>
+                            <input type="text" id="houseform-name" class="form-control" name="HouseForm[name]" value="{{ house.name|default:'Дом 2' }}">
+                            <div class="help-block text-danger">{{ form.name.errors }}</div>
+                        </div>
+
+                        <div class="form-group field-houseform-address">
+                            <label class="control-label" for="houseform-address">Адрес</label>
+                            <input type="text" id="houseform-address" class="form-control" name="HouseForm[address]" value="{{ house.address|default:'ул. Барбина' }}">
+                            <div class="help-block text-danger">{{ form.address.errors }}</div>
+                        </div>
+
+                        <div class="form-group field-houseform-image1">
+                            <label class="control-label" for="houseform-image1">Изображение #1. Размер: (522x350)</label>
+                            <input type="file" id="houseform-image1" name="HouseForm[image1]" accept="image/*">
+                        </div>
+                        <div class="form-group field-houseform-image2">
+                            <label class="control-label" for="houseform-image2">Изображение #2. Размер: (248x160)</label>
+                            <input type="file" id="houseform-image2" name="HouseForm[image2]" accept="image/*">
+                        </div>
+                        <div class="form-group field-houseform-image3">
+                            <label class="control-label" for="houseform-image3">Изображение #3. Размер: (248x160)</label>
+                            <input type="file" id="houseform-image3" name="HouseForm[image3]" accept="image/*">
+                        </div>
+                        <div class="form-group field-houseform-image4">
+                            <label class="control-label" for="houseform-image4">Изображение #4. Размер: (248x160)</label>
+                            <input type="file" id="houseform-image4" name="HouseForm[image4]" accept="image/*">
+                        </div>
+                        <div class="form-group field-houseform-image5">
+                            <label class="control-label" for="houseform-image5">Изображение #5. Размер: (248x160)</label>
+                            <input type="file" id="houseform-image5" name="HouseForm[image5]" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-lg-8">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                {% if house.image1 %}
+                                    <img src="{{ house.image1.url }}" class="img-responsive largeImg margin-bottom-30" alt="Изображение #1">
+                                {% else %}
+                                    <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F414%2Fimage1.jpg&w=522&h=350&fit=crop" class="img-responsive largeImg margin-bottom-30" alt="">
+                                {% endif %}
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                {% if house.image2 %}
+                                    <img src="{{ house.image2.url }}" class="img-responsive smallImg margin-bottom-30" alt="Изображение #2">
+                                {% else %}
+                                    <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F414%2Fimage2.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                                {% endif %}
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                {% if house.image3 %}
+                                    <img src="{{ house.image3.url }}" class="img-responsive smallImg margin-bottom-30" alt="Изображение #3">
+                                {% else %}
+                                    <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2Fplaceholder.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                                {% endif %}
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                {% if house.image4 %}
+                                    <img src="{{ house.image4.url }}" class="img-responsive smallImg margin-bottom-30" alt="Изображение #4">
+                                {% else %}
+                                    <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2Fplaceholder.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                                {% endif %}
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                {% if house.image5 %}
+                                    <img src="{{ house.image5.url }}" class="img-responsive smallImg margin-bottom-30" alt="Изображение #5">
+                                {% else %}
+                                    <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2Fplaceholder.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-lg-8">
+                        <div class="nav-tabs-custom">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a href="#tab-sections" data-toggle="tab" aria-expanded="true">Секции</a></li>
+                                <li><a href="#tab-floors" data-toggle="tab" aria-expanded="false">Этажи</a></li>
+                                <li><a href="#tab-houseuseradmins" data-toggle="tab" aria-expanded="false">Пользователи</a></li>
+                            </ul>
+
+                            <div class="tab-content">
+                                <div class="tab-pane active clearfix" id="tab-sections">
+                                    <div id="form-section-rows">
+                                        {% for section in house.sections.all %}
+                                        <div id="form-section-{{ forloop.counter0 }}" class="row form-section">
+                                            <div class="col-xs-12">
+                                                <input type="hidden" id="section-{{ forloop.counter0 }}-id" name="Section[{{ forloop.counter0 }}][id]" value="{{ section.id }}">
+                                                <input type="hidden" name="Section[{{ forloop.counter0 }}][house_id]" value="{{ house.id }}">
+                                                <div class="form-group">
+                                                    <label for="section-{{ forloop.counter0 }}-name">Название</label>
+                                                    <div class="input-group">
+                                                        <input type="text" id="section-{{ forloop.counter0 }}-name" class="form-control" name="Section[{{ forloop.counter0 }}][name]" value="{{ section.name }}">
+                                                        <span class="input-group-btn">
+                                                            <button type="button" class="btn btn-danger form-row-remove-btn"><i class="fa fa-trash"></i></button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% empty %}
+                                        <div id="form-section-0" class="row form-section">
+                                            <div class="col-xs-12">
+                                                <input type="hidden" name="Section[0][id]" value="1328">
+                                                <div class="form-group">
+                                                    <label>Название</label>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" name="Section[0][name]" value="Секция 1">
+                                                        <span class="input-group-btn">
+                                                            <button type="button" class="btn btn-danger form-row-remove-btn"><i class="fa fa-trash"></i></button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button class="btn btn-success pull-right form-row-add-section-btn" type="button">Добавить</button>
+                                </div>
+
+                                <div class="tab-pane clearfix" id="tab-floors">
+                                    <div id="form-floor-rows">
+                                        {% for floor in house.floors.all %}
+                                        <div id="form-floor-{{ forloop.counter0 }}" class="row form-floor">
+                                            <div class="col-xs-12">
+                                                <input type="hidden" id="floor-{{ forloop.counter0 }}-id" name="Floor[{{ forloop.counter0 }}][id]" value="{{ floor.id }}">
+                                                <input type="hidden" name="Floor[{{ forloop.counter0 }}][house_id]" value="{{ house.id }}">
+                                                <div class="form-group">
+                                                    <label for="floor-{{ forloop.counter0 }}-name">Название</label>
+                                                    <div class="input-group">
+                                                        <input type="text" id="floor-{{ forloop.counter0 }}-name" class="form-control" name="Floor[{{ forloop.counter0 }}][name]" value="{{ floor.name }}">
+                                                        <span class="input-group-btn">
+                                                            <button type="button" class="btn btn-danger form-row-remove-btn"><i class="fa fa-trash"></i></button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% empty %}
+                                        <div id="form-floor-0" class="row form-floor">
+                                            <div class="col-xs-12">
+                                                <input type="hidden" name="Floor[0][id]" value="1711">
+                                                <div class="form-group">
+                                                    <label>Название</label>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" name="Floor[0][name]" value="Этаж 1">
+                                                        <span class="input-group-btn">
+                                                            <button type="button" class="btn btn-danger form-row-remove-btn"><i class="fa fa-trash"></i></button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button class="btn btn-success pull-right form-row-add-floor-btn" type="button">Добавить</button>
+                                </div>
+
+                                <div class="tab-pane clearfix" id="tab-houseuseradmins">
+                                    <div id="form-houseuseradmin-rows">
+                                        {% for staff in house.staff.all %}
+                                        <div id="form-houseuseradmin-{{ forloop.counter0 }}" class="row form-houseuseradmin">
+                                            <div class="col-xs-12 col-sm-7">
+                                                <input type="hidden" name="HouseUserAdmin[{{ forloop.counter0 }}][id]" value="{{ staff.id }}">
+                                                <div class="form-group">
+                                                    <label>ФИО</label>
+                                                    <select class="form-control useradmin-select" name="HouseUserAdmin[{{ forloop.counter0 }}][user_admin_id]">
+                                                        <option value="">Выберите...</option>
+                                                        {% for admin in admin_users %}
+                                                            <option value="{{ admin.id }}" {% if admin.id == staff.user_admin_id %}selected{% endif %}>{{ admin.get_full_name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-5">
+                                                <div class="form-group">
+                                                    <label>Роль</label>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control useradmin-role" value="{{ staff.user_admin.role.name }}" readonly>
+                                                        <span class="input-group-btn">
+                                                            <button type="button" class="btn btn-danger form-row-remove-btn"><i class="fa fa-trash"></i></button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% empty %}
+                                        <div id="form-houseuseradmin-0" class="row form-houseuseradmin">
+                                            <div class="col-xs-12 col-sm-7">
+                                                <div class="form-group">
+                                                    <label>ФИО</label>
+                                                    <select class="form-control useradmin-select" name="HouseUserAdmin[0][user_admin_id]">
+                                                        <option value="">Выберите...</option>
+                                                        <option value="1">Nana Nanovna</option>
+                                                        <option value="239" selected>Электрик 2 qwerty</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-5">
+                                                <div class="form-group">
+                                                    <label>Роль</label>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control useradmin-role" value="Электрик" readonly>
+                                                        <span class="input-group-btn">
+                                                            <button type="button" class="btn btn-danger form-row-remove-btn"><i class="fa fa-trash"></i></button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button class="btn btn-success pull-right form-row-add-houseuseradmin-btn" type="button">Добавить</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 text-right">
+                        <div class="form-group">
+                            <a href="{% url 'house_list' %}" class="btn btn-default">Отменить</a>
+                            <button type="submit" class="btn btn-success">Сохранить</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+jQuery(function ($) {
+    // Встановлюємо стартові ID для додавання нових рядків
+    // (Їх потрібно обчислювати динамічно на основі того, скільки рядків вже відрендерено)
+    var formIdSectionNext = $('.form-section').length || 1;
+    var formIdFloorNext = $('.form-floor').length || 1;
+    var formIdUserNext = $('.form-houseuseradmin').length || 1;
+    var houseId = "{{ house.id|default:'414' }}";
+
+    // Видалення рядка
+    $(document).on('click', '.form-row-remove-btn', function(e){
+        if (confirm('Удалить?')) {
+            $(this).closest('.form-section, .form-floor, .form-houseuseradmin').remove();
+        }
+    });
+
+    // Додавання Секції (Заміни URL на свій Django шлях)
+    $(document).on('click', '.form-row-add-section-btn', function(e){
+        $.ajax({
+            url: "{% url 'ajax_get_house_section_form' %}?house_id=" + houseId + "&form_id=" + formIdSectionNext,
+            dataType: 'html', // В Django краще повертати HTML-шматок, а не JSON
+            success: function(html) {
+                $('#form-section-rows').append(html);
+                formIdSectionNext++;
+            }
+        });
+    });
+
+    // Додавання Поверху
+    $(document).on('click', '.form-row-add-floor-btn', function(e){
+        $.ajax({
+            url: "{% url 'ajax_get_house_floor_form' %}?house_id=" + houseId + "&form_id=" + formIdFloorNext,
+            dataType: 'html',
+            success: function(html) {
+                $('#form-floor-rows').append(html);
+                formIdFloorNext++;
+            }
+        });
+    });
+
+    // Додавання Користувача
+    $(document).on('click', '.form-row-add-houseuseradmin-btn', function(e){
+        $.ajax({
+            url: "{% url 'ajax_get_house_user_admin_form' %}?house_id=" + houseId + "&form_id=" + formIdUserNext,
+            dataType: 'html',
+            success: function(html) {
+                $('#form-houseuseradmin-rows').append(html);
+                formIdUserNext++;
+            }
+        });
+    });
+
+    $(document).on('change', '.useradmin-select', function(e){
+        var selector = $(this);
+        var userId = selector.val();
+        if(userId) {
+            $.ajax({
+                url: "{% url 'ajax_get_admin_role_label' %}?id=" + userId,
+                dataType: 'json',
+                success: function(json) {
+                    selector.closest('.form-houseuseradmin').find('.useradmin-role').val(json.role);
+                }
+            });
+        } else {
+            selector.closest('.form-houseuseradmin').find('.useradmin-role').val('');
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Профиль владельца{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Профиль владельца</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'user_list' %}">Владельцы квартир</a></li>
+        <li class="active">Профиль владельца</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title"></h3>
+            <div class="box-tools">
+                <a href="{{ owner.get_cabinet_login_url|default:'#' }}" target="_blank" class="btn btn-default btn-sm">
+                    <i class="fa fa-external-link"></i> Перейти в кабинет
+                </a>
+                <a href="/admin/user/update/{{ owner.id|default:'374' }}" class="btn btn-primary btn-sm">
+                    <span class="hidden-xs">Редактировать профиль</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="box-body">
+            <div class="row">
+                <div class="col-xs-12">
+
+                    <div class="userAvatar">
+                        {% if owner.avatar %}
+                            <img class="img-circle img-responsive" src="{{ owner.avatar.url }}" alt="{{ owner.get_full_name }}">
+                        {% else %}
+                            <img class="img-circle img-responsive" src="{% static 'admin/dist/img/default-avatar.png' %}" alt="Аватар не загружен" onerror="this.src='https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FUser%2F374%2Favatar.jpg&w=160&h=160&fit=crop'">
+                        {% endif %}
+                    </div>
+
+                    <div class="table-responsive no-padding">
+                        <table class="table table-bordered table-striped table-view">
+                            <tbody>
+                                <tr>
+                                    <td>Статус</td>
+                                    <td>
+                                        {% if owner.status == 'active' %}
+                                            <small class="label label-success">Активен</small>
+                                        {% elif owner.status == 'new' %}
+                                            <small class="label label-warning">Новый</small>
+                                        {% else %}
+                                            <small class="label label-danger">Отключен</small>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ID</td>
+                                    <td>{{ owner.uid|default:"00037" }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Фамилия</td>
+                                    <td>{{ owner.last_name|default:"Бузкова" }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Имя</td>
+                                    <td>{{ owner.first_name|default:"Мария" }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Отчество</td>
+                                    <td>{{ owner.middle_name|default:"Укарнева" }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Дата рождения</td>
+                                    <td>{{ owner.birth_date|date:"d.m.Y"|default:"14.06.2000" }}</td>
+                                </tr>
+                                <tr>
+                                    <td>О владельце (заметки)</td>
+                                    <td>{{ owner.notes|default:"Живая." }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Телефон</td>
+                                    <td>{{ owner.phone|default:"+380636978346" }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Viber</td>
+                                    <td>{{ owner.viber|default:"+380636978346" }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Telegram</td>
+                                    <td>{{ owner.telegram|default:"@isdfy" }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Email</td>
+                                    <td>{{ owner.email|default:"jimin1@gmail.com" }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

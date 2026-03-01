@@ -1,0 +1,151 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Тариф: {{ tariff.name|default:"Тариф 1" }} - Редактирование{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Тариф: {{ tariff.name|default:"Тариф 1" }}</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'tariff_list' %}">Тарифы</a></li>
+        <li><a href="{% url 'tariff_detail' tariff.id|default:'262' %}">Тариф: {{ tariff.name|default:"Тариф 1" }}</a></li>
+        <li class="active">Редактирование</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="box">
+        <div class="box-body">
+            <form id="w0" action="{% url 'tariff_update' tariff.id|default:'262' %}" method="post">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-xs-12 col-lg-7">
+                        <div class="form-group field-tariff-name">
+                            <label class="control-label" for="tariff-name">Название тарифа</label>
+                            <input type="text" id="tariff-name" class="form-control" name="name" value="{{ tariff.name|default:'Тариф 1' }}">
+                            <div class="help-block text-danger">{{ form.name.errors }}</div>
+                        </div>
+                        <div class="form-group field-tariff-description">
+                            <label class="control-label" for="tariff-description">Описание тарифа</label>
+                            <textarea id="tariff-description" class="form-control" name="description" rows="5">{{ tariff.description|default:'Тариф 1' }}</textarea>
+                            <div class="help-block text-danger">{{ form.description.errors }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-lg-7">
+                        <div id="form-tariffservice-rows">
+                            {% for item in tariff_services %}
+                                <div id="form-tariffservice-{{ forloop.counter0 }}" class="row form-tariffservice margin-bottom-15">
+                                    <div class="col-xs-6 col-md-4">
+                                        <div class="form-group margin-bottom-0">
+                                            <label>Услуга</label>
+                                            <select class="form-control service-select" name="TariffService[{{ forloop.counter0 }}][service_id]">
+                                                <option value="">Выберите...</option>
+                                                {% for service in all_services %}
+                                                    <option value="{{ service.id }}" {% if item.service.id == service.id %}selected{% endif %}>{{ service.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 col-md-3">
+                                        <div class="form-group margin-bottom-0">
+                                            <label>Цена за ед.</label>
+                                            <input type="number" step="0.01" class="form-control" name="TariffService[{{ forloop.counter0 }}][price]" value="{{ item.price }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 col-md-2">
+                                        <div class="form-group margin-bottom-0">
+                                            <label>Валюта</label>
+                                            <input type="text" class="form-control" name="TariffService[{{ forloop.counter0 }}][currency]" value="{{ item.currency|default:'грн' }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 col-md-3">
+                                        <div class="form-group margin-bottom-0">
+                                            <label>Ед. изм.</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control serviceunit-name" value="{{ item.service.unit.name }}" readonly>
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-default form-row-remove-btn {% if item.is_used %}disabled{% endif %}"><i class="fa fa-trash"></i></button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                {% endfor %}
+                        </div>
+
+                        <button type="button" class="btn btn-default btn-hover-change pull-left margin-bottom-15 form-row-add-tariffservice-btn">Добавить услугу</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-lg-7 text-right">
+                        <div class="form-group">
+                            <a href="{% url 'tariff_list' %}" class="btn btn-default">Отменить</a>
+                            <button type="submit" class="btn btn-success">Сохранить</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<input type="hidden" id="current_tariff_id" value="{{ tariff.id|default:'262' }}">
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+jQuery(function ($) {
+    // Встановлюємо стартовий індекс для нової послуги
+    var formIdTariffServiceNext = $('.form-tariffservice').length || 1;
+    var tariffId = $('#current_tariff_id').val();
+
+    // Видалення рядка
+    $(document).on('click', '.form-row-remove-btn', function(e){
+        if ($(this).hasClass('disabled')) {
+            alert('Эта услуга используется в квитанциях. Удаление невозможно.');
+        } else {
+            if (confirm('Удалить?')) {
+                $(this).closest('.form-tariffservice').remove();
+            }
+        }
+    });
+
+    // Додавання нової послуги (HTML-шматка)
+    $(document).on('click', '.form-row-add-tariffservice-btn', function(e){
+        $.ajax({
+            url: "{% url 'ajax_get_tariff_service_form' %}?tariff_id=" + tariffId + "&form_id=" + formIdTariffServiceNext,
+            dataType: 'html',
+            success: function(html) {
+                $('#form-tariffservice-rows').append(html);
+                formIdTariffServiceNext++;
+            }
+        });
+    });
+
+
+    $(document).on('change', '.service-select', function(e){
+        var selector = $(this);
+        var serviceId = selector.val();
+
+        if (serviceId) {
+            $.ajax({
+                url: "{% url 'ajax_get_service_unit' %}?service_id=" + serviceId,
+                dataType: 'json',
+                success: function(json) {
+                    // View має повернути JSON: {"unit_name": "кВт.ч"}
+                    selector.closest('.form-tariffservice').find('.serviceunit-name').val(json.unit_name);
+                }
+            });
+        } else {
+            selector.closest('.form-tariffservice').find('.serviceunit-name').val('');
+        }
+    });
+});
+</script>
+{% endblock %}

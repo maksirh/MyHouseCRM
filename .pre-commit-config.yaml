@@ -1,4 +1,4 @@
-exclude: '^src/core/static/admin/'
+exclude: '^src/core/static/(admin|cabinet)/'
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -8,6 +8,7 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
+        args: [ '--maxkb=1000' ]
 
   - repo: https://github.com/psf/black
     rev: 24.2.0

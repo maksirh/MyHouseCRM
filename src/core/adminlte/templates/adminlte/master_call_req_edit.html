@@ -1,0 +1,236 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Заявка №{{ request_obj.id|default:"476" }} - Редактирование{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Заявка №{{ request_obj.id|default:"476" }}</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'master_request_list' %}">Заявки вызова мастера</a></li>
+        <li><a href="{% url 'master_request_detail' request_obj.id|default:'476' %}">Заявка №{{ request_obj.id|default:"476" }}</a></li>
+        <li class="active">Редактирование</li>
+    </ul>
+</section>
+
+<section class="content">
+    <form id="w0" action="{% url 'master_request_update' request_obj.id|default:'476' %}" method="post">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-xs-12 col-md-7 col-lg-6">
+                <div class="page-header-spec">
+                    <div class="form-group field-masterrequest-date_request">
+                        <div class="input-group date">
+                            <input type="text" id="masterrequest-date_request" class="form-control" name="date_request" value="{{ request_obj.convenient_time|date:'d.m.Y'|default:'07.02.2026' }}">
+                            <span class="input-group-addon" title="Выбрать дату"><i class="glyphicon glyphicon-calendar"></i></span>
+                        </div>
+                        <div class="help-block text-danger">{{ form.date_request.errors }}</div>
+                    </div>
+
+                    <span class="label-mid">от</span>
+
+                    <div class="form-group field-masterrequest-time_request">
+                        <div class="input-group bootstrap-timepicker">
+                            <input type="text" id="masterrequest-time_request" class="form-control" name="time_request" value="{{ request_obj.convenient_time|date:'H:i'|default:'10:45' }}">
+                            <div class="input-group-addon">
+                                <i class="fa fa-clock-o"></i>
+                            </div>
+                        </div>
+                        <div class="help-block text-danger">{{ form.time_request.errors }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group">
+                            <label for="user_id">Владелец квартиры</label>
+                            {% if request_obj.flat and request_obj.flat.owner %}
+                                <a href="{% url 'user_detail' request_obj.flat.owner.id %}" target="_blank"><i class="fa fa-external-link"></i></a>
+                            {% else %}
+                                <a href="#" target="_blank"><i class="fa fa-external-link"></i></a> {% endif %}
+
+                            <select id="user_id" class="form-control" name="user_id" data-s2-options="s2options_7ebc6538">
+                                <option value="">Выберите...</option>
+                                {% for owner in owners %}
+                                    <option value="{{ owner.id }}" {% if request_obj.flat and request_obj.flat.owner.id == owner.id %}selected{% endif %}>
+                                        {{ owner.get_full_name }}
+                                    </option>
+                                {% empty %}
+                                    <option value="371" selected>Nana1</option> {% endfor %}
+                            </select>
+                        </div>
+
+                        <p>
+                            <b>Телефон:</b>
+                            <a id="owner_phone" href="tel:{% if request_obj.flat and request_obj.flat.owner %}{{ request_obj.flat.owner.phone }}{% else %}+380675487238{% endif %}">
+                                {% if request_obj.flat and request_obj.flat.owner %}{{ request_obj.flat.owner.phone }}{% else %}+380675487238{% endif %}
+                            </a>
+                        </p>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6">
+                        <p>
+                            <b>Дом:</b>
+                            <a id="flat_house" href="{% if request_obj.flat %}{% url 'house_detail' request_obj.flat.house.id %}{% else %}#{% endif %}">
+                                {% if request_obj.flat %}{{ request_obj.flat.house.name }}{% else %}Nan's House{% endif %}
+                            </a>
+                        </p>
+                        <p><b>Секция:</b> <span id="flat_section">{% if request_obj.flat %}{{ request_obj.flat.section.name }}{% else %}Секция Первая{% endif %}</span></p>
+                        <p><b>Этаж:</b> <span id="flat_floor">{% if request_obj.flat %}{{ request_obj.flat.floor.name }}{% else %}Этаж Первый{% endif %}</span></p>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group field-masterrequest-description required">
+                            <label class="control-label" for="masterrequest-description">Описание</label>
+                            <textarea id="masterrequest-description" class="form-control" name="description" rows="8" aria-required="true">{{ request_obj.description|default:"Djn" }}</textarea>
+                            <div class="help-block text-danger">{{ form.description.errors }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group field-masterrequest-flat_id required">
+                            <label class="control-label" for="masterrequest-flat_id">Квартира</label>
+                            <select id="masterrequest-flat_id" class="form-control" name="flat_id" aria-required="true" data-s2-options="s2options_7ebc6538">
+                                <option value="">Выберите...</option>
+                                {% if request_obj.flat %}
+                                    <option value="{{ request_obj.flat.id }}" selected>{{ request_obj.flat.number }}, {{ request_obj.flat.house.name }}</option>
+                                {% else %}
+                                    <option value="708" selected>1, Nan's House</option> {% endif %}
+                                </select>
+                            <div class="help-block text-danger">{{ form.flat_id.errors }}</div>
+                        </div>
+
+                        <div class="form-group field-masterrequest-type">
+                            <label class="control-label" for="masterrequest-type">Тип мастера</label>
+                            <select id="masterrequest-type" class="form-control" name="master_type">
+                                <option value="plumber" {% if request_obj.master_type == 'plumber' %}selected{% endif %}>Сантехник</option>
+                                <option value="electrician" {% if request_obj.master_type == 'electrician' %}selected{% endif %}>Электрик</option>
+                                <option value="locksmith" {% if request_obj.master_type == 'locksmith' %}selected{% endif %}>Слесарь</option>
+                                <option value="any" {% if request_obj.master_type == 'any' %}selected{% endif %}>Любой специалист</option>
+                            </select>
+                            <div class="help-block text-danger">{{ form.master_type.errors }}</div>
+                        </div>
+
+                        <div class="form-group field-masterrequest-status required">
+                            <label class="control-label" for="masterrequest-status">Статус</label>
+                            <select id="masterrequest-status" class="form-control" name="status" aria-required="true">
+                                <option value="">Выберите...</option>
+                                <option value="new" {% if request_obj.status == 'new' %}selected{% endif %}>Новое</option>
+                                <option value="in_progress" {% if request_obj.status == 'in_progress' %}selected{% endif %}>В работе</option>
+                                <option value="done" {% if request_obj.status == 'done' %}selected{% endif %}>Выполнено</option>
+                            </select>
+                            <div class="help-block text-danger">{{ form.status.errors }}</div>
+                        </div>
+
+                        <div class="form-group field-masterrequest-user_admin_id">
+                            <label class="control-label" for="masterrequest-user_admin_id">Мастер</label>
+                            <select id="masterrequest-user_admin_id" class="form-control" name="master_id">
+                                <option value="">Выберите...</option>
+                                {% for admin in masters %}
+                                    <option value="{{ admin.id }}" {% if request_obj.master and request_obj.master.id == admin.id %}selected{% endif %}>
+                                        {{ admin.role.name }} - {{ admin.get_full_name }}
+                                    </option>
+                                {% empty %}
+                                    <option value="5" selected>Электрик - Михаил Кравець</option> {% endfor %}
+                            </select>
+                            <div class="help-block text-danger">{{ form.master_id.errors }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group field-masterrequest-comment">
+                            <label class="control-label" for="masterrequest-comment">Комментарий</label>
+                            <textarea id="masterrequest-comment" class="compose-textarea form-control" name="comment" rows="8">{{ request_obj.comment|default:"" }}</textarea>
+                            <div class="help-block text-danger">{{ form.comment.errors }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 text-right">
+                        <div class="form-group">
+                            <a href="{% url 'master_request_list' %}" class="btn btn-default">Отменить</a>
+                            <button type="submit" class="btn btn-success">Сохранить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function () {
+    // Ініціалізація Timepicker
+    $('#masterrequest-time_request').timepicker({
+        showInputs: false,
+        showMeridian: false
+    });
+
+    // Ініціалізація WYSIWYG редактора
+    $("textarea.compose-textarea").wysihtml5({
+        locale: 'ru-RU',
+        toolbar: {
+            "font-styles": true,
+            "emphasis": true,
+            "lists": true,
+            "html": false,
+            "link": false,
+            "image": false,
+            "color": false,
+            "blockquote": false,
+            "fa": true,
+            "size": 'none'
+        }
+    });
+
+    $('#user_id').on('change', function() {
+        var userId = $(this).val();
+        if (userId) {
+            $.ajax({
+                url: "{% url 'ajax_get_flats_by_user' %}",
+                data: { 'user_id': userId },
+                success: function(data) {
+                    $("select#masterrequest-flat_id").html(data.flats_options_html);
+
+                    if (data.user_phone) {
+                        $('#owner_phone').text(data.user_phone).attr('href', 'tel:' + data.user_phone);
+                    }
+                }
+            });
+        } else {
+            $("select#masterrequest-flat_id").html('<option value="">Выберите...</option>');
+        }
+    });
+
+    $('#masterrequest-flat_id').on('change', function() {
+        var flatId = $(this).val();
+        if (flatId) {
+            $.ajax({
+                url: "{% url 'ajax_get_flat_info' %}",
+                data: { 'flat_id': flatId },
+                success: function(data) {
+                    if(data.house_name) {
+                        $('#flat_house').text(data.house_name).attr('href', data.house_url);
+                    }
+                    if(data.section_name) $('#flat_section').text(data.section_name);
+                    if(data.floor_name) $('#flat_floor').text(data.floor_name);
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

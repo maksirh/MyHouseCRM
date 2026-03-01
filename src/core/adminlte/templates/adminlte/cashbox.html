@@ -1,0 +1,218 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Касса{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Касса</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li> <li class="active">Касса</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12 col-lg-9">
+            <div class="row">
+                <div class="col-xs-12 col-md-4">
+                    <div class="small-box bg-green overflow-hidden">
+                        <div class="inner">
+                            <h3>{{ cashbox_state|default:"500.00" }} грн</h3>
+                            <p>Состояние кассы</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-4">
+                    <div class="small-box bg-blue overflow-hidden">
+                        <div class="inner">
+                            <h3>{{ accounts_balance|default:"100.00" }} грн</h3>
+                            <p>Баланс по счетам</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-4">
+                    <div class="small-box bg-red overflow-hidden">
+                        <div class="inner">
+                            <h3>{{ accounts_debt|default:"0.00" }} грн</h3>
+                            <p>Задолженность по счетам</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-lg-3">
+            <div class="btn-group pull-right margin-bottom">
+                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Выберите действие <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="/admin/account-transaction/create?type=in">Создать приход</a></li>
+                    <li><a href="/admin/account-transaction/create?type=out">Создать расход</a></li>
+                    <li><a href="/admin/account-transaction/export">Выгрузить в Excel</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"></h3>
+                    <div class="box-tools">
+                        <a href="/admin/account-transaction/index" class="btn btn-default btn-sm">
+                            <span class="hidden-xs">Очистить</span><i class="fa fa-eraser visible-xs" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="w0" class="grid-view">
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-bordered table-hover table-striped linkedRow">
+                            <thead>
+                                <tr>
+                                    <th style="width: 125px; min-width: 125px">№</th>
+                                    <th style="width: 125px; min-width: 125px"><a href="?sort=date">Дата</a></th>
+                                    <th style="width: 120px; min-width: 120px">Статус</th>
+                                    <th>Тип платежа</th>
+                                    <th style="min-width: 200px">Владелец</th>
+                                    <th style="min-width: 160px">Лицевой счет</th>
+                                    <th>Приход/расход</th>
+                                    <th style="width: 110px; min-width: 110px">Сумма (грн)</th>
+                                    <th style="width: 80px; min-width: 80px">&nbsp;</th>
+                                </tr>
+                                <tr id="w0-filters" class="filters">
+                                    <form method="GET">
+                                        <td><input type="text" class="form-control" name="uid"></td>
+                                        <td><input type="text" class="form-control" name="date" id="daterangepicker"></td>
+                                        <td>
+                                            <select class="form-control" name="status">
+                                                <option value=""></option>
+                                                <option value="completed">Проведен</option>
+                                                <option value="pending">Не проведен</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="purpose">
+                                                <option value=""></option>
+                                                <option value="47">Коммунальный платёж</option>
+                                                <option value="101">Вывоз мусора</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="user_id">
+                                                <option value=""></option>
+                                                <option value="1">Лисенко Павел Михайлович</option>
+                                            </select>
+                                        </td>
+                                        <td><input type="text" class="form-control" name="account_uid"></td>
+                                        <td>
+                                            <select class="form-control" name="type">
+                                                <option value=""></option>
+                                                <option value="in">Приход</option>
+                                                <option value="out">Расход</option>
+                                            </select>
+                                        </td>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                    </form>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in transactions %}
+                                    <tr data-href="{% url 'transaction_detail' transaction.id %}" data-key="{{ transaction.id }}">
+                                        <td>{{ transaction.uid }}</td>
+                                        <td>{{ transaction.date|date:"d.m.Y" }}</td>
+                                        <td>{{ transaction.get_status_display }}</td>
+                                        <td>{{ transaction.purpose }}</td>
+                                        <td>{{ transaction.user|default:"<span class='not-set'>(не задано)</span>"|safe }}</td>
+                                        <td>{{ transaction.account_uid|default:"<span class='not-set'>(не задано)</span>"|safe }}</td>
+                                        <td>
+                                            {% if transaction.type == 'in' %}
+                                                <span class="text text-green">Приход</span>
+                                            {% else %}
+                                                <span class="text text-red">Расход</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if transaction.type == 'in' %}
+                                                <span class="text-green">{{ transaction.amount }}</span>
+                                            {% else %}
+                                                <span class="text-red">-{{ transaction.amount }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="{% url 'transaction_update' transaction.id %}" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="{% url 'transaction_delete' transaction.id %}" title="Удалить" data-toggle="tooltip" data-method="post" data-confirm="Вы уверены, что хотите удалить этот элемент?"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr data-href="/admin/account-transaction/2705" data-key="2705">
+                                        <td>21022602704</td>
+                                        <td>21.02.2026</td>
+                                        <td>Проведен</td>
+                                        <td>Приход тест</td>
+                                        <td>Nana1</td>
+                                        <td>02022600716</td>
+                                        <td><span class="text text-green">Приход</span></td>
+                                        <td><span class="text-green">100.00</span></td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr data-href="/admin/account-transaction/2703" data-key="2703">
+                                        <td>21022602703</td>
+                                        <td>21.02.2026</td>
+                                        <td>Проведен</td>
+                                        <td>Вывоз мусора</td>
+                                        <td><span class="not-set">(не задано)</span></td>
+                                        <td><span class="not-set">(не задано)</span></td>
+                                        <td><span class="text text-red">Расход</span></td>
+                                        <td><span class="text-red">-100.00</span></td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="box-footer clearfix"></div>
+                </div>
+
+                <div class="box-footer">
+                    <div>Проведен приход: <span class="text-bold">{{ total_income|default:"600.00" }} грн</span></div>
+                    <div>Проведен расход: <span class="text-bold">{{ total_expense|default:"600.00" }} грн</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+
+    });
+</script>
+{% endblock %}

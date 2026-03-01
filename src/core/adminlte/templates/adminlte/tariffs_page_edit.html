@@ -1,0 +1,189 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Редактирование страницы "Тарифы"{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Редактирование страницы</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li class="active">Редактирование страницы "Тарифы"</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Редактирование страницы "Тарифы"</h3>
+                </div>
+                <div class="box-body">
+                    <form id="w0" action="{% url 'website_tariffs_update' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <h3 class="page-header">Информация</h3>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group field-websitetariffform-tarifftitle">
+                                    <label class="control-label" for="websitetariffform-tarifftitle">Заголовок</label>
+                                    <input type="text" id="websitetariffform-tarifftitle" class="form-control" name="WebsiteTariffForm[tariffTitle]" value="{{ page_data.title|default:'Наши тарифы для Вас' }}">
+                                    <div class="help-block text-danger">{{ form.tariffTitle.errors }}</div>
+                                </div>
+                                <div class="form-group field-websitetariffform-tariffdescription">
+                                    <label class="control-label" for="websitetariffform-tariffdescription">Краткий текст</label>
+                                    <textarea id="websitetariffform-tariffdescription" class="compose-textarea form-control" name="WebsiteTariffForm[tariffDescription]" placeholder="Текст">{{ page_data.description|default:"<blockquote><h4><i>&nbsp;С нашими тарифами легко и комфортно!&nbsp;</i></h4></blockquote>" }}</textarea>
+                                    <div class="help-block text-danger">{{ form.tariffDescription.errors }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row near-img">
+                            <div class="col-xs-12">
+                                <h3 class="page-header">Изображения</h3>
+                            </div>
+                            <div id="form-websitetariff-rows">
+                                {% for tariff in tariffs %}
+                                    <div id="form-websitetariff-{{ forloop.counter0 }}" class="col-md-4 form-websitetariff">
+                                        <h4>
+                                            Тариф {{ forloop.counter }}
+                                            <a href="{% url 'website_tariff_delete' tariff.id %}" class="pull-right text-red" onclick="return confirm('Удалить?');">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </h4>
+
+                                        {% if tariff.image %}
+                                            <img src="{{ tariff.image.url }}" alt="{{ tariff.title }}" class="img-responsive margin-bottom-15">
+                                        {% else %}
+                                            <img src="{% static 'admin/dist/img/placeholder.jpg' %}" alt="" class="img-responsive margin-bottom-15" onerror="this.src='https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FWebsiteTariff%2F22%2Fimage.png&w=650&h=300&fit=crop'">
+                                        {% endif %}
+
+                                        <input type="hidden" id="websitetariff-{{ forloop.counter0 }}-id" name="WebsiteTariff[{{ forloop.counter0 }}][id]" value="{{ tariff.id }}">
+
+                                        <div class="form-group">
+                                            <label for="websitetariff-{{ forloop.counter0 }}-imagefile">Файл</label>
+                                            <input type="file" id="websitetariff-{{ forloop.counter0 }}-imagefile" class="form-control" name="WebsiteTariff[{{ forloop.counter0 }}][imageFile]" accept="image/*">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="websitetariff-{{ forloop.counter0 }}-title">Подпись</label>
+                                            <input type="text" id="websitetariff-{{ forloop.counter0 }}-title" class="form-control" name="WebsiteTariff[{{ forloop.counter0 }}][title]" value="{{ tariff.title }}">
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <div id="form-websitetariff-0" class="col-md-4 form-websitetariff">
+                                        <h4>Тариф 1 <a href="#" class="pull-right text-red"><i class="fa fa-trash"></i></a></h4>
+                                        <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FWebsiteTariff%2F22%2Fimage.png&w=650&h=300&fit=crop" class="img-responsive margin-bottom-15" alt="">
+                                        <input type="hidden" name="WebsiteTariff[0][id]" value="22">
+                                        <div class="form-group">
+                                            <label>Файл</label>
+                                            <input type="file" class="form-control" name="WebsiteTariff[0][imageFile]">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Подпись</label>
+                                            <input type="text" class="form-control" name="WebsiteTariff[0][title]" value="Тариф для пенсионеров">
+                                        </div>
+                                    </div>
+
+                                    <div id="form-websitetariff-1" class="col-md-4 form-websitetariff">
+                                        <h4>Тариф 2 <a href="#" class="pull-right text-red"><i class="fa fa-trash"></i></a></h4>
+                                        <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FWebsiteTariff%2F21%2Fimage.png&w=650&h=300&fit=crop" class="img-responsive margin-bottom-15" alt="">
+                                        <input type="hidden" name="WebsiteTariff[1][id]" value="21">
+                                        <div class="form-group">
+                                            <label>Файл</label>
+                                            <input type="file" class="form-control" name="WebsiteTariff[1][imageFile]">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Подпись</label>
+                                            <input type="text" class="form-control" name="WebsiteTariff[1][title]" value="Тариф &quot;Большая семья&quot;">
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3 class="page-header">Настройки SEO</h3>
+                                <div class="form-group field-websitetariffform-tariffmetatitle">
+                                    <label class="control-label" for="websitetariffform-tariffmetatitle">Title</label>
+                                    <input type="text" id="websitetariffform-tariffmetatitle" class="form-control" name="WebsiteTariffForm[tariffMetaTitle]" value="{{ seo.title|default:'Тарифы' }}">
+                                    <div class="help-block text-danger">{{ form.tariffMetaTitle.errors }}</div>
+                                </div>
+                                <div class="form-group field-websitetariffform-tariffmetadescription">
+                                    <label class="control-label" for="websitetariffform-tariffmetadescription">Description</label>
+                                    <textarea id="websitetariffform-tariffmetadescription" class="form-control" name="WebsiteTariffForm[tariffMetaDescription]" rows="6">{{ seo.description|default:'Тарифы' }}</textarea>
+                                    <div class="help-block text-danger">{{ form.tariffMetaDescription.errors }}</div>
+                                </div>
+                                <div class="form-group field-websitetariffform-tariffmetakeywords">
+                                    <label class="control-label" for="websitetariffform-tariffmetakeywords">Keywords</label>
+                                    <textarea id="websitetariffform-tariffmetakeywords" class="form-control" name="WebsiteTariffForm[tariffMetaKeywords]" rows="6">{{ seo.keywords|default:'Тарифы' }}</textarea>
+                                    <div class="help-block text-danger">{{ form.tariffMetaKeywords.errors }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 text-center">
+                                <div class="form-group">
+                                    <a href="{% url 'website_tariffs' %}" class="btn btn-default">Отменить</a>
+                                    <button type="button" role="button" class="btn btn-success bg-green-active form-row-add-websitetariff-btn">Добавить тариф</button>
+                                    <button type="submit" class="btn btn-success">Сохранить</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+jQuery(function ($) {
+    // Встановлюємо наступний індекс для нової форми
+    var formIdWebsiteTariffNext = $('.form-websitetariff').length || 1;
+
+    // Видалення незбереженого блоку зі сторінки
+    $(document).on('click', '.form-row-remove-btn', function(e){
+        e.preventDefault();
+        if (confirm('Удалить?')) {
+            $(this).closest('.form-websitetariff').remove();
+        }
+    });
+
+    // Додавання нового блоку тарифу
+    $(document).on('click', '.form-row-add-websitetariff-btn', function(e){
+        $.ajax({
+            // URL твоєї Django View для генерації HTML-шматка форми
+            url: "{% url 'ajax_get_website_tariff_form' %}?form_id=" + formIdWebsiteTariffNext,
+            dataType: 'html',
+            success: function(html) {
+                $('#form-websitetariff-rows').append(html);
+                formIdWebsiteTariffNext++;
+            }
+        });
+    });
+
+    // Ініціалізація WYSIWYG редактора для основного опису
+    $("textarea.compose-textarea").wysihtml5({
+        locale: 'ru-RU',
+        toolbar: {
+            "font-styles": true,
+            "emphasis": true,
+            "lists": true,
+            "html": false,
+            "link": false,
+            "image": false,
+            "color": false,
+            "blockquote": false,
+            "fa": true,
+            "size": 'none'
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends 'cabinet_base.html' %}
+{% load static %}
+
+{% block title %}Сообщения{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Сообщения</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'cabinet_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li class="active">Сообщения</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title"></h3>
+            <div class="box-tools pull-right">
+                <div class="has-feedback">
+                    <form action="{% url 'cabinet_messages' %}" method="get">
+                        <input type="text" name="search" value="{{ request.GET.search|default:'' }}" class="form-control input-sm" placeholder="Поиск">
+                        <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="box-body no-padding">
+            <div id="w0" class="grid-view">
+                <div class="mailbox-controls">
+                    <button type="button" class="btn btn-default btn-sm checkbox-toggle" title="Выбрать все">
+                        <i class="fa fa-square-o"></i>
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm delete-many" title="Удалить выбранные">
+                        <i class="fa fa-trash-o"></i>
+                    </button>
+                    <div class="pull-right">
+                        {% if is_paginated %}
+                            {{ page_obj.start_index }}-{{ page_obj.end_index }}/{{ paginator.count }}
+                            <div class="btn-group">
+                                {% if page_obj.has_previous %}
+                                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="btn btn-default btn-sm"><i class="fa fa-chevron-left"></i></a>
+                                {% endif %}
+                                {% if page_obj.has_next %}
+                                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="btn btn-default btn-sm"><i class="fa fa-chevron-right"></i></a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="table-responsive mailbox-messages">
+                    <table class="table table-hover table-striped linkedRow">
+                        <thead>
+                            <tr>
+                                <th>&nbsp;</th>
+                                <th style="min-width: 200px">От кого</th>
+                                <th>Текст</th>
+                                <th style="width: 135px; min-width: 135px">Дата</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for message in messages %}
+                                <tr data-href="{% url 'cabinet_message_detail' message.id %}" class="{% if not message.is_read %}unread{% endif %}">
+                                    <td class="no-click">
+                                        <input type="checkbox" name="selection[]" value="{{ message.id }}">
+                                    </td>
+                                    <td>{{ message.sender|default:"Администрация" }}</td>
+                                    <td>
+                                        <strong>{{ message.title }}</strong> - {{ message.text|striptags|truncatechars:100 }}
+                                    </td>
+                                    <td>{{ message.created_at|date:"d.m.Y - H:i" }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="empty text-center" style="padding: 20px; color: #777;">Ничего не найдено.</div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mailbox-controls">
+                    <button type="button" class="btn btn-default btn-sm checkbox-toggle"><i class="fa fa-square-o"></i></button>
+                    <button type="button" class="btn btn-default btn-sm delete-many"><i class="fa fa-trash-o"></i></button>
+                    <div class="pull-right">
+                        {% if is_paginated %}
+                             {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function () {
+    // Ініціалізація iCheck для чекбоксів
+    $('.mailbox-messages input[type="checkbox"]').iCheck({
+        checkboxClass: 'icheckbox_flat-blue',
+        radioClass: 'iradio_flat-blue'
+    });
+
+    // Логіка "Вибрати все"
+    $(".checkbox-toggle").click(function () {
+        var clicks = $(this).data('clicks');
+        if (clicks) {
+            $(".mailbox-messages input[type='checkbox']").iCheck("uncheck");
+            $(".fa", this).removeClass("fa-check-square-o").addClass('fa-square-o');
+        } else {
+            $(".mailbox-messages input[type='checkbox']").iCheck("check");
+            $(".fa", this).removeClass("fa-square-o").addClass('fa-check-square-o');
+        }
+        $(this).data("clicks", !clicks);
+    });
+
+    // Масове видалення через AJAX
+    $('.delete-many').on('click', function() {
+        var ids = [];
+        $('input[name="selection[]"]:checked').each(function() {
+            ids.push($(this).val());
+        });
+
+        if (ids.length) {
+            if (confirm('Данные будут удалены. Продолжить?')) {
+                $.ajax({
+                    url: "{% url 'cabinet_message_delete_ajax' %}",
+                    type: 'post',
+                    data: {
+                        'ids[]': ids,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+                        location.reload();
+                    }
+                });
+            }
+        } else {
+            alert('Ничего не выбрано');
+        }
+    });
+
+    // Робимо рядки клікабельними (крім стовпця з чекбоксом)
+    $('.linkedRow tbody tr').on('click', function(e) {
+        if (!$(e.target).closest('.no-click').length && !$(e.target).is('input')) {
+            var href = $(this).data('href');
+            if (href) {
+                window.location = href;
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

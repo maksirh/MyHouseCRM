@@ -1,0 +1,207 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Показания счетчиков, кв.{{ flat.number|default:"1" }}{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Показания счетчиков, кв.{{ flat.number|default:"1" }}</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'counter_data_list' %}">Счетчики</a></li>
+        <li class="active">Показания счетчиков, кв.{{ flat.number|default:"1" }}</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="pull-right margin-bottom">
+                <a class="btn btn-success" href="{% url 'counter_data_create' %}?flat_id={{ flat.id|default:'708' }}&service_id={{ service.id|default:'126' }}">
+                    Добавить показание
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"></h3>
+                    <div class="box-tools">
+                        <a href="{% url 'counter_history' %}?flat_id={{ flat.id|default:'708' }}&service_id={{ service.id|default:'126' }}" class="btn btn-default btn-sm">
+                            <span class="hidden-xs">Очистить</span><i class="fa fa-eraser visible-xs" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="w0" class="grid-view">
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-bordered table-hover table-striped linkedRow">
+                            <thead>
+                                <tr>
+                                    <th style="width: 125px; min-width: 125px">№</th>
+                                    <th>Статус</th>
+                                    <th style="width: 125px; min-width: 125px"><a class="desc" href="?sort=-date">Дата</a></th>
+                                    <th style="width: 125px; min-width: 125px"><a href="?sort=-month">Месяц</a></th>
+                                    <th style="min-width: 200px">Дом</th>
+                                    <th style="min-width: 160px">Секция</th>
+                                    <th style="width: 110px; min-width: 110px">№ квартиры</th>
+                                    <th>Счетчик</th>
+                                    <th style="width: 90px; min-width: 90px">Показания</th>
+                                    <th style="width: 90px; min-width: 90px">Ед. изм.</th>
+                                    <th style="width: 80px; min-width: 80px">&nbsp;</th>
+                                </tr>
+                                <tr id="w0-filters" class="filters">
+                                    <form method="GET">
+                                        <input type="hidden" name="flat_id" value="{{ flat.id|default:'708' }}">
+                                        <input type="hidden" name="service_id" value="{{ service.id|default:'126' }}">
+
+                                        <td><input type="text" class="form-control" name="uid"></td>
+                                        <td>
+                                            <select class="form-control" name="status">
+                                                <option value=""></option>
+                                                <option value="new">Новое</option>
+                                                <option value="included">Учтено</option>
+                                                <option value="paid">Учтено и оплачено</option>
+                                                <option value="zero">Нулевое</option>
+                                            </select>
+                                        </td>
+                                        <td><input type="text" class="form-control" name="date_range" placeholder="Выберите дату"></td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            <select class="form-control" name="house">
+                                                <option value=""></option>
+                                                <option value="1">ЖК "Башня Чкалов"</option>
+                                                <option value="412" selected>Nan's House</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="section">
+                                                <option value="">Выберите дом</option>
+                                            </select>
+                                        </td>
+                                        <td><input type="text" class="form-control" name="flat_number"></td>
+                                        <td>
+                                            <select class="form-control" name="service">
+                                                <option value=""></option>
+                                                <option value="126" selected>Электричество 1</option>
+                                                <option value="127">Водопровод 1</option>
+                                                <option value="128">Газопровод 1</option>
+                                            </select>
+                                        </td>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                    </form>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in counter_history %}
+                                    <tr data-href="{% url 'counter_data_update' record.id %}" data-key="{{ record.id }}">
+                                        <td>{{ record.uid }}</td>
+                                        <td>
+                                            {% if record.status == 'new' %}
+                                                <small class="label label-warning">Новое</small>
+                                            {% elif record.status == 'included' %}
+                                                <small class="label label-primary">Учтено</small>
+                                            {% elif record.status == 'paid' %}
+                                                <small class="label label-success">Учтено и оплачено</small>
+                                            {% elif record.status == 'zero' %}
+                                                <small class="label label-default">Нулевое</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ record.date|date:"d.m.Y" }}</td>
+                                        <td>{{ record.period|date:"F Y"|title }}</td>
+                                        <td>{{ record.flat.house.name }}</td>
+                                        <td>{{ record.flat.section.name }}</td>
+                                        <td>{{ record.flat.number }}</td>
+                                        <td>{{ record.service.name }}</td>
+                                        <td style="background-color: #DFD5; font-weight: normal">
+                                            {{ record.value|floatformat:1 }}
+                                        </td>
+                                        <td style="background-color: #DFD5; font-weight: normal">
+                                            {{ record.service.unit.name }}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="{% url 'counter_data_update' record.id %}" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="{% url 'counter_data_delete' record.id %}?flat_id={{ flat.id }}&service_id={{ service.id }}" title="Удалить" data-toggle="tooltip" data-method="post" data-confirm="Вы уверены, что хотите удалить этот элемент?"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr data-href="/admin/counter-data/1018" data-key="1018">
+                                        <td>07022601018</td>
+                                        <td><small class="label label-success">Учтено и оплачено</small></td>
+                                        <td>07.02.2026</td>
+                                        <td>Февраль 2026</td>
+                                        <td>Nan's House</td>
+                                        <td>Секция Первая</td>
+                                        <td>1</td>
+                                        <td>Электричество 1</td>
+                                        <td style="background-color: #DFD5; font-weight: normal">23.0</td>
+                                        <td style="background-color: #DFD5; font-weight: normal">кВт.ч</td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr data-href="/admin/counter-data/1016" data-key="1016">
+                                        <td>03022601015</td>
+                                        <td><small class="label label-warning">Новое</small></td>
+                                        <td>03.02.2026</td>
+                                        <td>Февраль 2026</td>
+                                        <td>Nan's House</td>
+                                        <td>Секция Первая</td>
+                                        <td>1</td>
+                                        <td>Электричество 1</td>
+                                        <td style="background-color: #DFD5; font-weight: normal">32.0</td>
+                                        <td style="background-color: #DFD5; font-weight: normal">кВт.ч</td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr data-href="/admin/counter-data/1010" data-key="1010">
+                                        <td>02022600996</td>
+                                        <td><small class="label label-success">Учтено и оплачено</small></td>
+                                        <td>02.02.2026</td>
+                                        <td>Февраль 2026</td>
+                                        <td>Nan's House</td>
+                                        <td>Секция Первая</td>
+                                        <td>1</td>
+                                        <td>Электричество 1</td>
+                                        <td style="background-color: #DFD5; font-weight: normal">34.0</td>
+                                        <td style="background-color: #DFD5; font-weight: normal">кВт.ч</td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="box-footer clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+{% endblock %}

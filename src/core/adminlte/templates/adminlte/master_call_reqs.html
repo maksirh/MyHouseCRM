@@ -1,0 +1,217 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Заявки вызова мастера{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Заявки вызова мастера</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li class="active">Заявки вызова мастера</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="pull-right margin-bottom">
+                <a class="btn btn-success" href="{% url 'master_request_create' %}">Добавить заявку</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"></h3>
+                    <div class="box-tools">
+                        <a href="{% url 'master_request_list' %}" class="btn btn-default btn-sm">
+                            <span class="hidden-xs">Очистить</span><i class="fa fa-eraser visible-xs" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="w0" class="grid-view">
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-bordered table-hover table-striped linkedRow">
+                            <thead>
+                                <tr>
+                                    <th style="width: 100px; min-width: 100px"><a class="desc" href="?sort=id">№ заявки</a></th>
+                                    <th style="width: 135px; min-width: 135px"><a href="?sort=date">Удобное время</a></th>
+                                    <th style="min-width: 125px"><a href="?sort=master_type">Тип мастера</a></th>
+                                    <th style="min-width: 350px">Описание</th>
+                                    <th>Квартира</th>
+                                    <th style="min-width: 200px">Владелец</th>
+                                    <th>Телефон</th>
+                                    <th style="min-width: 125px">Мастер</th>
+                                    <th style="width: 135px; min-width: 135px">Статус</th>
+                                    <th style="width: 80px; min-width: 80px">&nbsp;</th>
+                                </tr>
+                                <tr id="w0-filters" class="filters">
+                                    <form method="GET">
+                                        <td><input type="text" class="form-control" name="id"></td>
+                                        <td><input type="text" class="form-control" name="date_range" placeholder="Выберите период"></td>
+                                        <td>
+                                            <select class="form-control" name="master_type">
+                                                <option value=""></option>
+                                                <option value="plumber">Сантехник</option>
+                                                <option value="electrician">Электрик</option>
+                                                <option value="locksmith">Слесарь</option>
+                                                <option value="any">Любой специалист</option>
+                                            </select>
+                                        </td>
+                                        <td><input type="text" class="form-control" name="description"></td>
+                                        <td><input type="text" class="form-control" name="flat"></td>
+                                        <td>
+                                            <select class="form-control" name="owner">
+                                                <option value=""></option>
+                                                <option value="1">Лисенко Павел</option>
+                                            </select>
+                                        </td>
+                                        <td><input type="text" class="form-control" name="phone"></td>
+                                        <td>
+                                            <select class="form-control" name="master">
+                                                <option value=""></option>
+                                                <option value="5">Электрик - Михаил Кравець</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="status">
+                                                <option value=""></option>
+                                                <option value="new">Новое</option>
+                                                <option value="in_progress">В работе</option>
+                                                <option value="done">Выполнено</option>
+                                            </select>
+                                        </td>
+                                        <td>&nbsp;</td>
+                                    </form>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in master_requests %}
+                                    <tr data-href="{% url 'master_request_detail' request.id %}" data-key="{{ request.id }}">
+                                        <td>{{ request.id }}</td>
+                                        <td>{{ request.convenient_time|date:"d.m.Y - H:i" }}</td>
+                                        <td>{{ request.get_master_type_display }}</td>
+                                        <td>{{ request.description|truncatechars:50 }}</td>
+                                        <td>
+                                            {% if request.flat %}
+                                                <a href="{% url 'flat_detail' request.flat.id %}">кв.{{ request.flat.number }}, {{ request.flat.house.name }}</a>
+                                            {% else %}
+                                                <span class="not-set">(не задано)</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if request.flat and request.flat.owner %}
+                                                <a href="{% url 'user_detail' request.flat.owner.id %}">{{ request.flat.owner.get_full_name }}</a>
+                                            {% else %}
+                                                <span class="not-set">(не задано)</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if request.flat and request.flat.owner %}
+                                                {{ request.flat.owner.phone }}
+                                            {% else %}
+                                                <span class="not-set">(не задано)</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if request.master %}
+                                                <a href="{% url 'admin_detail' request.master.id %}">{{ request.master.get_full_name }}</a>
+                                            {% else %}
+                                                <span class="not-set">(не задано)</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if request.status == 'new' %}
+                                                <small class="label label-primary">Новое</small>
+                                            {% elif request.status == 'in_progress' %}
+                                                <small class="label label-warning">В работе</small>
+                                            {% elif request.status == 'done' %}
+                                                <small class="label label-success">Выполнено</small>
+                                            {% else %}
+                                                <small class="label label-default">{{ request.get_status_display }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="{% url 'master_request_update' request.id %}" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="{% url 'master_request_delete' request.id %}" title="Удалить" data-toggle="tooltip" data-method="post" data-confirm="Вы уверены, что хотите удалить этот элемент?"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr data-href="/admin/master-request/476" data-key="476">
+                                        <td>476</td>
+                                        <td>07.02.2026 - 10:45</td>
+                                        <td>Электрик</td>
+                                        <td>Djn</td>
+                                        <td><a href="#">кв.1, Nan's House</a></td>
+                                        <td><a href="#">Nana1</a></td>
+                                        <td>+380675487238</td>
+                                        <td><a href="#">Михаил Кравець</a></td>
+                                        <td><small class="label label-warning">В работе</small></td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr data-href="/admin/master-request/475" data-key="475">
+                                        <td>475</td>
+                                        <td>07.02.2026 - 10:45</td>
+                                        <td>Электрик</td>
+                                        <td>Воттак.</td>
+                                        <td><a href="#">кв.1, Nan's House</a></td>
+                                        <td><a href="#">Nana1</a></td>
+                                        <td>+380675487238</td>
+                                        <td><a href="#">Михаил Кравець</a></td>
+                                        <td><small class="label label-primary">Новое</small></td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr data-href="/admin/master-request/458" data-key="458">
+                                        <td>458</td>
+                                        <td>14.04.2025 - 19:30</td>
+                                        <td>Электрик</td>
+                                        <td>тест</td>
+                                        <td><a href="#">кв.777, Стрела</a></td>
+                                        <td><span class="not-set">(не задано)</span></td>
+                                        <td><span class="not-set">(не задано)</span></td>
+                                        <td><a href="#">Calibri Cali</a></td>
+                                        <td><small class="label label-success">Выполнено</small></td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="box-footer clearfix">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+{% endblock %}

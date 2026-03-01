@@ -1,0 +1,138 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Лицевой счет{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Лицевой счет</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'account_list' %}">Лицевые счета</a></li>
+        <li class="active">Лицевой счет №{{ account.uid|default:"10022600722" }}</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12 col-md-7 col-lg-6">
+            <div class="page-header-spec">
+                <div class="form-group">
+                    <div class="input-group date">
+                        <div class="input-group-addon">№</div>
+                        <div class="form-control pull-right">{{ account.uid|default:"10022600722" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">Просмотр лицевого счета</h3>
+            <div class="box-tools">
+                <a href="/admin/account-transaction/create?type=in&account_id={{ account.id|default:'722' }}" class="btn btn-default btn-sm">
+                    <span class="hidden-xs"><i class="fa fa-dollar"></i> Принять платеж</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                </a>
+
+                {% if account.flat %}
+                    <a href="/admin/invoice/create?flat_id={{ account.flat.id }}" class="btn btn-default btn-sm">
+                        <span class="hidden-xs"><i class="fa fa-files-o"></i> Оформить квитанцию</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                    </a>
+                {% else %}
+                    <a href="/admin/invoice/create?flat_id=416" class="btn btn-default btn-sm">
+                        <span class="hidden-xs"><i class="fa fa-files-o"></i> Оформить квитанцию</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                    </a>
+                {% endif %}
+
+                <a href="/admin/account/update/{{ account.id|default:'722' }}" class="btn btn-primary btn-sm">
+                    <span class="hidden-xs">Редактировать счет</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="col-xs-12">
+                    <table class="table table-bordered table-striped table-view">
+                        <tbody>
+                            <tr>
+                                <td>Статус</td>
+                                <td>
+                                    {% if account.status == 'active' %}
+                                        <small class="label label-success">Активен</small>
+                                    {% else %}
+                                        <small class="label label-danger">Неактивен</small>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Дом</td>
+                                <td>
+                                    {% if account.flat.house %}
+                                        <a href="{% url 'house_detail' account.flat.house.id %}">{{ account.flat.house.name }}</a>
+                                    {% else %}
+                                        <a href="#">{{ mock_house|default:"ЖК &quot;Башня Чкалов&quot;"|safe }}</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Секция</td>
+                                <td>{{ account.flat.section.name|default:"Секция 2" }}</td>
+                            </tr>
+                            <tr>
+                                <td>Квартира</td>
+                                <td>
+                                    {% if account.flat %}
+                                        <a href="{% url 'flat_detail' account.flat.id %}">{{ account.flat.number }}</a>
+                                    {% else %}
+                                        <a href="#">{{ mock_flat|default:"13" }}</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Владелец</td>
+                                <td>
+                                    {% if account.flat.owner %}
+                                        <a href="{% url 'user_detail' account.flat.owner.id %}">{{ account.flat.owner }}</a>
+                                    {% else %}
+                                        <span class="not-set">(не задано)</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Остаток, грн.</td>
+                                <td>
+                                    {% if account.balance > 0 %}
+                                        <span class="text-green">{{ account.balance }}</span>
+                                    {% elif account.balance < 0 %}
+                                        <span class="text-red">{{ account.balance }}</span>
+                                    {% else %}
+                                        <span class="text-default">{{ account.balance|default:"0.00" }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div>
+                        {% if account.flat %}
+                            <p><a href="/admin/counter-data/counter-list?flat_id={{ account.flat.id }}">Посмотреть показания счетчиков</a></p>
+                        {% else %}
+                            <p><a href="/admin/counter-data/counter-list?flat_id=416">Посмотреть показания счетчиков</a></p>
+                        {% endif %}
+
+                        <p><a href="/admin/account-transaction/index?account_id={{ account.id|default:'722' }}&type=in">Посмотреть приходы</a></p>
+
+                        {% if account.flat %}
+                            <p><a href="/admin/invoice/index?flat_id={{ account.flat.id }}">Посмотреть квитанции</a></p>
+                        {% else %}
+                            <p><a href="/admin/invoice/index?flat_id=416">Посмотреть квитанции</a></p>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Показание счетчикa №{{ counter_record.uid|default:"07022601018" }}{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Показание счетчикa</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'counter_data_list' %}">Счетчики</a></li>
+        <li>
+            {% if counter_record %}
+                <a href="{% url 'counter_history' %}?flat_id={{ counter_record.flat.id }}&service_id={{ counter_record.service.id }}">Показания счетчиков, кв.{{ counter_record.flat.number }}</a>
+            {% else %}
+                <a href="#">Показания счетчиков, кв.1</a> {% endif %}
+        </li>
+        <li class="active">Показание счетчикa №{{ counter_record.uid|default:"07022601018" }}</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12 col-md-7 col-lg-6">
+            <div class="page-header-spec">
+                <div class="form-group">
+                    <div class="input-group date">
+                        <div class="input-group-addon">№</div>
+                        <div class="form-control pull-right">{{ counter_record.uid|default:"07022601018" }}</div>
+                    </div>
+                </div>
+                <span class="label-mid">от</span>
+                <div class="form-group">
+                    <div class="input-group date">
+                        <div class="input-group-addon">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </div>
+                        <div class="form-control pull-right">{{ counter_record.date|date:"d.m.Y"|default:"07.02.2026" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title"></h3>
+            <div class="box-tools">
+                <a href="/admin/counter-data/update/{{ counter_record.id|default:'1018' }}" class="btn btn-primary btn-sm">
+                    <span class="hidden-xs">Редактировать показание</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="col-xs-12 col-lg-4">
+                    <table class="table table-bordered table-striped table-view">
+                        <tbody>
+                            <tr>
+                                <td>Счетчик</td>
+                                <td>{{ counter_record.service.name|default:"Электричество 1" }}</td>
+                            </tr>
+                            <tr>
+                                <td>Дом</td>
+                                <td>
+                                    {% if counter_record.flat.house %}
+                                        <a href="{% url 'house_detail' counter_record.flat.house.id %}">{{ counter_record.flat.house.name }}</a>
+                                    {% else %}
+                                        <a href="#">Nan's House</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Секция</td>
+                                <td>{{ counter_record.flat.section.name|default:"Секция Первая" }}</td>
+                            </tr>
+                            <tr>
+                                <td>Квартира</td>
+                                <td>
+                                    {% if counter_record.flat %}
+                                        <a href="{% url 'flat_detail' counter_record.flat.id %}">{{ counter_record.flat.number }}</a>
+                                    {% else %}
+                                        <a href="#">1</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Пользователь</td>
+                                <td>
+                                    {% if counter_record.flat.owner %}
+                                        <a href="{% url 'user_detail' counter_record.flat.owner.id %}">{{ counter_record.flat.owner.get_full_name }}</a>
+                                    {% else %}
+                                        <a href="#">Nana1</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Текущие показания</td>
+                                <td>{{ counter_record.value|floatformat:1|default:"23.0" }}</td>
+                            </tr>
+                            <tr>
+                                <td>Ед. изм.</td>
+                                <td>{{ counter_record.service.unit.name|default:"кВт.ч" }}</td>
+                            </tr>
+                            <tr>
+                                <td>Статус</td>
+                                <td>
+                                    {% if counter_record.status == 'new' %}
+                                        <small class="label label-warning">Новое</small>
+                                    {% elif counter_record.status == 'included' %}
+                                        <small class="label label-primary">Учтено</small>
+                                    {% elif counter_record.status == 'paid' %}
+                                        <small class="label label-success">Учтено и оплачено</small>
+                                    {% elif counter_record.status == 'zero' %}
+                                        <small class="label label-default">Нулевое</small>
+                                    {% else %}
+                                        <small class="label label-success">Учтено и оплачено</small>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,762 @@
+        <!DOCTYPE html>
+    <html lang="ru-RU">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" href="https://myhouse24.demodev.cc/favicon.png">
+        <meta name="csrf-param" content="_csrf-cabinet">
+    <meta name="csrf-token" content="yHl3dgNQgcXHLulYWDF9yGfZ_ts_HgJ0rvfhGlM4-sCtEDNPNWizjIxPmx5qWSWnKJWJllhtXRviw6tpH2eltA==">
+        <title>Профиль</title>
+        <link href="/cabinet/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="/cabinet/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css" rel="stylesheet">
+<link href="/cabinet/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+<link href="/cabinet/bower_components/Ionicons/css/ionicons.min.css" rel="stylesheet">
+<link href="/cabinet/bower_components/jvectormap/jquery-jvectormap.css" rel="stylesheet">
+<link href="/cabinet/dist/css/AdminLTE.min.css" rel="stylesheet">
+<link href="/cabinet/plugins/iCheck/flat/blue.css" rel="stylesheet">
+<link href="/cabinet/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css" rel="stylesheet">
+<link href="/cabinet/dist/css/skins/_all-skins.min.css" rel="stylesheet">
+<link href="/cabinet/dist/css/style.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic" rel="stylesheet">
+<link href="/cabinet/custom.css" rel="stylesheet">    </head>
+    <body class="hold-transition skin-black-light sidebar-mini fixed">
+        <div class="wrapper">
+
+
+<header class="main-header">
+
+    <!-- Logo -->
+    <a href="/cabinet/" class="logo">
+        <span class="logo-mini">
+            <img src="/logo-mini.svg" class="img-responsive" alt="">
+        </span>
+        <span class="logo-lg">
+            <img src="/logo.svg" class="img-responsive" alt="">
+        </span>
+    </a>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-static-top">
+        <!-- Sidebar toggle button-->
+        <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+            <span class="sr-only">Toggle navigation</span>
+        </a>
+        <!-- Header title -->
+        <div class="header-title">Личный кабинет</div>
+        <!-- Navbar Right Menu -->
+        <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+                <!-- Notifications -->
+                <li class="dropdown notifications-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-bell"></i>
+                                            </a>
+                    <ul class="dropdown-menu">
+
+                                                    <li class="header">Нет новых сообщений</li>
+                                                <li class="footer"><a href="/cabinet/message/index">Перейти в раздел сообщений</a></li>
+
+                    </ul>
+                </li>
+                <!-- User Account -->
+                <li class="dropdown user user-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FUser%2F2%2Favatar.jpg&w=25&h=25&fit=crop" class="user-image" alt="Феечка Винкс">
+                        <span class="hidden-xs">Феечка Винкс</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <!-- User image -->
+                        <li class="user-header">
+                            <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FUser%2F2%2Favatar.jpg&w=160&h=160&fit=crop" class="img-circle" alt="Феечка Винкс">
+
+                            <p>Феечка Винкс</p>
+                        </li>
+                        <!-- Menu Footer-->
+                        <li class="user-footer">
+                            <div class="pull-left">
+                                <a class="btn btn-default btn-flat" href="/cabinet/user/view">Профиль</a>                            </div>
+                            <div class="pull-right">
+                                <a class="btn btn-default btn-flat" href="/cabinet/site/logout" data-method="post">Выход</a>                            </div>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+    </nav>
+</header>
+
+
+
+
+<!-- Left side column. contains the logo and sidebar -->
+<aside class="main-sidebar">
+    <!-- sidebar -->
+    <section class="sidebar">
+
+        <ul class="sidebar-menu" data-widget="tree"><li class="treeview"><a href="#!"><i class="fa fa-line-chart"></i>  <span>Сводка</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class='treeview-menu' >
+<li><a href="/cabinet/?flat_id=356"><i class="fa fa-building-o"></i>  <span>Дом ЗЕЛЁНЫЙ, кв.1</span></a></li>
+<li><a href="/cabinet/?flat_id=357"><i class="fa fa-building-o"></i>  <span>Дом ЗЕЛЁНЫЙ, кв.1233</span></a></li>
+<li><a href="/cabinet/?flat_id=358"><i class="fa fa-building-o"></i>  <span>Дом ЗЕЛЁНЫЙ, кв.11</span></a></li>
+<li><a href="/cabinet/?flat_id=424"><i class="fa fa-building-o"></i>  <span>ЖК &quot;Башня Чкалов&quot;, кв.7</span></a></li>
+<li><a href="/cabinet/?flat_id=603"><i class="fa fa-building-o"></i>  <span>ЖК &quot;Морская Симфония&quot;, кв.12</span></a></li>
+<li><a href="/cabinet/?flat_id=667"><i class="fa fa-building-o"></i>  <span>ЖК &quot;Адмирал&quot; Дом №13, кв.34</span></a></li>
+<li><a href="/cabinet/?flat_id=670"><i class="fa fa-building-o"></i>  <span>ЖК &quot;Морская Симфония&quot;, кв.543</span></a></li>
+<li><a href="/cabinet/?flat_id=671"><i class="fa fa-building-o"></i>  <span>ЖК &quot;Альтаир 3&quot;, кв.453</span></a></li>
+</ul>
+</li>
+<li class="treeview"><a href="#!"><i class="fa fa-files-o"></i>  <span>Квитанции</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class='treeview-menu' >
+<li><a href="/cabinet/invoice/index"><i class="fa fa-files-o"></i>  <span>Все квитанции</span></a></li>
+<li><a href="/cabinet/invoice/index?InvoiceSearch%5Bflat_id%5D=356"><i class="fa fa-file-text-o"></i>  <span>Дом ЗЕЛЁНЫЙ, кв.1</span></a></li>
+<li><a href="/cabinet/invoice/index?InvoiceSearch%5Bflat_id%5D=357"><i class="fa fa-file-text-o"></i>  <span>Дом ЗЕЛЁНЫЙ, кв.1233</span></a></li>
+<li><a href="/cabinet/invoice/index?InvoiceSearch%5Bflat_id%5D=358"><i class="fa fa-file-text-o"></i>  <span>Дом ЗЕЛЁНЫЙ, кв.11</span></a></li>
+<li><a href="/cabinet/invoice/index?InvoiceSearch%5Bflat_id%5D=424"><i class="fa fa-file-text-o"></i>  <span>ЖК &quot;Башня Чкалов&quot;, кв.7</span></a></li>
+<li><a href="/cabinet/invoice/index?InvoiceSearch%5Bflat_id%5D=603"><i class="fa fa-file-text-o"></i>  <span>ЖК &quot;Морская Симфония&quot;, кв.12</span></a></li>
+<li><a href="/cabinet/invoice/index?InvoiceSearch%5Bflat_id%5D=667"><i class="fa fa-file-text-o"></i>  <span>ЖК &quot;Адмирал&quot; Дом №13, кв.34</span></a></li>
+<li><a href="/cabinet/invoice/index?InvoiceSearch%5Bflat_id%5D=670"><i class="fa fa-file-text-o"></i>  <span>ЖК &quot;Морская Симфония&quot;, кв.543</span></a></li>
+<li><a href="/cabinet/invoice/index?InvoiceSearch%5Bflat_id%5D=671"><i class="fa fa-file-text-o"></i>  <span>ЖК &quot;Альтаир 3&quot;, кв.453</span></a></li>
+</ul>
+</li>
+<li class="treeview"><a href="/cabinet/tariff/index"><i class="fa fa-money"></i>  <span>Тарифы</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class='treeview-menu' >
+<li><a href="/cabinet/tariff/index?flat_id=356"><i class="fa fa-file-text-o"></i>  <span>Дом ЗЕЛЁНЫЙ, кв.1</span></a></li>
+<li><a href="/cabinet/tariff/index?flat_id=357"><i class="fa fa-file-text-o"></i>  <span>Дом ЗЕЛЁНЫЙ, кв.1233</span></a></li>
+<li><a href="/cabinet/tariff/index?flat_id=358"><i class="fa fa-file-text-o"></i>  <span>Дом ЗЕЛЁНЫЙ, кв.11</span></a></li>
+<li><a href="/cabinet/tariff/index?flat_id=424"><i class="fa fa-file-text-o"></i>  <span>ЖК &quot;Башня Чкалов&quot;, кв.7</span></a></li>
+<li><a href="/cabinet/tariff/index?flat_id=603"><i class="fa fa-file-text-o"></i>  <span>ЖК &quot;Морская Симфония&quot;, кв.12</span></a></li>
+<li><a href="/cabinet/tariff/index?flat_id=667"><i class="fa fa-file-text-o"></i>  <span>ЖК &quot;Адмирал&quot; Дом №13, кв.34</span></a></li>
+<li><a href="/cabinet/tariff/index?flat_id=670"><i class="fa fa-file-text-o"></i>  <span>ЖК &quot;Морская Симфония&quot;, кв.543</span></a></li>
+<li><a href="/cabinet/tariff/index?flat_id=671"><i class="fa fa-file-text-o"></i>  <span>ЖК &quot;Альтаир 3&quot;, кв.453</span></a></li>
+</ul>
+</li>
+<li><a href="/cabinet/message/index"><i class="fa fa-envelope-o"></i>  <span>Сообщения</span></a></li>
+<li><a href="/cabinet/master-request/index"><i class="fa fa-wrench"></i>  <span>Вызов мастера</span></a></li>
+<li class="active"><a href="/cabinet/user/view"><i class="fa fa-user-circle-o"></i>  <span>Профиль</span></a></li></ul>
+    </section>
+    <!-- /.sidebar -->
+</aside>
+
+
+        <div class="content-wrapper">
+    <section class="content-header">
+        <h1>
+            Профиль        </h1>
+
+        <ul class="breadcrumb"><li><a href="/cabinet/"><i class="fa fa-home"></i> Главная</a></li>
+<li class="active">Профиль</li>
+</ul>    </section>
+
+    <section class="content">
+
+<div class="row">
+    <div class="col-lg-3">
+        <div class="row">
+            <div class="col-md-6 col-lg-12">
+                <div class="box">
+                    <div class="box-body box-profile">
+                        <img class="profile-user-img img-responsive img-circle" src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FUser%2F2%2Favatar.jpg&w=160&h=160&fit=crop" alt="Аватар">
+
+                        <h3 class="profile-username text-center">Феечка Винкс</h3>
+
+                        <p class="text-muted text-center">Владелец квартиры</p>
+
+                        <ul class="list-group list-group-unbordered">
+                            <li class="list-group-item">
+                                <span>Телефон</span>
+                                <span class="pull-right">+380990220202</span>
+                            </li>
+                            <li class="list-group-item">
+                                <span>Viber</span>
+                                <span class="pull-right">we</span>
+                            </li>
+                            <li class="list-group-item">
+                                <span>Telegram</span>
+                                <span class="pull-right">we</span>
+                            </li>
+                            <li class="list-group-item">
+                                <span>Email</span>
+                                <span class="pull-right">victor.z@avada-media.com</span>
+                            </li>
+                        </ul>
+
+                        <a href="/cabinet/user/update" class="btn btn-primary btn-block">Изменить</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-12">
+                <h3 class="page-header">Обо мне (заметки)</h3>
+                <div class="box">
+                    <div class="box-body box-profile">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur facilisis arcu posuere, tincidunt turpis ultrices, aliquet sem. Sed ut malesuada nunc, et aliquam enim. In vel nunc tortor. Mauris aliquam elit sed tellus auctor, at vehicula massa iaculis. Donec nibh magna, efficitur sagittis turpis eu, mollis volutpat augue. Fusce in mi lobortis, mollis eros sed, varius nisl. Duis in metus nisl. Aenean consequat maximus leo, a interdum libero lacinia eu. Ut luctus enim nec congue eleifend. Donec pellentesque accumsan tellus quis pretium. Etiam ultricies mi in sapien fringilla, sit amet malesuada est posuere. Nullam at aliquet purus. Vestibulum molestie purus orci, eu iaculis ligula fermentum id. Curabitur odio ex, elementum nec ultrices commodo, fermentum eu mi.
+
+Duis consectetur justo eu malesuada mollis. Phasellus eu egestas ante. Pellentesque porttitor dignissim lacus vitae dignissim. Cras purus purus, facilisis consequat nisl quis, egestas bibendum felis. Aenean vitae consequat lorem. Pellentesque bibendum molestie purus eu volutpat. Aenean scelerisque elit vel risus viverra, sed suscipit tortor fringilla. Morbi sollicitudin suscipit turpis vitae suscipit. Duis porttitor orci ut tortor ultricies, eget pharetra libero blandit. Nunc quis efficitur ipsum. Nulla a dignissim nisi.
+
+Quisque egestas nulla massa, a malesuada lectus varius a. Mauris ultricies magna at suscipit aliquet. Sed varius eleifend leo non scelerisque. Praesent tincidunt leo porta neque rutrum, a lobortis orci congue. Nulla aliquam elit fringilla consectetur posuere. Duis quis nisl at sapien vestibulum congue. Curabitur finibus sapien et turpis volutpat auctor. Quisque non faucibus est.
+
+Mauris iaculis placerat purus, at lobortis arcu tincidunt eget. Integer luctus pellentesque velit, sit amet semper ipsum. Nulla et urna ac turpis ornare lacinia. Etiam id tempor nisl. Nunc interdum odio et sapien tempus vestibulum. Integer blandit lobortis vehicula. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus ornare euismod lacus, accumsan feugiat eros.                    </div>
+                </div>
+            </div>
+            <!-- /.box-body -->
+        </div>
+    </div>
+    <div class="col-lg-9">
+        <h2 class="page-header">Мои квартиры</h2>
+                                    <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Описание квартиры</h3>
+                    </div>
+                    <div class="box-body">
+                        <p>Дом ЗЕЛЁНЫЙ. Дом ЗЕЛЁНЫЙ, кв. 1</p>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F206%2Fimage1.jpg&w=522&h=350&fit=crop" class="img-responsive largeImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F206%2Fimage2.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F206%2Fimage3.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F206%2Fimage4.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F206%2Fimage5.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Описание</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th style="min-width: 200px; font-weight:normal;">Название дома</th>
+                                        <th style="font-weight:normal;">Дом ЗЕЛЁНЫЙ</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Адрес</td>
+                                        <td>Дом ЗЕЛЁНЫЙ</td>
+                                    </tr>
+                                    <tr>
+                                        <td>№ квартиры</td>
+                                        <td>1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Площадь</td>
+                                        <td>
+                                                                                            160.00м<sup>2</sup>
+                                                                                    </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Этаж</td>
+                                        <td>Этаж 2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Секция</td>
+                                        <td>Секция 1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Лицевой счет</td>
+                                        <td>02022600718</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                            <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Описание квартиры</h3>
+                    </div>
+                    <div class="box-body">
+                        <p>Дом ЗЕЛЁНЫЙ. Дом ЗЕЛЁНЫЙ, кв. 1233</p>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F206%2Fimage1.jpg&w=522&h=350&fit=crop" class="img-responsive largeImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F206%2Fimage2.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F206%2Fimage3.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F206%2Fimage4.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F206%2Fimage5.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Описание</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th style="min-width: 200px; font-weight:normal;">Название дома</th>
+                                        <th style="font-weight:normal;">Дом ЗЕЛЁНЫЙ</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Адрес</td>
+                                        <td>Дом ЗЕЛЁНЫЙ</td>
+                                    </tr>
+                                    <tr>
+                                        <td>№ квартиры</td>
+                                        <td>1233</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Площадь</td>
+                                        <td>
+                                                                                            160.00м<sup>2</sup>
+                                                                                    </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Этаж</td>
+                                        <td>Этаж 2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Секция</td>
+                                        <td>Секция 1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Лицевой счет</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                            <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Описание квартиры</h3>
+                    </div>
+                    <div class="box-body">
+                        <p>Дом ЗЕЛЁНЫЙ. Дом ЗЕЛЁНЫЙ, кв. 11</p>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F206%2Fimage1.jpg&w=522&h=350&fit=crop" class="img-responsive largeImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F206%2Fimage2.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F206%2Fimage3.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F206%2Fimage4.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F206%2Fimage5.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Описание</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th style="min-width: 200px; font-weight:normal;">Название дома</th>
+                                        <th style="font-weight:normal;">Дом ЗЕЛЁНЫЙ</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Адрес</td>
+                                        <td>Дом ЗЕЛЁНЫЙ</td>
+                                    </tr>
+                                    <tr>
+                                        <td>№ квартиры</td>
+                                        <td>11</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Площадь</td>
+                                        <td>
+                                                                                            0.00м<sup>2</sup>
+                                                                                    </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Этаж</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Секция</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Лицевой счет</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                            <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Описание квартиры</h3>
+                    </div>
+                    <div class="box-body">
+                        <p>ЖК "Башня Чкалов". ул. Большая Арнаутская, 21, кв. 7</p>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F1%2Fimage1.jpeg&w=522&h=350&fit=crop" class="img-responsive largeImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F1%2Fimage2.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F1%2Fimage3.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F1%2Fimage4.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F1%2Fimage5.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Описание</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th style="min-width: 200px; font-weight:normal;">Название дома</th>
+                                        <th style="font-weight:normal;">ЖК "Башня Чкалов"</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Адрес</td>
+                                        <td>ул. Большая Арнаутская, 21</td>
+                                    </tr>
+                                    <tr>
+                                        <td>№ квартиры</td>
+                                        <td>7</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Площадь</td>
+                                        <td>
+                                                                                            68.00м<sup>2</sup>
+                                                                                    </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Этаж</td>
+                                        <td>Этаж 3</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Секция</td>
+                                        <td>Секция 2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Лицевой счет</td>
+                                        <td>31012600715</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                            <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Описание квартиры</h3>
+                    </div>
+                    <div class="box-body">
+                        <p>ЖК "Морская Симфония". пер. Мореходный 2/2, кв. 12</p>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F2%2Fimage1.jpg&w=522&h=350&fit=crop" class="img-responsive largeImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F2%2Fimage2.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F2%2Fimage3.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F2%2Fimage4.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F2%2Fimage5.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Описание</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th style="min-width: 200px; font-weight:normal;">Название дома</th>
+                                        <th style="font-weight:normal;">ЖК "Морская Симфония"</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Адрес</td>
+                                        <td>пер. Мореходный 2/2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>№ квартиры</td>
+                                        <td>12</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Площадь</td>
+                                        <td>
+                                                                                            0.00м<sup>2</sup>
+                                                                                    </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Этаж</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Секция</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Лицевой счет</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                            <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Описание квартиры</h3>
+                    </div>
+                    <div class="box-body">
+                        <p>ЖК "Адмирал" Дом №13. ул. Пушкина, 4/13, кв. 34</p>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2Fplaceholder.jpg&w=522&h=350&fit=crop" class="img-responsive largeImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2Fplaceholder.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2Fplaceholder.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2Fplaceholder.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2Fplaceholder.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Описание</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th style="min-width: 200px; font-weight:normal;">Название дома</th>
+                                        <th style="font-weight:normal;">ЖК "Адмирал" Дом №13</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Адрес</td>
+                                        <td>ул. Пушкина, 4/13</td>
+                                    </tr>
+                                    <tr>
+                                        <td>№ квартиры</td>
+                                        <td>34</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Площадь</td>
+                                        <td>
+                                                                                            33.00м<sup>2</sup>
+                                                                                    </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Этаж</td>
+                                        <td>Этаж 4</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Секция</td>
+                                        <td>Секция 1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Лицевой счет</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                            <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Описание квартиры</h3>
+                    </div>
+                    <div class="box-body">
+                        <p>ЖК "Морская Симфония". пер. Мореходный 2/2, кв. 543</p>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F2%2Fimage1.jpg&w=522&h=350&fit=crop" class="img-responsive largeImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F2%2Fimage2.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F2%2Fimage3.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F2%2Fimage4.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F2%2Fimage5.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Описание</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th style="min-width: 200px; font-weight:normal;">Название дома</th>
+                                        <th style="font-weight:normal;">ЖК "Морская Симфония"</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Адрес</td>
+                                        <td>пер. Мореходный 2/2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>№ квартиры</td>
+                                        <td>543</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Площадь</td>
+                                        <td>
+                                                                                            34.00м<sup>2</sup>
+                                                                                    </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Этаж</td>
+                                        <td>Этаж 4</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Секция</td>
+                                        <td>Секция 1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Лицевой счет</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                            <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Описание квартиры</h3>
+                    </div>
+                    <div class="box-body">
+                        <p>ЖК "Альтаир 3". ул. Жаботинского, 54, кв. 453</p>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F20%2Fimage1.jpg&w=522&h=350&fit=crop" class="img-responsive largeImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F20%2Fimage2.png&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F20%2Fimage3.png&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F20%2Fimage4.png&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F20%2Fimage5.png&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Описание</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th style="min-width: 200px; font-weight:normal;">Название дома</th>
+                                        <th style="font-weight:normal;">ЖК "Альтаир 3"</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Адрес</td>
+                                        <td>ул. Жаботинского, 54</td>
+                                    </tr>
+                                    <tr>
+                                        <td>№ квартиры</td>
+                                        <td>453</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Площадь</td>
+                                        <td>
+                                                                                            34.00м<sup>2</sup>
+                                                                                    </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Этаж</td>
+                                        <td>Этаж 1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Секция</td>
+                                        <td>Секция 1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Лицевой счет</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                        </div>
+</div>
+    </section>
+</div>
+
+<footer class="main-footer">
+    Разработано <a href="https://avada-media.ua/">AVADA-MEDIA</a>. На базе системы управления <a href="https://avada-media.ua/moydom24/">"МойДом24"</a>.
+</footer>
+
+    </div>
+
+    <script src="/cabinet/assets/137cc266/jquery.js"></script>
+<script src="/cabinet/assets/4da2ea81/yii.js"></script>
+<script src="/cabinet/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/cabinet/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+<script src="/cabinet/bower_components/fastclick/lib/fastclick.js"></script>
+<script src="/cabinet/dist/js/adminlte.min.js"></script>
+<script src="/cabinet/plugins/iCheck/icheck.min.js"></script>
+<script src="/cabinet/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.js"></script>
+<script src="/cabinet/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.ru-RU.js"></script>
+<script src="/cabinet/bower_components/jquery-sparkline/dist/jquery.sparkline.min.js"></script>
+<script src="/cabinet/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+<script src="/cabinet/plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+<script src="/cabinet/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+<script src="/cabinet/bower_components/chart.js/Chart.js"></script>
+<script src="/cabinet/dist/js/main.js"></script>
+<script src="/cabinet/custom.js"></script>    </body>
+    </html>
