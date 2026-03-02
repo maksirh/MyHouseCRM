@@ -8,6 +8,7 @@ from src.website.models import (
     InfoItems,
     MainPage,
     SeoBlock,
+    ServicePage,
 )
 
 
@@ -111,3 +112,9 @@ class AboutUsPageForm(forms.ModelForm):
             "additional_title": forms.TextInput(attrs={"class": "form-control"}),
             "additional_description": forms.Textarea(attrs={"class": "form-control"}),
         }
+
+
+class ServicePageForm(forms.ModelForm):
+    class Meta:
+        model = ServicePage
+        fields = []

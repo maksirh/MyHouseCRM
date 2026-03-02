@@ -9,8 +9,9 @@ from src.core.adminlte.forms import (
     InfoItemsFormset,
     MainPageForm,
     SeoBlockForm,
+    ServicePageForm,
 )
-from src.website.models import AboutUsPage, MainPage
+from src.website.models import AboutUsPage, MainPage, ServicePage
 
 
 class StatisticPageView(TemplateView):
@@ -168,12 +169,62 @@ class AboutUsPageView(UpdateView):
 
             return redirect(self.success_url)
         else:
-            print("\n" + "=" * 30)
-            print("🔴 УВАГА! ПОМИЛКА ЗБЕРЕЖЕННЯ СТОРІНКИ!")
-            print("Головна форма:", form.errors)
-            print("SEO блок:", seo_form.errors)
-            print("Головна галерея:", main_gallery_formset.errors)
-            print("Додаткова галерея:", add_gallery_formset.errors)
-            print("Файли, які дійшли до сервера:", request.FILES)
-            print("=" * 30 + "\n")
+            return self.render_to_response(self.get_context_data(form=form))
+
+
+class ServicePageView(UpdateView):
+    model = ServicePage
+    form_class = ServicePageForm
+    template_name = "adminlte/services_page_edit.html"
+    success_url = reverse_lazy("adminlte:edit_service_page")
+
+    def get_object(self, **kwargs):
+        obj, created = ServicePage.objects.get_or_create(id=1)
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super(ServicePageView, self).get_context_data(**kwargs)
+        service_page = self.get_object()
+
+        if self.request.method == "POST":
+            context["info"] = InfoItemsFormset(
+                self.request.POST,
+                self.request.FILES,
+                prefix="info",
+                queryset=service_page.service.all(),
+            )
+
+            context["seo_block"] = SeoBlockForm(
+                self.request.POST, instance=service_page.seo_block
+            )
+
+        else:
+            context["info"] = InfoItemsFormset(
+                prefix="info", queryset=service_page.service.all()
+            )
+            context["seo_block"] = SeoBlockForm(instance=service_page.seo_block)
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.form_class(request.POST, request.FILES, instance=self.object)
+        context = self.get_context_data()
+
+        services_formset = context["info"]
+        seo_form = context["seo_block"]
+
+        if form.is_valid() and services_formset.is_valid() and seo_form.is_valid():
+            services_page = form.save(commit=False)
+            seo_block = seo_form.save()
+            services_page.seo_block = seo_block
+            services_page.save()
+
+            saved_services = services_formset.save()
+            for service in saved_services:
+                services_page.service.add(service)
+
+            return redirect(self.success_url)
+
+        else:
             return self.render_to_response(self.get_context_data(form=form))

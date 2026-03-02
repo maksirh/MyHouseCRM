@@ -1,14 +1,14 @@
 {% extends 'admin_base.html' %}
 {% load static %}
 
-{% block title %}Редактирование страницы "Услуги"{% endblock %}
+{% block title %}Редагування сторінки "Послуги"{% endblock %}
 
 {% block content %}
 <section class="content-header">
-    <h1>Редактирование страницы</h1>
+    <h1>Редагування сторінки</h1>
     <ul class="breadcrumb">
-        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
-        <li class="active">Редактирование страницы "Услуги"</li>
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li class="active">Редагування сторінки "Послуги"</li>
     </ul>
 </section>
 
@@ -17,65 +17,52 @@
         <div class="col-xs-12">
             <div class="box">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Редактирование страницы "Услуги"</h3>
+                    <h3 class="box-title">Редагування сторінки "Послуги"</h3>
                 </div>
                 <div class="box-body">
-                    <form id="w0" action="{% url 'website_services_update' %}" method="post" enctype="multipart/form-data">
+                    <form id="service-form" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
+
+                        {{ info.management_form }}
 
                         <div class="row near-img">
                             <div class="col-xs-12">
-                                <h3 class="page-header">Услуги</h3>
+                                <h3 class="page-header">Послуги</h3>
                             </div>
-                            <div id="form-websiteservice-rows">
-                                {% for service in services %}
-                                    <div id="form-websiteservice-{{ forloop.counter0 }}" class="col-md-4 form-websiteservice">
+                            <div id="form-info-rows">
+                                {% for form in info %}
+                                    <div class="col-md-4 form-websiteservice">
                                         <h4>
-                                            Услуга {{ forloop.counter }}
-                                            <a href="{% url 'website_service_delete' service.id %}" class="pull-right text-red" onclick="return confirm('Удалить?');">
-                                                <i class="fa fa-trash"></i>
-                                            </a>
+                                            Послуга <span class="service-number">{{ forloop.counter }}</span>
+                                            {% if form.instance.pk %}
+                                                <div class="pull-right">
+                                                    <label>{{ form.DELETE }} Видалити</label>
+                                                </div>
+                                            {% endif %}
                                         </h4>
 
-                                        {% if service.image %}
-                                            <img src="{{ service.image.url }}" alt="{{ service.title }}" class="img-responsive margin-bottom-15">
+                                        {% if form.instance.image %}
+                                            <img src="{{ form.instance.image.url }}" class="img-responsive margin-bottom-15" style="max-height: 150px;">
                                         {% else %}
-                                            <img src="{% static 'admin/dist/img/placeholder.jpg' %}" alt="" class="img-responsive margin-bottom-15" onerror="this.src='https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2Fplaceholder.jpg&w=650&h=300&fit=crop'">
+                                            <img src="{% static 'admin/dist/img/placeholder.jpg' %}" class="img-responsive margin-bottom-15">
                                         {% endif %}
 
-                                        <input type="hidden" id="websiteservice-{{ forloop.counter0 }}-id" name="WebsiteService[{{ forloop.counter0 }}][id]" value="{{ service.id }}">
-
-                                        <div class="form-group">
-                                            <label for="websiteservice-{{ forloop.counter0 }}-imagefile">Рекомендуемый размер: (650x300)</label>
-                                            <input type="file" id="websiteservice-{{ forloop.counter0 }}-imagefile" class="form-control" name="WebsiteService[{{ forloop.counter0 }}][imageFile]" accept="image/*">
+                                        {{ form.id }} <div class="form-group">
+                                            <label>Рекомендований розмір: (650x300)</label>
+                                            {{ form.image }}
+                                            <div class="text-danger">{{ form.image.errors }}</div>
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="websiteservice-{{ forloop.counter0 }}-title">Название услуги</label>
-                                            <input type="text" id="websiteservice-{{ forloop.counter0 }}-title" class="form-control" name="WebsiteService[{{ forloop.counter0 }}][title]" value="{{ service.title }}">
+                                            <label>Назва послуги</label>
+                                            {{ form.title }}
+                                            <div class="text-danger">{{ form.title.errors }}</div>
                                         </div>
 
                                         <div class="form-group margin-bottom-30">
-                                            <label for="websiteservice-{{ forloop.counter0 }}-description">Описание услуги</label>
-                                            <textarea id="websiteservice-{{ forloop.counter0 }}-description" class="compose-textarea editor-init form-control" name="WebsiteService[{{ forloop.counter0 }}][description]" placeholder="Текст описания">{{ service.description }}</textarea>
-                                        </div>
-                                    </div>
-                                {% empty %}
-                                    <div id="form-websiteservice-0" class="col-md-4 form-websiteservice">
-                                        <h4>Услуга 1</h4>
-                                        <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2Fplaceholder.jpg&w=650&h=300&fit=crop" alt="" class="img-responsive margin-bottom-15">
-                                        <input type="hidden" name="WebsiteService[0][id]" value="">
-                                        <div class="form-group">
-                                            <label>Рекомендуемый размер: (650x300)</label>
-                                            <input type="file" class="form-control" name="WebsiteService[0][imageFile]" accept="image/*">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Название услуги</label>
-                                            <input type="text" class="form-control" name="WebsiteService[0][title]" value="Тестовая услуга">
-                                        </div>
-                                        <div class="form-group margin-bottom-30">
-                                            <label>Описание услуги</label>
-                                            <textarea class="compose-textarea editor-init form-control" name="WebsiteService[0][description]"></textarea>
+                                            <label>Опис послуги</label>
+                                            {{ form.description }}
+                                            <div class="text-danger">{{ form.description.errors }}</div>
                                         </div>
                                     </div>
                                 {% endfor %}
@@ -84,18 +71,18 @@
 
                         <div class="row">
                             <div class="col-md-12">
-                                <h3 class="page-header">Настройки SEO</h3>
-                                <div class="form-group field-websiteserviceform-servicemetatitle">
-                                    <label class="control-label" for="websiteserviceform-servicemetatitle">Title</label>
-                                    <input type="text" id="websiteserviceform-servicemetatitle" class="form-control" name="WebsiteServiceForm[serviceMetaTitle]" value="{{ seo.title|default:'These are our services1' }}">
+                                <h3 class="page-header">Налаштування SEO</h3>
+                                <div class="form-group">
+                                    <label>Title</label>
+                                    {{ seo_block.title }}
                                 </div>
-                                <div class="form-group field-websiteserviceform-servicemetadescription">
-                                    <label class="control-label" for="websiteserviceform-servicemetadescription">Description</label>
-                                    <textarea id="websiteserviceform-servicemetadescription" class="form-control" name="WebsiteServiceForm[serviceMetaDescription]" rows="6">{{ seo.description|default:'These are our services1' }}</textarea>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    {{ seo_block.description }}
                                 </div>
-                                <div class="form-group field-websiteserviceform-servicemetakeywords">
-                                    <label class="control-label" for="websiteserviceform-servicemetakeywords">Keywords</label>
-                                    <textarea id="websiteserviceform-servicemetakeywords" class="form-control" name="WebsiteServiceForm[serviceMetaKeywords]" rows="6">{{ seo.keywords|default:'These are our services1' }}</textarea>
+                                <div class="form-group">
+                                    <label>Keywords</label>
+                                    {{ seo_block.keywords }}
                                 </div>
                             </div>
                         </div>
@@ -103,9 +90,9 @@
                         <div class="row">
                             <div class="col-xs-12 text-center">
                                 <div class="form-group">
-                                    <a href="{% url 'website_services' %}" class="btn btn-default">Отменить</a>
-                                    <button type="button" role="button" class="btn btn-success bg-green-active form-row-add-websiteservice-btn">Добавить услугу</button>
-                                    <button type="submit" class="btn btn-success">Сохранить</button>
+                                    <a href="{% url 'adminlte:statistic' %}" class="btn btn-default">Скасувати</a>
+                                    <button type="button" class="btn btn-success bg-green-active form-row-add-service-btn">Додати послугу</button>
+                                    <button type="submit" class="btn btn-success">Зберегти</button>
                                 </div>
                             </div>
                         </div>
@@ -115,57 +102,44 @@
         </div>
     </div>
 </section>
+
+<div id="empty-form" style="display:none;">
+    <div class="col-md-4 form-websiteservice">
+        <h4>Нова послуга</h4>
+        <div class="form-group">
+            <label>Зображення</label>
+            {{ info.empty_form.image }}
+        </div>
+        <div class="form-group">
+            <label>Назва</label>
+            {{ info.empty_form.title }}
+        </div>
+        <div class="form-group">
+            <label>Опис</label>
+            {{ info.empty_form.description }}
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
 jQuery(function ($) {
-    // Встановлюємо наступний індекс для нової форми послуги
-    var formIdWebsiteServiceNext = $('.form-websiteservice').length || 1;
+    $('.form-row-add-service-btn').click(function() {
+        var formIdx = $('#id_info-TOTAL_FORMS').val();
+        var newForm = $('#empty-form').html().replace(/__prefix__/g, formIdx);
 
-    // Видалення незбереженого блоку послуги зі сторінки
-    $(document).on('click', '.form-row-remove-btn', function(e){
-        e.preventDefault();
-        if (confirm('Удалить?')) {
-            $(this).closest('.form-websiteservice').remove();
-        }
+        $('#form-info-rows').append(newForm);
+        $('#id_info-TOTAL_FORMS').val(parseInt(formIdx) + 1);
+
+        addTextEditor();
     });
 
-    // Додавання нового блоку послуги
-    $(document).on('click', '.form-row-add-websiteservice-btn', function(e){
-        $.ajax({
-            // URL твоєї Django View для генерації HTML-шматка форми
-            url: "{% url 'ajax_get_website_service_form' %}?form_id=" + formIdWebsiteServiceNext,
-            dataType: 'html', // В Django краще віддавати відрендерений HTML
-            success: function(html) {
-                $('#form-websiteservice-rows').append(html);
-                formIdWebsiteServiceNext++;
-                // Ініціалізуємо WYSIWYG на нових текстових полях
-                addTextEditor();
-            }
-        });
-    });
-
-    // Функція ініціалізації текстового редактора WYSIWYG
     function addTextEditor() {
-        $("textarea.compose-textarea.editor-init").wysihtml5({
-            locale: 'ru-RU',
-            toolbar: {
-                "font-styles": true,
-                "emphasis": true,
-                "lists": true,
-                "html": false,
-                "link": false,
-                "image": false,
-                "color": false,
-                "blockquote": false,
-                "fa": true,
-                "size": 'none'
-            }
-        }).removeClass('editor-init'); // Видаляємо клас, щоб повторно не ініціалізувати
+        $('.form-websiteservice textarea').addClass('form-control');
     }
 
-    // Запускаємо при завантаженні сторінки
     addTextEditor();
 });
 </script>

@@ -62,4 +62,4 @@ class MainPage(models.Model):
 
 class ServicePage(models.Model):
     service = ManyToManyField(InfoItems)
-    seo_block = ForeignKey(SeoBlock, on_delete=models.CASCADE)
+    seo_block = ForeignKey(SeoBlock, on_delete=models.CASCADE, null=True, blank=True)
