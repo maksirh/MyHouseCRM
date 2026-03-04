@@ -11,7 +11,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <ol class="breadcrumb">
-                    <li><a href="{% url 'home' %}">Главная</a></li>
+                    <li><a href="{% url 'website:home_page' %}">Главная</a></li>
                     <li class="active">Контакты</li>
                 </ol>
             </div>
@@ -49,8 +49,8 @@
                     <h3>Контакты</h3>
                 </div>
                 <div class="box">
-                    {% if contact_data.fullname %}
-                        <p><i class="fas fa-user-circle"></i> {{ contact_data.fullname }}</p>
+                    {% if contact_data.name %}
+                        <p><i class="fas fa-user-circle"></i> {{ contact_data.name }}</p>
                     {% endif %}
 
                     {% if contact_data.location %}
@@ -61,8 +61,8 @@
                         <p><i class="fas fa-map-marker"></i> {{ contact_data.address }}</p>
                     {% endif %}
 
-                    {% if contact_data.phone %}
-                        <p><i class="fas fa-phone"></i> <a href="tel:{{ contact_data.phone }}">{{ contact_data.phone }}</a></p>
+                    {% if contact_data.phone_number %}
+                        <p><i class="fas fa-phone"></i> <a href="tel:{{ contact_data.phone_number}}">{{ contact_data.phone_number }}</a></p>
                     {% endif %}
 
                     {% if contact_data.email %}

@@ -1,6 +1,6 @@
 from django.views.generic import ListView, TemplateView
 
-from src.website.models import AboutUsPage, MainPage, ServicePage
+from src.website.models import AboutUsPage, ContactsPage, MainPage, ServicePage
 
 
 class HomePageView(TemplateView):
@@ -54,4 +54,18 @@ class ServicePageView(ListView):
         service_page = ServicePage.objects.first()
         if service_page:
             context["seo"] = service_page.seo_block
+        return context
+
+
+class ContactPageView(TemplateView):
+    template_name = "website/contacts.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        contact_page = ContactsPage.load()
+
+        context["contact_data"] = contact_page
+        context["seo"] = contact_page.seo_block
+
         return context

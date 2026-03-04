@@ -3,6 +3,23 @@ from django.db.models import ForeignKey, ManyToManyField
 from phonenumber_field.modelfields import PhoneNumberField
 
 
+class SingletonModel(models.Model):
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        pass
+
+    @classmethod
+    def load(cls):
+        obj, created = cls.objects.get_or_create(pk=1)
+        return obj
+
+
 class SeoBlock(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
@@ -26,10 +43,11 @@ class Gallery(models.Model):
     image = models.ImageField(upload_to="gallery/")
 
 
-class ContactsPage(models.Model):
+class ContactsPage(SingletonModel):
     name = models.CharField(max_length=100, null=True, blank=True)
     location = models.CharField(max_length=100, null=True, blank=True)
     title = models.CharField(max_length=100, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     phone_number = PhoneNumberField(blank=True, null=True)
     longitude = models.FloatField(null=True, blank=True)

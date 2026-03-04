@@ -4,6 +4,7 @@ from django.views.generic import TemplateView, UpdateView
 
 from src.core.adminlte.forms import (
     AboutUsPageForm,
+    ContactsPage,
     ContactsPageForm,
     GalleryFormSet,
     InfoItemsFormset,
@@ -36,9 +37,11 @@ class MainPageView(UpdateView):
         context = super().get_context_data(**kwargs)
         main_page = self.get_object()
 
+        contact = ContactsPage.load()
+
         if self.request.method == "POST":
             context["contact_form"] = ContactsPageForm(
-                self.request.POST, instance=main_page.contact
+                self.request.POST, instance=contact
             )
             context["seo_block"] = SeoBlockForm(
                 self.request.POST, instance=main_page.seo_block
@@ -223,6 +226,50 @@ class ServicePageView(UpdateView):
             saved_services = services_formset.save()
             for service in saved_services:
                 services_page.service.add(service)
+
+            return redirect(self.success_url)
+
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
+
+
+class ContactPageView(UpdateView):
+    model = ContactsPage
+    form_class = ContactsPageForm
+    template_name = "adminlte/contacts_page_edit.html"
+    success_url = reverse_lazy("adminlte:contacts_edit")
+
+    def get_object(self, queryset=None):
+        return ContactsPage.load()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        contact = self.object
+
+        if self.request.method == "POST":
+            context["seo_block"] = SeoBlockForm(
+                self.request.POST, instance=contact.seo_block
+            )
+        else:
+            context["seo_block"] = SeoBlockForm(instance=contact.seo_block)
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        form = self.get_form()
+
+        context = self.get_context_data()
+        seo_form = context["seo_block"]
+
+        if form.is_valid() and seo_form.is_valid():
+            seo_instance = seo_form.save()
+
+            contact_instance = form.save(commit=False)
+            contact_instance.seo_block = seo_instance
+            contact_instance.save()
 
             return redirect(self.success_url)
 
