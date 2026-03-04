@@ -4,6 +4,9 @@ from .views import (
     AboutUsPageView,
     ContactPageView,
     MainPageView,
+    RoleCreateView,
+    RoleDeleteView,
+    RolesUpdateView,
     ServicePageView,
     StatisticPageView,
 )
@@ -16,4 +19,7 @@ urlpatterns = [
     path("managesite/aboutus", AboutUsPageView.as_view(), name="edit_about_us_page"),
     path("managesite/services", ServicePageView.as_view(), name="edit_service_page"),
     path("managesite/contacts", ContactPageView.as_view(), name="contacts_edit"),
+    path("settings/", RolesUpdateView.as_view(), name="roles_update"),
+    path("roles/create/", RoleCreateView.as_view(), name="role_create"),
+    path("roles/delete/<int:pk>", RoleDeleteView.as_view(), name="role_delete"),
 ]

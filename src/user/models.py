@@ -4,7 +4,7 @@ from django.db import models
 
 class Roles(models.Model):
     name = models.CharField()
-    is_master = models.BooleanField()
+    is_master = models.BooleanField(default=False)
     has_statistics = models.BooleanField(default=False)
     has_cashbox = models.BooleanField(default=False)
     has_receipt = models.BooleanField(default=False)

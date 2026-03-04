@@ -11,29 +11,51 @@
     <link href="{% static 'cabinet/bower_components/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
     <link href="{% static 'cabinet/bower_components/Ionicons/css/ionicons.min.css' %}" rel="stylesheet">
     <link href="{% static 'cabinet/dist/css/AdminLTE.min.css' %}" rel="stylesheet">
-    <link href="{% static 'cabinet/plugins/iCheck/flat/blue.css' %}" rel="stylesheet">
     <link href="{% static 'cabinet/custom.css' %}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic" rel="stylesheet">
+
+    <style>
+        .login-box .nav-tabs-custom .nav-tabs > li {
+            width: 50%;
+            text-align: center;
+        }
+        .checkbox label {
+            padding-left: 20px;
+            font-weight: 400;
+        }
+    </style>
 </head>
 <body class="hold-transition login-page">
 
 <div class="login-box">
     <div class="login-logo">
-        <a href="{% url 'home' %}">
-            <img src="{% static 'logo.svg' %}" alt="logo">
+        <a href="{% url 'website:home_page' %}">
+            <img src="{% static 'logo.svg' %}" alt="logo" style="max-width: 100%; max-height: 80px; display: inline-block;">
         </a>
     </div>
+
     <div class="nav-tabs-custom">
-        <ul class="nav nav-tabs">
-            <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Для жильца</a></li>
-            <li><a href="{% url 'admin_login' %}">Для администрации</a></li>
-        </ul>
+        <ul class="nav nav-tabs" style="display: flex;">
+    <li class="{% if not is_admin_login %}active{% endif %}" style="width: 50%; text-align: center;">
+        <a href="{% url 'authentication:cabinet_login' %}">Для мешканця</a>
+    </li>
+    <li class="{% if is_admin_login %}active{% endif %}" style="width: 50%; text-align: center;">
+        <a href="{% url 'authentication:admin_login' %}">Для адміністрації</a>
+    </li>
+</ul>
+
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
                 <div class="login-box-body">
 
                     <div id="preloader"></div>
-                    <p class="login-box-msg">Вход в личный кабинет</p>
+                    <p class="login-box-msg">
+                    {% if is_admin_login %}
+                        Вхід в панель управління
+                    {% else %}
+                        Вход в особистий кабінет
+                    {% endif %}
+                    </p>
 
                     {% if form.non_field_errors %}
                         <div class="alert alert-danger">
@@ -43,11 +65,11 @@
                         </div>
                     {% endif %}
 
-                    <form id="login-form" action="{% url 'cabinet_login' %}" method="post">
+                    <form id="login-form" method="post" action="{% if is_admin_login %}{% url 'authentication:admin_login' %}{% else %}{% url 'authentication:cabinet_login' %}{% endif %}">
                         {% csrf_token %}
 
                         <div class="form-group has-feedback {% if form.username.errors %}has-error{% endif %}">
-                            <input type="text" id="loginform-username" class="form-control" name="username" placeholder="E-mail или ID" required autofocus value="{{ form.username.value|default:'' }}">
+                            <input type="text" id="loginform-username" class="form-control" name="username" placeholder="E-mail або ID" required autofocus value="{{ form.username.value|default:'' }}">
                             <span class="fa fa-envelope form-control-feedback"></span>
                             {% if form.username.errors %}
                                 <div class="help-block">{{ form.username.errors|join:", " }}</div>
@@ -64,14 +86,14 @@
 
                         <div class="row">
                             <div class="col-xs-12">
-                                <div class="checkbox icheck">
+                                <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" id="loginform-rememberme" name="remember_me" value="1" checked> Запомнить меня
+                                        <input type="checkbox" id="loginform-rememberme" name="remember_me" value="1" checked> Запам'ятати мене
                                     </label>
                                 </div>
                             </div>
                             <div class="col-xs-12">
-                                <button type="submit" class="btn btn-primary btn-block margin-top-15" name="login-button">Вход</button>
+                                <button type="submit" class="btn btn-primary btn-block margin-top-15" name="login-button">Вхід</button>
                             </div>
                         </div>
 
@@ -84,17 +106,9 @@
 
 <script src="{% static 'cabinet/assets/137cc266/jquery.js' %}"></script>
 <script src="{% static 'cabinet/bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'cabinet/plugins/iCheck/icheck.min.js' %}"></script>
 
 <script>
 $(function () {
-    // Ініціалізація плагіну iCheck для чекбокса "Запам'ятати мене"
-    $('.login-box-body input[type="checkbox"]').iCheck({
-        checkboxClass: 'icheckbox_flat-blue',
-        radioClass: 'icheckbox_flat-blue'
-    });
-
-    // Плавне приховування прелоадера
     $('#preloader').fadeOut('slow', function(){
         $(this).remove();
     });

@@ -111,7 +111,6 @@
                             <li><a href="{% url 'adminlte:edit_main_page' %}"><i class="fa fa-circle-o"></i> <span>Главная страница</span></a></li>
                             <li><a href="{% url 'adminlte:edit_about_us_page' %}"><i class="fa fa-circle-o"></i> <span>О нас</span></a></li>
                             <li><a href="{% url 'adminlte:edit_service_page' %}"><i class="fa fa-circle-o"></i> <span>Услуги</span></a></li>
-                            <li><a href="#"><i class="fa fa-circle-o"></i> <span>Тарифы</span></a></li>
                             <li><a href="{% url 'adminlte:contacts_edit' %}"><i class="fa fa-circle-o"></i> <span>Контакты</span></a></li>
                         </ul>
                     </li>
@@ -120,7 +119,7 @@
                         <ul class="treeview-menu">
                             <li><a href="#"><i class="fa fa-briefcase"></i> <span>Услуги</span></a></li>
                             <li><a href="#"><i class="fa fa-money"></i> <span>Тарифы</span></a></li>
-                            <li><a href="#"><i class="fa fa-user"></i> <span>Роли</span></a></li>
+                            <li><a href="{% url 'adminlte:roles_update' %}"><i class="fa fa-user"></i> <span>Роли</span></a></li>
                             <li><a href="#"><i class="fa fa-user-plus"></i> <span>Пользователи</span></a></li>
                             <li><a href="#"><i class="fa fa-credit-card"></i> <span>Платежные реквизиты</span></a></li>
                             <li><a href="#"><i class="fa fa-list-ol"></i> <span>Статьи платежей</span></a></li>

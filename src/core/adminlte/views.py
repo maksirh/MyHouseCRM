@@ -1,6 +1,7 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, UpdateView
+from django.views import View
+from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
 
 from src.core.adminlte.forms import (
     AboutUsPageForm,
@@ -12,6 +13,7 @@ from src.core.adminlte.forms import (
     SeoBlockForm,
     ServicePageForm,
 )
+from src.user.models import Roles
 from src.website.models import AboutUsPage, MainPage, ServicePage
 
 
@@ -275,3 +277,54 @@ class ContactPageView(UpdateView):
 
         else:
             return self.render_to_response(self.get_context_data(form=form))
+
+
+class RolesUpdateView(View):
+    PERMISSIONS = [
+        "has_statistics",
+        "has_cashbox",
+        "has_receipt",
+        "has_own_account",
+        "has_apartment",
+        "has_owner_apartments",
+        "has_message",
+        "has_call_master",
+        "has_counter",
+        "has_manage_site",
+        "has_service",
+        "has_tariffs",
+        "has_roles",
+        "has_user",
+        "has_account_detail",
+    ]
+
+    def get(self, request):
+        roles = Roles.objects.all()
+        return render(request, "adminlte/roles.html", {"roles": roles})
+
+    def post(self, request):
+        roles = Roles.objects.all()
+
+        for role in roles:
+            for perm in self.PERMISSIONS:
+                checkbox_name = f"{perm}_{role.id}"
+
+                is_checked = checkbox_name in request.POST
+                setattr(role, perm, is_checked)
+
+            role.save()
+
+        return redirect("adminlte:roles_update")
+
+
+class RoleCreateView(CreateView):
+    model = Roles
+    fields = ["name"]
+    template_name = "adminlte/role_create.html"
+
+    success_url = reverse_lazy("adminlte:role_create")
+
+
+class RoleDeleteView(DeleteView):
+    model = Roles
+    success_url = reverse_lazy("adminlte:roles_update")

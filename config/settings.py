@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "src.website",
     "phonenumber_field",
     "src.core.adminlte",
+    "src.authentication",
 ]
 
 MIDDLEWARE = [
