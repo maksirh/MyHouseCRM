@@ -1,7 +1,16 @@
+from django.contrib import messages
+from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    TemplateView,
+    UpdateView,
+)
 
 from src.core.adminlte.forms import (
     AboutUsPageForm,
@@ -12,8 +21,10 @@ from src.core.adminlte.forms import (
     MainPageForm,
     SeoBlockForm,
     ServicePageForm,
+    UserForm,
+    UserProfileForm,
 )
-from src.user.models import Roles
+from src.user.models import Roles, User
 from src.website.models import AboutUsPage, MainPage, ServicePage
 
 
@@ -328,3 +339,128 @@ class RoleCreateView(CreateView):
 class RoleDeleteView(DeleteView):
     model = Roles
     success_url = reverse_lazy("adminlte:roles_update")
+
+
+class UserEditView(UpdateView):
+    model = User
+    form_class = UserForm
+    template_name = "adminlte/edit_user.html"
+    success_url = reverse_lazy("adminlte:users_list")
+
+    def form_valid(self, form):
+        form.instance.username = form.cleaned_data.get("email")
+
+        raw_password = form.cleaned_data.get("password")
+        if raw_password:
+            form.instance.set_password(raw_password)
+
+        phone = form.cleaned_data.get("phone")
+        if phone:
+            form.instance.phone_number = phone
+
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["roles"] = Roles.objects.all()
+        return context
+
+
+class UserCreateView(CreateView):
+    model = User
+    form_class = UserForm
+    template_name = "adminlte/edit_user.html"
+    success_url = reverse_lazy("adminlte:users_list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["roles"] = Roles.objects.all()
+        return context
+
+    def form_valid(self, form):
+        form.instance.username = form.cleaned_data.get("email")
+
+        raw_password = form.cleaned_data.get("password")
+        if raw_password:
+            form.instance.set_password(raw_password)
+
+        phone = form.cleaned_data.get("phone")
+        if phone:
+            form.instance.phone_number = phone
+
+        return super().form_valid(form)
+
+
+class UserListView(ListView):
+    model = User
+    template_name = "adminlte/users_list.html"
+    context_object_name = "users"
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = User.objects.all()
+
+        name_query = self.request.GET.get("name")
+        if name_query:
+            queryset = queryset.filter(
+                Q(first_name__icontains=name_query) | Q(last_name__icontains=name_query)
+            )
+
+        role_query = self.request.GET.get("role")
+        if role_query:
+            queryset = queryset.filter(role__name__iexact=role_query)
+
+        phone_query = self.request.GET.get("phone")
+        if phone_query:
+            queryset = queryset.filter(phone_number__icontains=phone_query)
+
+        email_query = self.request.GET.get("email")
+        if email_query:
+            queryset = queryset.filter(email__icontains=email_query)
+
+        status_query = self.request.GET.get("status")
+        if status_query:
+            queryset = queryset.filter(status=status_query)
+
+        sort_by = self.request.GET.get("sort")
+        if sort_by == "name":
+            queryset = queryset.order_by("first_name", "last_name")
+        elif sort_by == "-name":
+            queryset = queryset.order_by("-first_name", "-last_name")
+        elif sort_by == "role":
+            queryset = queryset.order_by("role__name")
+        else:
+            queryset = queryset.order_by("-id")
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["roles"] = Roles.objects.all()
+        context["query_params"] = self.request.GET.urlencode()
+        return context
+
+
+class UserProfileView(UpdateView):
+    model = User
+    form_class = UserProfileForm
+    template_name = "adminlte/user_profile.html"
+    success_url = reverse_lazy("adminlte:user_profile")
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def form_valid(self, form):
+        messages.success(self.request, "Ваш профіль успішно оновлено!")
+        return super().form_valid(form)
+
+
+class UserDetailView(DetailView):
+    model = User
+    template_name = "adminlte/user_detail.html"
+    context_object_name = "target_user"
+
+
+class UserDeleteView(DeleteView):
+    model = User
+    success_url = reverse_lazy("adminlte:users_list")

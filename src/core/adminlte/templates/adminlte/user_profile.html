@@ -1,0 +1,104 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Мій профіль{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Мій профіль</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li class="active">Мій профіль</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+
+        <div class="col-md-3">
+            <div class="box box-primary">
+                <div class="box-body box-profile">
+                    <img class="profile-user-img img-responsive img-circle" src="{% static 'cabinet/dist/img/avatar5.png' %}" alt="Аватар користувача">
+
+                    <h3 class="profile-username text-center">{{ request.user.get_full_name|default:"Адміністратор" }}</h3>
+                    <p class="text-muted text-center">{{ request.user.role.name|default:"Директор" }}</p>
+
+                    <ul class="list-group list-group-unbordered">
+                        <li class="list-group-item">
+                            <b>Статус</b>
+                            <a class="pull-right">
+                                {% if request.user.status == 'active' %}
+                                    <span class="text-success">Активний</span>
+                                {% else %}
+                                    <span class="text-warning">{{ request.user.status }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Налаштування профілю</h3>
+                </div>
+
+                <form action="{% url 'user_profile' %}" method="post">
+                    {% csrf_token %}
+
+                    <div class="box-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-success alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                    <h4><i class="icon fa fa-check"></i> Успіх!</h4>
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <div class="form-group {% if form.first_name.errors %}has-error{% endif %}">
+                            <label>Ім'я</label>
+                            <input type="text" class="form-control" name="first_name" value="{{ form.first_name.value|default:'' }}">
+                            {% if form.first_name.errors %}
+                                <div class="help-block">{{ form.first_name.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group {% if form.last_name.errors %}has-error{% endif %}">
+                            <label>Прізвище</label>
+                            <input type="text" class="form-control" name="last_name" value="{{ form.last_name.value|default:'' }}">
+                            {% if form.last_name.errors %}
+                                <div class="help-block">{{ form.last_name.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group {% if form.phone_number.errors %}has-error{% endif %}">
+                            <label>Телефон</label>
+                            <input type="text" class="form-control" name="phone_number" value="{{ form.phone_number.value|default:'' }}">
+                            {% if form.phone_number.errors %}
+                                <div class="help-block">{{ form.phone_number.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group {% if form.email.errors %}has-error{% endif %}">
+                            <label>Email (логін)</label>
+                            <input type="email" class="form-control" name="email" required value="{{ form.email.value|default:'' }}">
+                            {% if form.email.errors %}
+                                <div class="help-block">{{ form.email.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="box-footer text-right">
+                        <button type="submit" class="btn btn-success">Зберегти зміни</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

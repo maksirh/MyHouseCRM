@@ -23,11 +23,18 @@ class Roles(models.Model):
 
 
 class User(AbstractUser):
-    role = models.ForeignKey(Roles, on_delete=models.PROTECT)
-    first_name = models.CharField()
-    last_name = models.CharField()
-    surname = models.CharField()
-    birth_date = models.DateField()
-    phone_number = models.CharField()
-    viber = models.CharField()
-    telegram = models.CharField()
+    STATUS_CHOICES = [
+        ("active", "Активний"),
+        ("new", "Новий"),
+        ("disabled", "Відключений"),
+    ]
+    role = models.ForeignKey(Roles, on_delete=models.PROTECT, null=True)
+    first_name = models.CharField(null=True, blank=True, max_length=255)
+    last_name = models.CharField(null=True, blank=True, max_length=255)
+    surname = models.CharField(null=True, blank=True, max_length=255)
+    email = models.EmailField(null=True, blank=True, max_length=255)
+    birth_date = models.DateField(null=True, blank=True)
+    phone_number = models.CharField(null=True, blank=True, max_length=255)
+    viber = models.CharField(null=True, blank=True, max_length=255)
+    telegram = models.CharField(null=True, blank=True, max_length=255)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="active")

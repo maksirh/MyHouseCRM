@@ -9,6 +9,12 @@ from .views import (
     RolesUpdateView,
     ServicePageView,
     StatisticPageView,
+    UserCreateView,
+    UserDeleteView,
+    UserDetailView,
+    UserEditView,
+    UserListView,
+    UserProfileView,
 )
 
 app_name = "adminlte"
@@ -22,4 +28,10 @@ urlpatterns = [
     path("settings/", RolesUpdateView.as_view(), name="roles_update"),
     path("roles/create/", RoleCreateView.as_view(), name="role_create"),
     path("roles/delete/<int:pk>", RoleDeleteView.as_view(), name="role_delete"),
+    path("user/edit/<int:pk>", UserEditView.as_view(), name="user_edit"),
+    path("user/create/", UserCreateView.as_view(), name="user_create"),
+    path("user/list/", UserListView.as_view(), name="users_list"),
+    path("user/profile", UserProfileView.as_view(), name="user_profile"),
+    path("user/detail/<int:pk>", UserDetailView.as_view(), name="user_detail"),
+    path("user/delete/<int:pk>", UserDeleteView.as_view(), name="user_delete"),
 ]

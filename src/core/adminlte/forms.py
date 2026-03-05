@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import modelformset_factory
 
+from src.user.models import User
 from src.website.models import (
     AboutUsPage,
     ContactsPage,
@@ -120,3 +121,56 @@ class ServicePageForm(forms.ModelForm):
     class Meta:
         model = ServicePage
         fields = []
+
+
+class UserForm(forms.ModelForm):
+    password = forms.CharField(required=False)
+    password_confirm = forms.CharField(required=False)
+
+    phone = forms.CharField(required=False)
+
+    class Meta:
+        model = User
+        fields = [
+            "first_name",
+            "last_name",
+            "surname",
+            "email",
+            "role",
+            "phone_number",
+            "birth_date",
+            "viber",
+            "telegram",
+            "status",
+        ]
+
+        widgets = {
+            "first_name": forms.TextInput(attrs={"class": "form-control"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control"}),
+            "surname": forms.TextInput(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+            "role": forms.Select(attrs={"class": "form-control"}),
+            "phone_number": forms.TextInput(attrs={"class": "form-control"}),
+            "birth_date": forms.DateInput(attrs={"class": "form-control"}),
+            "viber": forms.TextInput(attrs={"class": "form-control"}),
+            "telegram": forms.TextInput(attrs={"class": "form-control"}),
+            "status": forms.Select(attrs={"class": "form-control"}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        password_confirm = cleaned_data.get("password_confirm")
+
+        if password and password_confirm and password != password_confirm:
+            self.add_error(
+                "password_confirm", "Паролі не співпадають. Спробуйте ще раз."
+            )
+
+        return cleaned_data
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "phone_number", "email"]

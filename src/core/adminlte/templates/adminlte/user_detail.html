@@ -1,0 +1,91 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Картка користувача{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Картка користувача</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li><a href="{% url 'adminlte:users_list' %}">Користувачі</a></li>
+        <li class="active">{{ target_user.get_full_name|default:"(не задано)" }}</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+
+        <div class="col-md-3">
+            <div class="box box-primary">
+                <div class="box-body box-profile">
+                    <img class="profile-user-img img-responsive img-circle" src="{% static 'cabinet/dist/img/avatar5.png' %}" alt="Аватар">
+
+                    <h3 class="profile-username text-center">{{ target_user.get_full_name|default:"(не задано)" }}</h3>
+                    <p class="text-muted text-center">{{ target_user.role.name|default:"Директор" }}</p>
+
+                    <ul class="list-group list-group-unbordered">
+                        <li class="list-group-item">
+                            <b>Статус</b>
+                            <a class="pull-right">
+                                {% if target_user.status == 'active' %}
+                                    <span class="label label-success">Активний</span>
+                                {% elif target_user.status == 'new' %}
+                                    <span class="label label-warning">Новий</span>
+                                {% else %}
+                                    <span class="label label-danger">Відключений</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Детальна інформація</h3>
+                    <div class="box-tools">
+                        <a href="{% url 'adminlte:user_edit' target_user.id %}" class="btn btn-primary btn-sm">
+                            <i class="fa fa-pencil"></i> Редагувати
+                        </a>
+                    </div>
+                </div>
+
+                <div class="box-body no-padding">
+                    <table class="table table-bordered table-striped">
+                        <tbody>
+                            <tr>
+                                <th style="width: 200px;">Ім'я</th>
+                                <td>{{ target_user.first_name|default:"(не задано)" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Прізвище</th>
+                                <td>{{ target_user.last_name|default:"(не задано)" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Телефон</th>
+                                <td>{{ target_user.phone_number|default:"(не задано)" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Email (логін)</th>
+                                <td>{{ target_user.email }}</td>
+                            </tr>
+                            <tr>
+                                <th>Роль</th>
+                                <td>{{ target_user.role.name|default:"Директор" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="box-footer">
+                    <a href="{% url 'adminlte:users_list' %}" class="btn btn-default">Повернутися до списку</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

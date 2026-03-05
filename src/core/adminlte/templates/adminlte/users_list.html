@@ -1,14 +1,14 @@
 {% extends 'admin_base.html' %}
 {% load static %}
 
-{% block title %}Пользователи{% endblock %}
+{% block title %}Користувачі{% endblock %}
 
 {% block content %}
 <section class="content-header">
-    <h1>Пользователи</h1>
+    <h1>Користувачі</h1>
     <ul class="breadcrumb">
-        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
-        <li class="active">Пользователи</li>
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li class="active">Користувачі</li>
     </ul>
 </section>
 
@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="pull-right margin-bottom">
-                <a class="btn btn-success" href="{% url 'admin_create' %}">Создать пользователя</a>
+                <a class="btn btn-success" href="{% url 'adminlte:user_create' %}">Створити користувача</a>
             </div>
         </div>
     </div>
@@ -27,8 +27,8 @@
                 <div class="box-header with-border">
                     <h3 class="box-title"></h3>
                     <div class="box-tools">
-                        <a href="{% url 'admin_list' %}" class="btn btn-default btn-sm">
-                            <span class="hidden-xs">Очистить</span><i class="fa fa-eraser visible-xs" aria-hidden="true"></i>
+                        <a href="{% url 'adminlte:users_list' %}" class="btn btn-default btn-sm">
+                            <span class="hidden-xs">Очистити</span><i class="fa fa-eraser visible-xs" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
@@ -39,10 +39,10 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th><a href="?sort=name">Пользователь</a></th>
+                                    <th><a href="?sort=name">Користувач</a></th>
                                     <th><a href="?sort=role">Роль</a></th>
                                     <th>Телефон</th>
-                                    <th>Email (логин)</th>
+                                    <th>Email (логін)</th>
                                     <th>Статус</th>
                                     <th style="width: 114px; min-width: 114px">&nbsp;</th>
                                 </tr>
@@ -51,88 +51,67 @@
                                         <td>&nbsp;</td>
                                         <td><input type="text" class="form-control" name="name" value="{{ request.GET.name }}"></td>
                                         <td>
-                                            <select class="form-control" name="role">
+                                            <select class="form-control" name="role" onchange="this.form.submit()">
                                                 <option value=""></option>
-                                                <option value="director" {% if request.GET.role == 'director' %}selected{% endif %}>Директор</option>
-                                                <option value="manager" {% if request.GET.role == 'manager' %}selected{% endif %}>Управляющий</option>
-                                                <option value="accountant" {% if request.GET.role == 'accountant' %}selected{% endif %}>Бухгалтер</option>
-                                                <option value="electrician" {% if request.GET.role == 'electrician' %}selected{% endif %}>Электрик</option>
-                                                <option value="plumber" {% if request.GET.role == 'plumber' %}selected{% endif %}>Сантехник</option>
+                                                {% for role in roles %}
+                                                    <option value="{{ role.name }}" {% if request.GET.role == role.name %}selected{% endif %}>{{ role.name }}</option>
+                                                {% endfor %}
                                             </select>
                                         </td>
                                         <td><input type="text" class="form-control" name="phone" value="{{ request.GET.phone }}"></td>
                                         <td><input type="text" class="form-control" name="email" value="{{ request.GET.email }}"></td>
                                         <td>
-                                            <select class="form-control" name="status">
+                                            <select class="form-control" name="status" onchange="this.form.submit()">
                                                 <option value=""></option>
-                                                <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Активен</option>
-                                                <option value="new" {% if request.GET.status == 'new' %}selected{% endif %}>Новый</option>
-                                                <option value="disabled" {% if request.GET.status == 'disabled' %}selected{% endif %}>Отключен</option>
+                                                <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Активний</option>
+                                                <option value="new" {% if request.GET.status == 'new' %}selected{% endif %}>Новий</option>
+                                                <option value="disabled" {% if request.GET.status == 'disabled' %}selected{% endif %}>Відключений</option>
                                             </select>
                                         </td>
-                                        <td>&nbsp;</td>
+                                        <td><button type="submit" style="display: none;"></button></td>
                                     </form>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for admin in admins %}
-                                    <tr data-href="{% if admin == request.user %}{% url 'admin_profile' %}{% else %}{% url 'admin_detail' admin.id %}{% endif %}" data-key="{{ admin.id }}">
+                                {% for user in users %}
+                                    <tr data-href="{% if user == request.user %}{% url 'adminlte:user_profile' %}{% else %}{% url 'adminlte:user_detail' user.id %}{% endif %}" data-key="{{ user.id }}">
                                         <td>{{ forloop.counter }}</td>
-                                        <td>{{ admin.get_full_name|default:"<span class='not-set'>(не задано)</span>"|safe }}</td>
-                                        <td>{{ admin.role.name|default:"Директор" }}</td>
-                                        <td>{{ admin.phone }}</td>
-                                        <td>{{ admin.email }}</td>
+                                        <td>{{ user.get_full_name|default:"<span class='not-set'>(не задано)</span>"|safe }}</td>
+                                        <td>{{ user.role.name|default:"Директор" }}</td>
+                                        <td>{{ user.phone_number }}</td>
+                                        <td>{{ user.email }}</td>
                                         <td>
-                                            {% if admin.status == 'active' %}
-                                                <small class="label label-success">Активен</small>
-                                            {% elif admin.status == 'new' %}
-                                                <small class="label label-warning">Новый</small>
+                                            {% if user.status == 'active' %}
+                                                <small class="label label-success">Активний</small>
+                                            {% elif user.status == 'new' %}
+                                                <small class="label label-warning">Новий</small>
                                             {% else %}
-                                                <small class="label label-danger">Отключен</small>
+                                                <small class="label label-danger">Відключений</small>
                                             {% endif %}
                                         </td>
                                         <td>
                                             <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="{% url 'admin_invite' admin.id %}" title="Отправить приглашение" data-toggle="tooltip"><i class="fa fa-repeat"></i></a>
+                                                <a class="btn btn-default btn-sm" href="#" title="Відправити запрошення" data-toggle="tooltip"><i class="fa fa-repeat"></i></a>
 
-                                                <a class="btn btn-default btn-sm" href="{% if admin == request.user %}{% url 'admin_profile' %}{% else %}{% url 'admin_update' admin.id %}{% endif %}" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-default btn-sm" href="{% if user == request.user %}{% url 'adminlte:user_profile' %}{% else %}{% url 'adminlte:user_edit' user.id %}{% endif %}" title="Редагувати" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
 
-                                                {% if admin == request.user %}
+                                                {% if user == request.user %}
                                                     <button class="btn btn-default btn-sm disabled"><i class="fa fa-trash"></i></button>
                                                 {% else %}
-                                                    <a class="btn btn-default btn-sm" href="{% url 'admin_delete' admin.id %}" title="Удалить" data-toggle="tooltip" data-method="post" data-confirm="Вы уверены, что хотите удалить этот элемент?"><i class="fa fa-trash"></i></a>
+                                                    <form action="{% url 'adminlte:user_delete' user.id %}" method="post" style="display: inline;" onsubmit="return confirm('Ви впевнені, що хочете видалити цього користувача?');">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-default btn-sm" title="Видалити" data-toggle="tooltip">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    </form>
                                                 {% endif %}
                                             </div>
                                         </td>
                                     </tr>
                                 {% empty %}
-                                    <tr data-href="#">
-                                        <td>1</td>
-                                        <td>Nana Nanovna</td>
-                                        <td>Директор</td>
-                                        <td>+380990010101</td>
-                                        <td>admin@admin.com</td>
-                                        <td><small class="label label-success">Активен</small></td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="#" title="Отправить приглашение" data-toggle="tooltip"><i class="fa fa-repeat"></i></a>
-                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
-                                                <button class="btn btn-default btn-sm disabled"><i class="fa fa-trash"></i></button> </div>
-                                        </td>
-                                    </tr>
-                                    <tr data-href="#">
-                                        <td>2</td>
-                                        <td>Виктория Виктория</td>
-                                        <td>Сантехник</td>
-                                        <td>+388899554344</td>
-                                        <td>123123@gmail.1235</td>
-                                        <td><small class="label label-danger">Отключен</small></td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="#" title="Отправить приглашение" data-toggle="tooltip"><i class="fa fa-repeat"></i></a>
-                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
-                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
-                                            </div>
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">
+                                            <em>Користувачів не знайдено.</em>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -140,15 +119,31 @@
                         </table>
                     </div>
 
+                    {% if is_paginated %}
                     <div class="box-footer clearfix">
                         <ul class="pagination pagination-sm no-margin pull-right">
-                            <li class="prev disabled"><span>&laquo;</span></li>
-                            <li class="active"><a href="?page=1">1</a></li>
-                            <li><a href="?page=2">2</a></li>
-                            <li><a href="?page=3">3</a></li>
-                            <li class="next"><a href="?page=2">&raquo;</a></li>
+                            {% if page_obj.has_previous %}
+                                <li class="prev"><a href="?page={{ page_obj.previous_page_number }}&{{ query_params }}">&laquo;</a></li>
+                            {% else %}
+                                <li class="prev disabled"><span>&laquo;</span></li>
+                            {% endif %}
+
+                            {% for i in paginator.page_range %}
+                                {% if page_obj.number == i %}
+                                    <li class="active"><span>{{ i }}</span></li>
+                                {% else %}
+                                    <li><a href="?page={{ i }}&{{ query_params }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="next"><a href="?page={{ page_obj.next_page_number }}&{{ query_params }}">&raquo;</a></li>
+                            {% else %}
+                                <li class="next disabled"><span>&raquo;</span></li>
+                            {% endif %}
                         </ul>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
