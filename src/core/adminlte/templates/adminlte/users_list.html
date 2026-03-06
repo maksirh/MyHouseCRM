@@ -91,7 +91,7 @@
                                         </td>
                                         <td>
                                             <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="#" title="Відправити запрошення" data-toggle="tooltip"><i class="fa fa-repeat"></i></a>
+                                                <a class="btn btn-default btn-sm" href="{% url 'adminlte:user_invite' user.id %}" title="Відправити запрошення" data-toggle="tooltip"><i class="fa fa-repeat"></i></a>
 
                                                 <a class="btn btn-default btn-sm" href="{% if user == request.user %}{% url 'adminlte:user_profile' %}{% else %}{% url 'adminlte:user_edit' user.id %}{% endif %}" title="Редагувати" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
 

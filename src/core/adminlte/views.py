@@ -1,6 +1,8 @@
+from django.conf import settings
 from django.contrib import messages
+from django.core.mail import send_mail
 from django.db.models import Q
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import (
@@ -464,3 +466,39 @@ class UserDetailView(DetailView):
 class UserDeleteView(DeleteView):
     model = User
     success_url = reverse_lazy("adminlte:users_list")
+
+
+def send_user_invite(request, pk):
+    target_user = get_object_or_404(User, pk=pk)
+
+    if not target_user.email:
+        messages.error(
+            request, "Неможливо надіслати запрошення: у користувача немає Email."
+        )
+        return redirect("users_list")
+
+    subject = "Запрошення до системи MyHouseCRM"
+    message = f"""Вітаємо, {target_user.first_name or 'Користувачу'}!
+
+Вас запрошено до системи управління MyHouseCRM.
+Ваш логін для входу: {target_user.email}
+
+Для входу перейдіть за посиланням:
+
+З повагою, Адміністрація."""
+
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[target_user.email],
+            fail_silently=False,
+        )
+        messages.success(
+            request, f"Запрошення успішно надіслано на {target_user.email}"
+        )
+    except Exception as e:
+        messages.error(request, f"Помилка при відправці листа: {e}")
+
+    return redirect("adminlte:users_list")

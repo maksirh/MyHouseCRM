@@ -15,6 +15,7 @@ from .views import (
     UserEditView,
     UserListView,
     UserProfileView,
+    send_user_invite,
 )
 
 app_name = "adminlte"
@@ -34,4 +35,5 @@ urlpatterns = [
     path("user/profile", UserProfileView.as_view(), name="user_profile"),
     path("user/detail/<int:pk>", UserDetailView.as_view(), name="user_detail"),
     path("user/delete/<int:pk>", UserDeleteView.as_view(), name="user_delete"),
+    path("user/invite/<int:pk>", send_user_invite, name="user_invite"),
 ]

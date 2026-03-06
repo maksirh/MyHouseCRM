@@ -7,7 +7,7 @@
 <section class="content-header">
     <h1>Мій профіль</h1>
     <ul class="breadcrumb">
-        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
         <li class="active">Мій профіль</li>
     </ul>
 </section>
@@ -45,7 +45,7 @@
                     <h3 class="box-title">Налаштування профілю</h3>
                 </div>
 
-                <form action="{% url 'user_profile' %}" method="post">
+                <form action="{% url 'adminlte:user_profile' %}" method="post">
                     {% csrf_token %}
 
                     <div class="box-body">
