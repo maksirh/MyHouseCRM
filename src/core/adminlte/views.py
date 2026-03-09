@@ -21,11 +21,14 @@ from src.core.adminlte.forms import (
     GalleryFormSet,
     InfoItemsFormset,
     MainPageForm,
+    MeasureFormSet,
     SeoBlockForm,
+    ServiceFormSet,
     ServicePageForm,
     UserForm,
     UserProfileForm,
 )
+from src.crm.models import Measure, Service
 from src.user.models import Roles, User
 from src.website.models import AboutUsPage, MainPage, ServicePage
 
@@ -330,19 +333,6 @@ class RolesUpdateView(View):
         return redirect("adminlte:roles_update")
 
 
-class RoleCreateView(CreateView):
-    model = Roles
-    fields = ["name"]
-    template_name = "adminlte/role_create.html"
-
-    success_url = reverse_lazy("adminlte:role_create")
-
-
-class RoleDeleteView(DeleteView):
-    model = Roles
-    success_url = reverse_lazy("adminlte:roles_update")
-
-
 class UserEditView(UpdateView):
     model = User
     form_class = UserForm
@@ -502,3 +492,39 @@ def send_user_invite(request, pk):
         messages.error(request, f"Помилка при відправці листа: {e}")
 
     return redirect("adminlte:users_list")
+
+
+class ServiceEditView(View):
+    template_name = "adminlte/service_edit.html"
+
+    def get(self, request):
+        service_formset = ServiceFormSet(
+            queryset=Service.objects.all(), prefix="service"
+        )
+        measure_formset = MeasureFormSet(
+            queryset=Measure.objects.all(), prefix="measure"
+        )
+
+        context = {
+            "service_formset": service_formset,
+            "measure_formset": measure_formset,
+        }
+
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        service_formset = ServiceFormSet(request.POST, prefix="service")
+        measure_formset = MeasureFormSet(request.POST, prefix="measure")
+
+        if service_formset.is_valid() and measure_formset.is_valid():
+            service_formset.save()
+            measure_formset.save()
+
+            return redirect("adminlte:service_edit")
+
+        context = {
+            "service_formset": service_formset,
+            "measure_formset": measure_formset,
+        }
+
+        return render(request, self.template_name, context)

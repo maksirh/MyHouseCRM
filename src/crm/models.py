@@ -17,12 +17,15 @@ class PersonalAccount(models.Model):
 
 
 class Measure(models.Model):
-    name = models.CharField()
+    name = models.CharField(null=True, max_length=50)
+
+    def __str__(self):
+        return self.name
 
 
 class Service(models.Model):
-    name = models.CharField()
-    measure = ManyToManyField(Measure)
+    name = models.CharField(null=True, max_length=50)
+    measure = ForeignKey(Measure, on_delete=models.SET_NULL, null=True, blank=True)
 
 
 class Currency(models.Model):

@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import modelformset_factory
 
+from src.crm.models import Measure, Service
 from src.user.models import User
 from src.website.models import (
     AboutUsPage,
@@ -174,3 +175,32 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "phone_number", "email"]
+
+
+class MeasureForm(forms.ModelForm):
+    class Meta:
+        model = Measure
+        fields = ["name"]
+
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+        }
+
+
+class ServiceForm(forms.ModelForm):
+    class Meta:
+        model = Service
+        fields = ["name", "measure"]
+
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+            "measure": forms.Select(attrs={"class": "form-control"}),
+        }
+
+
+MeasureFormSet = modelformset_factory(
+    Measure, form=MeasureForm, extra=0, can_delete=True
+)
+ServiceFormSet = modelformset_factory(
+    Service, form=ServiceForm, extra=0, can_delete=True
+)

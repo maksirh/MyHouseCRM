@@ -14,11 +14,6 @@
 
 <section class="content">
     <div class="box">
-        <div class="box-header with-border">
-            <div class="pull-right">
-                <a href="{% url 'adminlte:role_create' %}" class="btn btn-success">Додати роль</a>
-            </div>
-        </div>
 
         <form action="{% url 'adminlte:roles_update' %}" method="post">
             {% csrf_token %}
@@ -66,9 +61,6 @@
                                 <td class="text-center"><input type="checkbox" name="has_user_{{ role.id }}" value="1" {% if role.has_user %}checked{% endif %}></td>
                                 <td class="text-center"><input type="checkbox" name="has_account_detail_{{ role.id }}" value="1" {% if role.has_account_detail %}checked{% endif %}></td>
                                 <td class="text-center">
-                                    <button type="submit" form="delete-form-{{ role.id }}" class="text-danger" style="padding: 0; border: none; background: none;" title="Видалити роль" onclick="return confirm('Ви впевнені, що хочете видалити цю роль?');">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
                                 </td>
                             </tr>
                         {% empty %}
@@ -94,10 +86,5 @@
     </div>
 </section>
 
-{% for role in roles %}
-    <form id="delete-form-{{ role.id }}" action="{% url 'adminlte:role_delete' role.id %}" method="post" style="display: none;">
-        {% csrf_token %}
-    </form>
-{% endfor %}
 
 {% endblock %}

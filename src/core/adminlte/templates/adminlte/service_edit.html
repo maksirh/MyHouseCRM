@@ -1,128 +1,77 @@
 {% extends 'admin_base.html' %}
 {% load static %}
 
-{% block title %}Редактирование услуг{% endblock %}
+{% block title %}Редагування послуг{% endblock %}
 
 {% block content %}
 <section class="content-header">
-    <h1>Редактирование услуг</h1>
+    <h1>Редагування послуг</h1>
 </section>
 
 <section class="content">
     <div class="box">
         <div class="box-body">
-            <form id="w0" action="{% url 'services_update' %}" method="post">
+            <form id="w0" action="" method="post">
                 {% csrf_token %}
+
+                {{ service_formset.management_form }}
+                {{ measure_formset.management_form }}
+
                 <div class="row">
                     <div class="col-xs-12 col-lg-7">
                         <div class="nav-tabs-custom">
+
                             <ul class="nav nav-tabs">
-                                <li class="active"><a href="#tab_service" data-toggle="tab" aria-expanded="true">Услуги</a></li>
-                                <li class=""><a href="#tab_serviceunit" data-toggle="tab" aria-expanded="false">Единицы измерения</a></li>
+                                <li class="active"><a href="#tab_service" data-toggle="tab" aria-expanded="true">Послуги</a></li>
+                                <li class=""><a href="#tab_measure" data-toggle="tab" aria-expanded="false">Одиниці виміру</a></li>
                             </ul>
 
                             <div class="tab-content">
+
                                 <div class="tab-pane clearfix active" id="tab_service">
                                     <div id="form-service-rows">
-                                        {% for service in services %}
-                                            <div id="form-service-{{ forloop.counter0 }}" class="row form-service">
+                                        {% for form in service_formset %}
+                                            <div class="row form-service item-row">
+                                                {{ form.id }}
+
                                                 <div class="col-xs-12 col-sm-7">
-                                                    <input type="hidden" id="service-{{ forloop.counter0 }}-id" name="Service[{{ forloop.counter0 }}][id]" value="{{ service.id }}">
                                                     <div class="form-group">
-                                                        <label for="service-{{ forloop.counter0 }}-name">Услуга</label>
-                                                        <input type="text" id="service-{{ forloop.counter0 }}-name" class="form-control" name="Service[{{ forloop.counter0 }}][name]" value="{{ service.name }}">
+                                                        <label>Послуга</label>
+                                                        {{ form.name }}
                                                     </div>
                                                 </div>
                                                 <div class="col-xs-12 col-sm-5">
                                                     <div class="form-group">
-                                                        <label for="service-{{ forloop.counter0 }}-service_unit_id">Ед. изм.</label>
+                                                        <label>Од. вим.</label>
                                                         <div class="input-group">
-                                                            <select id="service-{{ forloop.counter0 }}-service_unit_id" class="form-control" name="Service[{{ forloop.counter0 }}][service_unit_id]">
-                                                                <option value="">Выберите...</option>
-                                                                {% for unit in units %}
-                                                                    <option value="{{ unit.id }}" {% if service.unit.id == unit.id %}selected{% endif %}>{{ unit.name }}</option>
-                                                                {% endfor %}
-                                                            </select>
+                                                            {{ form.measure }}
                                                             <span class="input-group-btn">
-                                                                <button type="button" class="btn btn-default form-row-remove-btn {% if service.is_used_in_receipts %}disabled{% endif %}" no-delete-msg="Эта услуга используется в квитанциях. Удаление невозможно.">
-                                                                    <i class="fa fa-trash"></i>
-                                                                </button>
+                                                                <button type="button" class="btn btn-default remove-btn"><i class="fa fa-trash"></i></button>
+                                                                <div style="display: none;">{{ form.DELETE }}</div>
                                                             </span>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-xs-12">
-                                                    <input type="hidden" name="Service[{{ forloop.counter0 }}][is_counter]" value="0">
-                                                    <label>
-                                                        <input type="checkbox" id="service-{{ forloop.counter0 }}-is_counter" name="Service[{{ forloop.counter0 }}][is_counter]" value="1" {% if service.is_counter %}checked{% endif %}>
-                                                        Показывать в счетчиках
-                                                    </label>
-                                                    <div style="margin-bottom: 16px;"></div>
-                                                </div>
-                                            </div>
-                                        {% empty %}
-                                            <div id="form-service-0" class="row form-service">
-                                                <div class="col-xs-12 col-sm-7">
-                                                    <input type="hidden" name="Service[0][id]" value="5">
-                                                    <div class="form-group">
-                                                        <label>Услуга</label>
-                                                        <input type="text" class="form-control" name="Service[0][name]" value="Курьер 1">
-                                                    </div>
-                                                </div>
-                                                <div class="col-xs-12 col-sm-5">
-                                                    <div class="form-group">
-                                                        <label>Ед. изм.</label>
-                                                        <div class="input-group">
-                                                            <select class="form-control" name="Service[0][service_unit_id]">
-                                                                <option value="">Выберите...</option>
-                                                                <option value="50" selected>час</option>
-                                                            </select>
-                                                            <span class="input-group-btn">
-                                                                <button type="button" class="btn btn-default form-row-remove-btn"><i class="fa fa-trash"></i></button>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-xs-12">
-                                                    <input type="hidden" name="Service[0][is_counter]" value="0">
-                                                    <label><input type="checkbox" name="Service[0][is_counter]" value="1" checked> Показывать в счетчиках</label>
-                                                    <div style="margin-bottom: 16px;"></div>
                                                 </div>
                                             </div>
                                         {% endfor %}
                                     </div>
-                                    <button type="button" class="btn btn-default btn-hover-change pull-left form-row-add-service-btn">Добавить</button>
+                                    <button type="button" class="btn btn-default pull-left" id="add-service-btn">Додати</button>
                                 </div>
 
-                                <div class="tab-pane clearfix" id="tab_serviceunit">
-                                    <div id="form-serviceunit-rows">
-                                        {% for unit in units %}
-                                            <div id="form-serviceunit-{{ forloop.counter0 }}" class="row form-serviceunit">
+                                <div class="tab-pane clearfix" id="tab_measure">
+                                    <div id="form-measure-rows">
+                                        {% for form in measure_formset %}
+                                            <div class="row form-measure item-row">
+                                                {{ form.id }}
+
                                                 <div class="col-xs-12">
-                                                    <input type="hidden" id="serviceunit-{{ forloop.counter0 }}-id" name="ServiceUnit[{{ forloop.counter0 }}][id]" value="{{ unit.id }}">
                                                     <div class="form-group">
-                                                        <label for="serviceunit-{{ forloop.counter0 }}-name">Ед. изм.</label>
+                                                        <label>Од. вим.</label>
                                                         <div class="input-group">
-                                                            <input type="text" id="serviceunit-{{ forloop.counter0 }}-name" class="form-control" name="ServiceUnit[{{ forloop.counter0 }}][name]" value="{{ unit.name }}">
+                                                            {{ form.name }}
                                                             <span class="input-group-btn">
-                                                                <button type="button" class="btn btn-default form-row-remove-btn {% if unit.is_used_in_services %}disabled{% endif %}" no-delete-msg="Эта ед.изм. используется в услуге. Удаление невозможно.">
-                                                                    <i class="fa fa-trash"></i>
-                                                                </button>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        {% empty %}
-                                            <div id="form-serviceunit-0" class="row form-serviceunit">
-                                                <div class="col-xs-12">
-                                                    <input type="hidden" name="ServiceUnit[0][id]" value="8">
-                                                    <div class="form-group">
-                                                        <label>Ед. изм.</label>
-                                                        <div class="input-group">
-                                                            <input type="text" class="form-control" name="ServiceUnit[0][name]" value="кВт.ч">
-                                                            <span class="input-group-btn">
-                                                                <button type="button" class="btn btn-default form-row-remove-btn disabled" no-delete-msg="Эта ед.изм. используется в услуге. Удаление невозможно."><i class="fa fa-trash"></i></button>
+                                                                <button type="button" class="btn btn-default remove-btn"><i class="fa fa-trash"></i></button>
+                                                                <div style="display: none;">{{ form.DELETE }}</div>
                                                             </span>
                                                         </div>
                                                     </div>
@@ -130,8 +79,9 @@
                                             </div>
                                         {% endfor %}
                                     </div>
-                                    <button type="button" class="btn btn-default btn-hover-change pull-left form-row-add-serviceunit-btn">Добавить</button>
+                                    <button type="button" class="btn btn-default pull-left" id="add-measure-btn">Додати</button>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -140,12 +90,55 @@
                 <div class="row">
                     <div class="col-xs-12 text-center">
                         <div class="form-group">
-                            <a href="{% url 'admin_home' %}" class="btn btn-default">Отменить</a>
-                            <button type="submit" class="btn btn-success">Сохранить</button>
+                            <a href="{% url 'adminlte:statistic' %}" class="btn btn-default">Скасувати</a>
+                            <button type="submit" class="btn btn-success">Зберегти</button>
                         </div>
                     </div>
                 </div>
             </form>
+
+            <div id="empty-service-form" style="display: none;">
+                <div class="row form-service item-row">
+                    {{ service_formset.empty_form.id }}
+                    <div class="col-xs-12 col-sm-7">
+                        <div class="form-group">
+                            <label>Послуга</label>
+                            {{ service_formset.empty_form.name }}
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-5">
+                        <div class="form-group">
+                            <label>Од. вим.</label>
+                            <div class="input-group">
+                                {{ service_formset.empty_form.measure }}
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default remove-btn"><i class="fa fa-trash"></i></button>
+                                    <div style="display: none;">{{ service_formset.empty_form.DELETE }}</div>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="empty-measure-form" style="display: none;">
+                <div class="row form-measure item-row">
+                    {{ measure_formset.empty_form.id }}
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label>Од. вим.</label>
+                            <div class="input-group">
+                                {{ measure_formset.empty_form.name }}
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default remove-btn"><i class="fa fa-trash"></i></button>
+                                    <div style="display: none;">{{ measure_formset.empty_form.DELETE }}</div>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </section>
@@ -153,47 +146,38 @@
 
 {% block extra_js %}
 <script>
-jQuery(function ($) {
-    // Встановлюємо динамічні індекси для нових полів
-    var formIdServiceNext = $('.form-service').length || 1;
-    var formIdServiceUnitNext = $('.form-serviceunit').length || 1;
+$(document).ready(function() {
 
-    // Видалення рядка
-    $(document).on('click', '.form-row-remove-btn', function(e){
-        if ($(this).hasClass('disabled')) {
-            // Якщо є клас disabled, показуємо причину, чому не можна видалити
-            var msg = $(this).attr('no-delete-msg');
-            alert(msg);
+    function addForm(btnId, containerId, emptyFormId, prefix) {
+        $(btnId).click(function(e) {
+            e.preventDefault();
+
+            var totalFormsInput = $('#id_' + prefix + '-TOTAL_FORMS');
+            var formIdx = parseInt(totalFormsInput.val());
+
+            var newHtml = $(emptyFormId).html().replace(/__prefix__/g, formIdx);
+
+            $(containerId).append(newHtml);
+
+            totalFormsInput.val(formIdx + 1);
+        });
+    }
+
+    addForm('#add-service-btn', '#form-service-rows', '#empty-service-form', 'service');
+    addForm('#add-measure-btn', '#form-measure-rows', '#empty-measure-form', 'measure');
+
+    $(document).on('click', '.remove-btn', function(e) {
+        e.preventDefault();
+        var row = $(this).closest('.item-row');
+
+        var deleteCheckbox = row.find('input[type="checkbox"][name$="-DELETE"]');
+
+        if (deleteCheckbox.length > 0) {
+            deleteCheckbox.prop('checked', true);
+            row.hide();
         } else {
-            // Видаляємо рядок
-            if (confirm('Удалить?')) {
-                $(this).closest('.form-service, .form-serviceunit').remove();
-            }
+            row.remove();
         }
-    });
-
-    // Додавання нової послуги
-    $(document).on('click', '.form-row-add-service-btn', function(e){
-        $.ajax({
-            url: "{% url 'ajax_get_service_form' %}?form_id=" + formIdServiceNext,
-            dataType: 'html',
-            success: function(html) {
-                $('#form-service-rows').append(html);
-                formIdServiceNext++;
-            }
-        });
-    });
-
-    // Додавання нової одиниці виміру
-    $(document).on('click', '.form-row-add-serviceunit-btn', function(e){
-        $.ajax({
-            url: "{% url 'ajax_get_service_unit_form' %}?form_id=" + formIdServiceUnitNext,
-            dataType: 'html',
-            success: function(html) {
-                $('#form-serviceunit-rows').append(html);
-                formIdServiceUnitNext++;
-            }
-        });
     });
 });
 </script>

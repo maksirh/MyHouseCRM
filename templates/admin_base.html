@@ -117,7 +117,7 @@
                     <li class="treeview">
                         <a href="#!"><i class="fa fa-cogs"></i> <span>Настройки системы</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
                         <ul class="treeview-menu">
-                            <li><a href="#"><i class="fa fa-briefcase"></i> <span>Услуги</span></a></li>
+                            <li><a href="{% url "adminlte:service_edit" %}"><i class="fa fa-briefcase"></i> <span>Услуги</span></a></li>
                             <li><a href="#"><i class="fa fa-money"></i> <span>Тарифы</span></a></li>
                             <li><a href="{% url 'adminlte:roles_update' %}"><i class="fa fa-user"></i> <span>Роли</span></a></li>
                             <li><a href="{% url "adminlte:users_list" %}"><i class="fa fa-user-plus"></i> <span>Пользователи</span></a></li>
