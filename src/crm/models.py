@@ -5,12 +5,6 @@ from src.house.models import Apartments
 from src.user.models import Roles, User
 
 
-class Tariffs(models.Model):
-    name = models.CharField()
-    description = models.TextField()
-    updated_at = models.DateTimeField(auto_now=True)
-
-
 class PersonalAccount(models.Model):
     status = models.BooleanField(default=False)
     balance = models.FloatField()
@@ -23,19 +17,34 @@ class Measure(models.Model):
         return self.name
 
 
+class Currency(models.Model):
+    name = models.CharField()
+
+
 class Service(models.Model):
     name = models.CharField(null=True, max_length=50)
     measure = ForeignKey(Measure, on_delete=models.SET_NULL, null=True, blank=True)
+    currency = models.ForeignKey(
+        Currency, on_delete=models.SET_NULL, null=True, blank=True, default=1
+    )
+
+    def __str__(self):
+        return self.name
 
 
-class Currency(models.Model):
+class Tariffs(models.Model):
     name = models.CharField()
+    description = models.TextField()
+    updated_at = models.DateTimeField(auto_now=True)
+    services = ManyToManyField(Service, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
 
 
 class TariffService(models.Model):
     tariff = models.ForeignKey(Tariffs, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    currency = models.ManyToManyField(Currency)
     price_per_unit = models.FloatField()
 
 

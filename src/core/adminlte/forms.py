@@ -1,7 +1,7 @@
 from django import forms
-from django.forms import modelformset_factory
+from django.forms import inlineformset_factory, modelformset_factory
 
-from src.crm.models import Measure, Service
+from src.crm.models import Measure, Service, Tariffs, TariffService
 from src.user.models import User
 from src.website.models import (
     AboutUsPage,
@@ -190,11 +190,12 @@ class MeasureForm(forms.ModelForm):
 class ServiceForm(forms.ModelForm):
     class Meta:
         model = Service
-        fields = ["name", "measure"]
+        fields = ["name", "measure", "currency"]
 
         widgets = {
             "name": forms.TextInput(attrs={"class": "form-control"}),
             "measure": forms.Select(attrs={"class": "form-control"}),
+            "currency": forms.Select(attrs={"class": "form-control"}),
         }
 
 
@@ -203,4 +204,32 @@ MeasureFormSet = modelformset_factory(
 )
 ServiceFormSet = modelformset_factory(
     Service, form=ServiceForm, extra=0, can_delete=True
+)
+
+
+class TariffsForm(forms.ModelForm):
+    class Meta:
+        model = Tariffs
+        fields = ["name", "description"]
+
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+            "description": forms.Textarea(attrs={"class": "form-control"}),
+        }
+
+
+class TariffServiceForm(forms.ModelForm):
+    class Meta:
+        model = TariffService
+        fields = ["service", "price_per_unit"]
+        widgets = {
+            "service": forms.Select(attrs={"class": "form-control service-select"}),
+            "price_per_unit": forms.NumberInput(
+                attrs={"class": "form-control", "step": "0.01"}
+            ),
+        }
+
+
+TariffServiceFormSet = inlineformset_factory(
+    Tariffs, TariffService, form=TariffServiceForm, extra=0, can_delete=True
 )

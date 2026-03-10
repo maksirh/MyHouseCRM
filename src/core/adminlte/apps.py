@@ -13,9 +13,16 @@ def create_default_roles(sender, **kwargs):
         Roles.objects.get_or_create(name=role_name)
 
 
+def create_default_currency(sender, **kwargs):
+    from src.crm.models import Currency
+
+    Currency.objects.get_or_create(name="грн")
+
+
 class AdminlteConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "src.core.adminlte"
 
     def ready(self):
         post_migrate.connect(create_default_roles, sender=self)
+        post_migrate.connect(create_default_currency, sender=self)

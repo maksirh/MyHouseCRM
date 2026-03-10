@@ -7,8 +7,8 @@
 <section class="content-header">
     <h1>Тариф: {{ tariff.name|default:"Тариф 1" }}</h1>
     <ul class="breadcrumb">
-        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
-        <li><a href="{% url 'tariff_list' %}">Тарифы</a></li>
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'adminlte:tariff_list' %}">Тарифы</a></li>
         <li class="active">Тариф: {{ tariff.name|default:"Тариф 1" }}</li>
     </ul>
 </section>
@@ -18,7 +18,7 @@
         <div class="box-header with-border">
             <h3 class="box-title"></h3>
             <div class="box-tools">
-                <a href="{% url 'tariff_update' tariff.id|default:'262' %}" class="btn btn-primary btn-sm">
+                <a href="{% url 'adminlte:tariff_update' tariff.id|default:'262' %}" class="btn btn-primary btn-sm">
                     <span class="hidden-xs">Редактировать тариф</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
                 </a>
             </div>
@@ -58,7 +58,7 @@
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ item.service.name }}</td>
                                 <td>{{ item.service.unit.name }}</td>
-                                <td>{{ item.price }}</td>
+                                <td>{{ item.price_per_unit }}</td>
                                 <td>{{ item.currency|default:"грн" }}</td>
                             </tr>
                         {% empty %}

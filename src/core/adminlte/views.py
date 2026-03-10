@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import View
@@ -25,10 +26,12 @@ from src.core.adminlte.forms import (
     SeoBlockForm,
     ServiceFormSet,
     ServicePageForm,
+    TariffServiceFormSet,
+    TariffsForm,
     UserForm,
     UserProfileForm,
 )
-from src.crm.models import Measure, Service
+from src.crm.models import Measure, Service, Tariffs
 from src.user.models import Roles, User
 from src.website.models import AboutUsPage, MainPage, ServicePage
 
@@ -521,10 +524,90 @@ class ServiceEditView(View):
             measure_formset.save()
 
             return redirect("adminlte:service_edit")
-
+        else:
+            print("ПОМИЛКИ ФОРМИ ПОСЛУГИ:", service_formset.errors)
         context = {
             "service_formset": service_formset,
             "measure_formset": measure_formset,
         }
 
         return render(request, self.template_name, context)
+
+
+def tariff_update(request, pk=None):
+    if pk:
+        tariff = get_object_or_404(Tariffs, pk=pk)
+    else:
+        tariff = Tariffs()
+
+    if request.method == "POST":
+        form = TariffsForm(request.POST, instance=tariff)
+        formset = TariffServiceFormSet(request.POST, instance=tariff)
+
+        if form.is_valid() and formset.is_valid():
+            saved_tariff = form.save()
+            formset.instance = saved_tariff
+            formset.save()
+            return redirect("adminlte:tariff_list")
+    else:
+        form = TariffsForm(instance=tariff)
+        formset = TariffServiceFormSet(instance=tariff)
+
+    return render(
+        request,
+        "adminlte/tariff_edit.html",
+        {
+            "tariff": tariff,
+            "form": form,
+            "formset": formset,
+        },
+    )
+
+
+def get_service_unit(request):
+    service_id = request.GET.get("service_id")
+    if service_id:
+        service = Service.objects.filter(id=service_id).first()
+        if service:
+            return JsonResponse(
+                {
+                    "unit_name": service.measure.name if service.measure else "",
+                    "currency": service.currency.name if service.currency else "грн",
+                }
+            )
+    return JsonResponse({"unit_name": "", "currency": ""})
+
+
+class TariffListView(ListView):
+    model = Tariffs
+    template_name = "adminlte/tariffs.html"
+    context_object_name = "tariffs"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+
+        sort_by = self.request.GET.get("sort")
+
+        allowed_sort_fields = ["name", "-name", "updated_at", "-updated_at"]
+
+        if sort_by in allowed_sort_fields:
+            qs = qs.order_by(sort_by)
+        else:
+            qs = qs.order_by("-updated_at")
+
+        return qs
+
+
+class TariffDetailView(DetailView):
+    model = Tariffs
+    template_name = "adminlte/tariff_info.html"
+    context_object_name = "tariff"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["tariff_services"] = self.object.tariffservice_set.select_related(
+            "service", "service__measure", "service__currency"
+        ).all()
+
+        return context

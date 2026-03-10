@@ -8,13 +8,17 @@ from .views import (
     ServiceEditView,
     ServicePageView,
     StatisticPageView,
+    TariffDetailView,
+    TariffListView,
     UserCreateView,
     UserDeleteView,
     UserDetailView,
     UserEditView,
     UserListView,
     UserProfileView,
+    get_service_unit,
     send_user_invite,
+    tariff_update,
 )
 
 app_name = "adminlte"
@@ -34,4 +38,9 @@ urlpatterns = [
     path("user/delete/<int:pk>", UserDeleteView.as_view(), name="user_delete"),
     path("user/invite/<int:pk>", send_user_invite, name="user_invite"),
     path("service/edit/", ServiceEditView.as_view(), name="service_edit"),
+    path("tariff/list/", TariffListView.as_view(), name="tariff_list"),
+    path("tariff/create/", tariff_update, name="tariff_create"),
+    path("tariff/edit/<int:pk>", tariff_update, name="tariff_update"),
+    path("tariff/getservice/", get_service_unit, name="get_service_unit"),
+    path("tariff/detail/<int:pk>", TariffDetailView.as_view(), name="tariff_detail"),
 ]
