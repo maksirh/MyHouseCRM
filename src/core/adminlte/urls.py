@@ -4,6 +4,7 @@ from .views import (
     AboutUsPageView,
     ContactPageView,
     MainPageView,
+    PaymentDetailView,
     RolesUpdateView,
     ServiceEditView,
     ServicePageView,
@@ -43,4 +44,5 @@ urlpatterns = [
     path("tariff/edit/<int:pk>", tariff_update, name="tariff_update"),
     path("tariff/getservice/", get_service_unit, name="get_service_unit"),
     path("tariff/detail/<int:pk>", TariffDetailView.as_view(), name="tariff_detail"),
+    path("payment/detail/", PaymentDetailView.as_view(), name="payment_detail"),
 ]

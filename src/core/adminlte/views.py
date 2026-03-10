@@ -23,6 +23,8 @@ from src.core.adminlte.forms import (
     InfoItemsFormset,
     MainPageForm,
     MeasureFormSet,
+    PaymentDetail,
+    PaymentDetailForm,
     SeoBlockForm,
     ServiceFormSet,
     ServicePageForm,
@@ -611,3 +613,14 @@ class TariffDetailView(DetailView):
         ).all()
 
         return context
+
+
+class PaymentDetailView(UpdateView):
+    model = PaymentDetail
+    form_class = PaymentDetailForm
+    template_name = "adminlte/payment_details.html"
+    success_url = reverse_lazy("adminlte:payment_detail")
+
+    def get_object(self, queryset=None):
+        obj, created = PaymentDetail.objects.get_or_create(id=1)
+        return obj
