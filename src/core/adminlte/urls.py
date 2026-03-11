@@ -3,6 +3,10 @@ from django.urls import path
 from .views import (
     AboutUsPageView,
     ContactPageView,
+    CreateArticleView,
+    DeleteArticleView,
+    EditArticleView,
+    ListArticleView,
     MainPageView,
     PaymentDetailView,
     RolesUpdateView,
@@ -45,4 +49,8 @@ urlpatterns = [
     path("tariff/getservice/", get_service_unit, name="get_service_unit"),
     path("tariff/detail/<int:pk>", TariffDetailView.as_view(), name="tariff_detail"),
     path("payment/detail/", PaymentDetailView.as_view(), name="payment_detail"),
+    path("article/list/", ListArticleView.as_view(), name="article_list"),
+    path("article/edit/<int:pk>", EditArticleView.as_view(), name="article_edit"),
+    path("article/create/", CreateArticleView.as_view(), name="article_create"),
+    path("article/delete/<int:pk>", DeleteArticleView.as_view(), name="article_delete"),
 ]

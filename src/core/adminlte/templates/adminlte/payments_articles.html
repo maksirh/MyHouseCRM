@@ -1,14 +1,14 @@
 {% extends 'admin_base.html' %}
 {% load static %}
 
-{% block title %}Статьи приходов/расходов{% endblock %}
+{% block title %}Статті доходів/витрат{% endblock %}
 
 {% block content %}
 <section class="content-header">
-    <h1>Статьи приходов/расходов</h1>
+    <h1>Статті доходів/витрат</h1>
     <ul class="breadcrumb">
-        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
-        <li class="active">Статьи приходов/расходов</li>
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li class="active">Статті доходів/витрат</li>
     </ul>
 </section>
 
@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="pull-right margin-bottom">
-                <a class="btn btn-success" href="{% url 'transaction_purpose_create' %}">Добавить статью</a>
+                <a class="btn btn-success" href="{% url 'adminlte:article_create' %}">Додати статтю</a>
             </div>
         </div>
     </div>
@@ -29,78 +29,52 @@
                         <table class="table table-bordered table-hover table-striped linkedRow">
                             <thead>
                                 <tr>
-                                    <th>Название</th>
-                                    <th><a href="?sort=type">Приход/расход</a></th>
+                                    <th>Назва</th>
+                                    <th><a href="?sort=article">Прихід/витрата</a></th>
                                     <th style="width: 80px; min-width: 80px">&nbsp;</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for purpose in transaction_purposes %}
-                                    <tr data-href="{% url 'transaction_purpose_update' purpose.id %}" data-key="{{ purpose.id }}">
-                                        <td>{{ purpose.name }}</td>
+                                {% for item in articles %}
+                                    <tr data-href="{% url 'adminlte:article_edit' item.id %}" style="cursor: pointer;">
+                                        <td>{{ item.name }}</td>
                                         <td>
-                                            {% if purpose.type == 'income' %}
-                                                <span class="text text-green">Приход</span>
+                                            {% if item.article == 'I' %}
+                                                <span class="text text-green">Прихід</span>
                                             {% else %}
-                                                <span class="text text-red">Расход</span>
+                                                <span class="text text-red">Витрата</span>
                                             {% endif %}
                                         </td>
                                         <td>
                                             <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="{% url 'transaction_purpose_update' purpose.id %}" title="Редактировать" data-toggle="tooltip">
+                                                <a class="btn btn-default btn-sm" href="{% url 'adminlte:article_edit' item.id %}" title="Редагувати" data-toggle="tooltip">
                                                     <i class="fa fa-pencil"></i>
                                                 </a>
 
-                                                {% if purpose.is_used %}
-                                                    <button class="btn btn-default btn-sm disabled" onclick="alert('Этот элемент используется в системе. Его нельзя удалить.');" title="Удалить" data-toggle="tooltip">
+                                                {# {% if item.is_used %} #}
+                                                {# {% else %} #}
+
+                                                <form action="{% url 'adminlte:article_delete' item.id %}" method="post" style="display:inline;" onsubmit="return confirm('Ви впевнені, що хочете видалити цю статтю?');">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-default btn-sm" title="Видалити" data-toggle="tooltip">
                                                         <i class="fa fa-trash"></i>
                                                     </button>
-                                                {% else %}
-                                                    <a class="btn btn-default btn-sm" href="{% url 'transaction_purpose_delete' purpose.id %}" title="Удалить" data-toggle="tooltip" data-method="post" data-confirm="Вы уверены, что хотите удалить этот элемент?">
-                                                        <i class="fa fa-trash"></i>
-                                                    </a>
-                                                {% endif %}
+                                                </form>
+
+                                                {# {% endif %} #}
                                             </div>
                                         </td>
                                     </tr>
                                 {% empty %}
-                                    <tr data-href="#">
-                                        <td>Зарплата дворнику</td>
-                                        <td><span class="text text-red">Расход</span></td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
-                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr data-href="#">
-                                        <td>Коммунальный платёж</td>
-                                        <td><span class="text text-green">Приход</span></td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
-                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr data-href="#">
-                                        <td>Всякое</td>
-                                        <td><span class="text text-green">Приход</span></td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
-                                                <button class="btn btn-default btn-sm disabled" onclick="alert('Этот элемент используется в системе. Его нельзя удалить.');" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></button>
-                                            </div>
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted" style="padding: 20px;">
+                                            Статті ще не додані. <a href="{% url 'adminlte:article_create' %}">Створити першу статтю</a>.
                                         </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
-
-                    <div class="box-footer clearfix">
-                        </div>
                 </div>
             </div>
         </div>
@@ -112,6 +86,12 @@
 <script>
 $(function () {
     $('[data-toggle="tooltip"]').tooltip();
+
+    $('tr[data-href]').on('click', function(e) {
+        if (!$(e.target).closest('a, button').length) {
+            window.location = $(this).data('href');
+        }
+    });
 });
 </script>
 {% endblock %}

@@ -80,7 +80,7 @@ class Receipts(models.Model):
 
 class Article(models.Model):
     ARTICLE_TYPES = (("I", "Прихід"), ("E", "Витрата"))
-    name = models.CharField()
+    name = models.CharField(max_length=128)
     article = models.CharField(choices=ARTICLE_TYPES, max_length=2)
 
 

@@ -1,39 +1,49 @@
 {% extends 'admin_base.html' %}
 {% load static %}
 
-{% block title %}Новая статья{% endblock %}
+{% block title %}
+    {% if form.instance.pk %}Редагування статті: {{ form.instance.name }}{% else %}Нова стаття{% endif %}
+{% endblock %}
 
 {% block content %}
 <section class="content-header">
-    <h1>Новая статья</h1>
+    <h1>
+        {% if form.instance.pk %}
+            Редагування статті: {{ form.instance.name }}
+        {% else %}
+            Нова стаття
+        {% endif %}
+    </h1>
     <ul class="breadcrumb">
-        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
-        <li><a href="{% url 'transaction_purpose_list' %}">Статьи приходов/расходов</a></li>
-        <li class="active">Новая статья</li>
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li><a href="{% url 'adminlte:article_list' %}">Статті доходів/витрат</a></li>
+        <li class="active">{% if form.instance.pk %}Редагування{% else %}Нова стаття{% endif %}</li>
     </ul>
 </section>
 
 <section class="content">
     <div class="box">
         <div class="box-body">
-            <form id="w0" action="{% if purpose %}{% url 'transaction_purpose_update' purpose.id %}{% else %}{% url 'transaction_purpose_create' %}{% endif %}" method="post">
+            <form id="w0" action="" method="post">
                 {% csrf_token %}
 
                 <div class="row">
                     <div class="col-xs-12 col-lg-7">
-                        <div class="form-group field-transactionpurpose-name required">
-                            <label class="control-label" for="transactionpurpose-name">Название</label>
-                            <input type="text" id="transactionpurpose-name" class="form-control" name="name" value="{{ purpose.name|default:'' }}" aria-required="true" required>
+
+                        <div class="form-group field-transactionpurpose-name required {% if form.name.errors %}has-error{% endif %}">
+                            <label class="control-label" for="{{ form.name.id_for_label }}">Назва</label>
+
+                            {{ form.name }}
+
                             <div class="help-block text-danger">{{ form.name.errors }}</div>
                         </div>
 
-                        <div class="form-group field-transactionpurpose-type">
-                            <label class="control-label" for="transactionpurpose-type">Приход/расход</label>
-                            <select id="transactionpurpose-type" class="form-control" name="type">
-                                <option value="income" {% if purpose.type == 'income' %}selected{% endif %}>Приход</option>
-                                <option value="expense" {% if purpose.type == 'expense' %}selected{% endif %}>Расход</option>
-                            </select>
-                            <div class="help-block text-danger">{{ form.type.errors }}</div>
+                        <div class="form-group field-transactionpurpose-type {% if form.article.errors %}has-error{% endif %}">
+                            <label class="control-label" for="{{ form.article.id_for_label }}">Прихід/витрата</label>
+
+                            {{ form.article }}
+
+                            <div class="help-block text-danger">{{ form.article.errors }}</div>
                         </div>
                     </div>
                 </div>
@@ -41,8 +51,8 @@
                 <div class="row">
                     <div class="col-xs-12 text-right">
                         <div class="form-group">
-                            <a href="{% url 'transaction_purpose_list' %}" class="btn btn-default">Отменить</a>
-                            <button type="submit" class="btn btn-success">Сохранить</button>
+                            <a href="{% url 'adminlte:article_list' %}" class="btn btn-default">Скасувати</a>
+                            <button type="submit" class="btn btn-success">Зберегти</button>
                         </div>
                     </div>
                 </div>

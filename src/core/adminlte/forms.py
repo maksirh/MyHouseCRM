@@ -1,7 +1,14 @@
 from django import forms
 from django.forms import inlineformset_factory, modelformset_factory
 
-from src.crm.models import Measure, PaymentDetail, Service, Tariffs, TariffService
+from src.crm.models import (
+    Article,
+    Measure,
+    PaymentDetail,
+    Service,
+    Tariffs,
+    TariffService,
+)
 from src.user.models import User
 from src.website.models import (
     AboutUsPage,
@@ -243,4 +250,15 @@ class PaymentDetailForm(forms.ModelForm):
         widgets = {
             "name": forms.TextInput(attrs={"class": "form-control"}),
             "description": forms.Textarea(attrs={"class": "form-control"}),
+        }
+
+
+class ArticleForm(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = ["name", "article"]
+
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+            "article": forms.Select(attrs={"class": "form-control"}),
         }

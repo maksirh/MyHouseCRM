@@ -17,6 +17,7 @@ from django.views.generic import (
 
 from src.core.adminlte.forms import (
     AboutUsPageForm,
+    ArticleForm,
     ContactsPage,
     ContactsPageForm,
     GalleryFormSet,
@@ -33,7 +34,7 @@ from src.core.adminlte.forms import (
     UserForm,
     UserProfileForm,
 )
-from src.crm.models import Measure, Service, Tariffs
+from src.crm.models import Article, Measure, Service, Tariffs
 from src.user.models import Roles, User
 from src.website.models import AboutUsPage, MainPage, ServicePage
 
@@ -624,3 +625,28 @@ class PaymentDetailView(UpdateView):
     def get_object(self, queryset=None):
         obj, created = PaymentDetail.objects.get_or_create(id=1)
         return obj
+
+
+class ListArticleView(ListView):
+    model = Article
+    template_name = "adminlte/payments_articles.html"
+    context_object_name = "articles"
+
+
+class CreateArticleView(CreateView):
+    model = Article
+    form_class = ArticleForm
+    template_name = "adminlte/payment_article_edit.html"
+    success_url = reverse_lazy("adminlte:article_list")
+
+
+class EditArticleView(UpdateView):
+    model = Article
+    form_class = ArticleForm
+    template_name = "adminlte/payment_article_edit.html"
+    success_url = reverse_lazy("adminlte:article_list")
+
+
+class DeleteArticleView(DeleteView):
+    model = Article
+    success_url = reverse_lazy("adminlte:article_list")
