@@ -20,12 +20,16 @@ from src.core.adminlte.forms import (
     ArticleForm,
     ContactsPage,
     ContactsPageForm,
+    FloorFormSet,
     GalleryFormSet,
+    HouseForm,
+    HouseUserFormSet,
     InfoItemsFormset,
     MainPageForm,
     MeasureFormSet,
     PaymentDetail,
     PaymentDetailForm,
+    SectionFormSet,
     SeoBlockForm,
     ServiceFormSet,
     ServicePageForm,
@@ -35,6 +39,7 @@ from src.core.adminlte.forms import (
     UserProfileForm,
 )
 from src.crm.models import Article, Measure, Service, Tariffs
+from src.house.models import House
 from src.user.models import Roles, User
 from src.website.models import AboutUsPage, MainPage, ServicePage
 
@@ -650,3 +655,123 @@ class EditArticleView(UpdateView):
 class DeleteArticleView(DeleteView):
     model = Article
     success_url = reverse_lazy("adminlte:article_list")
+
+
+class HouseView(View):
+    template_name = "adminlte/edit_house.html"
+
+    def get_object(self, pk):
+        if pk:
+            return get_object_or_404(House, pk=pk)
+        return House()
+
+    def get(self, request, pk=None):
+        house = self.get_object(pk)
+
+        form = HouseForm(instance=house)
+        section_formset = SectionFormSet(instance=house, prefix="sections")
+        floor_formset = FloorFormSet(instance=house, prefix="floors")
+        user_formset = HouseUserFormSet(instance=house, prefix="users")
+
+        context = {
+            "house": house,
+            "form": form,
+            "section_formset": section_formset,
+            "floor_formset": floor_formset,
+            "user_formset": user_formset,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, pk=None):
+        house = self.get_object(pk)
+
+        form = HouseForm(request.POST, request.FILES, instance=house)
+        section_formset = SectionFormSet(
+            request.POST, instance=house, prefix="sections"
+        )
+        floor_formset = FloorFormSet(request.POST, instance=house, prefix="floors")
+        user_formset = HouseUserFormSet(request.POST, instance=house, prefix="users")
+
+        if (
+            form.is_valid()
+            and section_formset.is_valid()
+            and floor_formset.is_valid()
+            and user_formset.is_valid()
+        ):
+            saved_house = form.save()
+
+            section_formset.instance = saved_house
+            section_formset.save()
+
+            floor_formset.instance = saved_house
+            floor_formset.save()
+
+            user_formset.instance = saved_house
+            user_formset.save()
+
+            return redirect("adminlte:house_list")
+
+        context = {
+            "house": house,
+            "form": form,
+            "section_formset": section_formset,
+            "floor_formset": floor_formset,
+            "user_formset": user_formset,
+        }
+        return render(request, self.template_name, context)
+
+
+def get_user_role(request):
+    user_id = request.GET.get("user_id")
+    if user_id:
+        try:
+            user = User.objects.select_related("role").get(pk=user_id)
+            role_name = user.role.name if user.role else "Без ролі"
+
+            return JsonResponse({"role_name": role_name})
+        except User.DoesNotExist:
+            pass
+
+    return JsonResponse({"role_name": "Помилка"}, status=400)
+
+
+class HouseListView(ListView):
+    model = House
+    template_name = "adminlte/house_list.html"
+    paginate_by = 10
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+
+        name = self.request.GET.get("name")
+        address = self.request.GET.get("address")
+        sort_by = self.request.GET.get("sort")
+
+        if name:
+            qs = qs.filter(name__icontains=name)
+        if address:
+            qs = qs.filter(address__icontains=address)
+
+        allowed_sort_fields = ["name", "-name", "address", "-address"]
+        if sort_by in allowed_sort_fields:
+            qs = qs.order_by(sort_by)
+        else:
+            qs = qs.order_by("-id")
+
+        return qs
+
+
+class HouseDetailView(DetailView):
+    model = House
+    template_name = "adminlte/house_info.html"
+    context_object_name = "house"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+
+        return qs.prefetch_related("users")
+
+
+class HouseDeleteView(DeleteView):
+    model = House
+    success_url = reverse_lazy("adminlte:house_list")

@@ -6,13 +6,13 @@ from src.user.models import User
 
 class House(models.Model):
     name = models.CharField(max_length=100)
-    address = models.CharField()
-    main_image = models.ImageField(upload_to="images/")
-    image1 = models.ImageField(upload_to="images/")
-    image2 = models.ImageField(upload_to="images/")
-    image3 = models.ImageField(upload_to="images/")
-    image4 = models.ImageField(upload_to="images/")
-    users = ManyToManyField(User)
+    address = models.CharField(max_length=255)
+    main_image = models.ImageField(upload_to="images/", null=True, blank=True)
+    image1 = models.ImageField(upload_to="images/", null=True, blank=True)
+    image2 = models.ImageField(upload_to="images/", null=True, blank=True)
+    image3 = models.ImageField(upload_to="images/", null=True, blank=True)
+    image4 = models.ImageField(upload_to="images/", null=True, blank=True)
+    users = ManyToManyField(User, blank=True)
 
 
 class Section(models.Model):
@@ -25,12 +25,21 @@ class Floor(models.Model):
     house = models.ForeignKey(House, on_delete=models.CASCADE)
 
 
-class Apartments(models.Model):
+class Apartment(models.Model):
     account = models.ForeignKey("crm.PersonalAccount", on_delete=models.CASCADE)
     number = models.IntegerField()
-    area = models.FloatField()
+    area = models.DecimalField(max_digits=7, decimal_places=2)
     house = models.ForeignKey(House, on_delete=models.CASCADE)
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    floor = models.ForeignKey(Floor, on_delete=models.CASCADE)
-    owner = ForeignKey(User, on_delete=models.CASCADE)
-    tariff = models.ForeignKey("crm.Tariffs", on_delete=models.CASCADE)
+    section = models.ForeignKey(
+        Section, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    floor = models.ForeignKey(Floor, on_delete=models.SET_NULL, null=True, blank=True)
+    owner = ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    tariff = models.ForeignKey(
+        "crm.Tariffs", on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+
+class HouseUser(models.Model):
+    house = models.ForeignKey(House, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)

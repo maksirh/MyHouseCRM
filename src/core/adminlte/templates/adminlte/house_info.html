@@ -1,17 +1,17 @@
 {% extends 'admin_base.html' %}
 {% load static %}
 
-{% block title %}{{ house.name|default:"Дом 2" }}{% endblock %}
+{% block title %}{{ house.name }}{% endblock %}
 
 {% block content %}
 <section class="content-header">
     <h1>
-        {{ house.name|default:"Дом 2" }}
+        {{ house.name }}
     </h1>
     <ul class="breadcrumb">
-        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
-        <li><a href="{% url 'house_list' %}">Дома</a></li>
-        <li class="active">{{ house.name|default:"Дом 2" }}</li>
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li><a href="{% url 'adminlte:house_list' %}">Дома</a></li>
+        <li class="active">{{ house.name }}</li>
     </ul>
 </section>
 
@@ -20,8 +20,8 @@
         <div class="box-header with-border">
             <h3 class="box-title"></h3>
             <div class="box-tools">
-                <a href="/admin/house/update/{{ house.id|default:'414' }}" class="btn btn-primary btn-sm">
-                    <span class="hidden-xs">Редактировать дом</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                <a href="{% url 'adminlte:house_update' house.id %}" class="btn btn-primary btn-sm">
+                    <span class="hidden-xs">Редагувати дім</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
                 </a>
             </div>
         </div>
@@ -32,33 +32,32 @@
                     <table class="table table-bordered table-striped table-view">
                         <tbody>
                             <tr>
-                                <td>Название</td>
-                                <td>{{ house.name|default:"Дом 2" }}</td>
+                                <td>Назва</td>
+                                <td>{{ house.name }}</td>
                             </tr>
                             <tr>
-                                <td>Адрес</td>
-                                <td>{{ house.address|default:"ул. Барбина" }}</td>
+                                <td>Адреса</td>
+                                <td>{{ house.address }}</td>
                             </tr>
                             <tr>
-                                <td>Секций</td>
-                                <td>{{ house.sections.count|default:"1" }}</td>
+                                <td>Секції</td>
+                                <td>{{ house.section_set.count }}</td>
                             </tr>
                             <tr>
-                                <td>Этажей</td>
-                                <td>{{ house.floors.count|default:"1" }}</td>
+                                <td>Поверхи</td>
+                                <td>{{ house.floor_set.count }}</td>
                             </tr>
                             <tr>
-                                <td>Пользователи</td>
+                                <td>Користувачі</td>
                                 <td>
                                     {% for admin_user in house.users.all %}
                                         <p class="no-margin">
-                                            <strong>{{ admin_user.role.name|default:"Электрик" }}:</strong>
-                                            <a href="{% url 'admin_detail' admin_user.id %}">{{ admin_user.get_full_name }}</a>
+                                            <strong>Користувач:</strong>
+                                            <a href="#">{{ admin_user.get_full_name|default:admin_user.username }}</a>
                                         </p>
                                     {% empty %}
-                                        <p class="no-margin">
-                                            <strong>Электрик:</strong>
-                                            <a href="#">Электрик 2 qwerty</a>
+                                        <p class="no-margin text-muted">
+                                            Користувачі не знайдені
                                         </p>
                                     {% endfor %}
                                 </td>
@@ -70,10 +69,18 @@
                 <div class="col-xs-12 col-lg-8">
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
-                            {% if house.image1 %}
-                                <img src="{{ house.image1.url }}" class="img-responsive largeImg margin-bottom-30" alt="Фото 1">
+                            {% if house.main_image %}
+                                <img src="{{ house.main_image.url }}" class="img-responsive largeImg margin-bottom-30" alt="Главное фото">
                             {% else %}
-                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F414%2Fimage1.jpg&w=522&h=350&fit=crop" class="img-responsive largeImg margin-bottom-30" alt="">
+                                <img src="{% static 'admin/img/placeholder.jpg' %}" class="img-responsive largeImg margin-bottom-30" alt="Нет фото">
+                            {% endif %}
+                        </div>
+
+                        <div class="col-xs-6 col-md-3">
+                            {% if house.image1 %}
+                                <img src="{{ house.image1.url }}" class="img-responsive smallImg margin-bottom-30" alt="Фото 1">
+                            {% else %}
+                                <img src="{% static 'admin/img/placeholder.jpg' %}" class="img-responsive smallImg margin-bottom-30" alt="Нет фото">
                             {% endif %}
                         </div>
 
@@ -81,7 +88,7 @@
                             {% if house.image2 %}
                                 <img src="{{ house.image2.url }}" class="img-responsive smallImg margin-bottom-30" alt="Фото 2">
                             {% else %}
-                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2FHouse%2F414%2Fimage2.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                                <img src="{% static 'admin/img/placeholder.jpg' %}" class="img-responsive smallImg margin-bottom-30" alt="Нет фото">
                             {% endif %}
                         </div>
 
@@ -89,7 +96,7 @@
                             {% if house.image3 %}
                                 <img src="{{ house.image3.url }}" class="img-responsive smallImg margin-bottom-30" alt="Фото 3">
                             {% else %}
-                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2Fplaceholder.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                                <img src="{% static 'admin/img/placeholder.jpg' %}" class="img-responsive smallImg margin-bottom-30" alt="Нет фото">
                             {% endif %}
                         </div>
 
@@ -97,15 +104,7 @@
                             {% if house.image4 %}
                                 <img src="{{ house.image4.url }}" class="img-responsive smallImg margin-bottom-30" alt="Фото 4">
                             {% else %}
-                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2Fplaceholder.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
-                            {% endif %}
-                        </div>
-
-                        <div class="col-xs-6 col-md-3">
-                            {% if house.image5 %}
-                                <img src="{{ house.image5.url }}" class="img-responsive smallImg margin-bottom-30" alt="Фото 5">
-                            {% else %}
-                                <img src="https://myhouse24.demodev.cc/site/glide?path=%2Fupload%2Fplaceholder.jpg&w=248&h=160&fit=crop" class="img-responsive smallImg margin-bottom-30" alt="">
+                                <img src="{% static 'admin/img/placeholder.jpg' %}" class="img-responsive smallImg margin-bottom-30" alt="Нет фото">
                             {% endif %}
                         </div>
                     </div>

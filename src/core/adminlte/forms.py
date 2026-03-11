@@ -1,5 +1,6 @@
 from django import forms
-from django.forms import inlineformset_factory, modelformset_factory
+from django.forms import modelformset_factory
+from django.forms.models import inlineformset_factory
 
 from src.crm.models import (
     Article,
@@ -9,6 +10,7 @@ from src.crm.models import (
     Tariffs,
     TariffService,
 )
+from src.house.models import Floor, House, HouseUser, Section
 from src.user.models import User
 from src.website.models import (
     AboutUsPage,
@@ -262,3 +264,79 @@ class ArticleForm(forms.ModelForm):
             "name": forms.TextInput(attrs={"class": "form-control"}),
             "article": forms.Select(attrs={"class": "form-control"}),
         }
+
+
+class HouseForm(forms.ModelForm):
+    class Meta:
+        model = House
+        fields = [
+            "name",
+            "address",
+            "main_image",
+            "image1",
+            "image2",
+            "image3",
+            "image4",
+        ]
+
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+            "address": forms.TextInput(attrs={"class": "form-control"}),
+            "main_image": forms.FileInput(attrs={"class": "form-control"}),
+            "image1": forms.FileInput(attrs={"class": "form-control"}),
+            "image2": forms.FileInput(attrs={"class": "form-control"}),
+            "image3": forms.FileInput(attrs={"class": "form-control"}),
+            "image4": forms.FileInput(attrs={"class": "form-control"}),
+        }
+
+
+class UserModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        full_name = f"{obj.first_name} {obj.last_name}".strip()
+        return full_name if full_name else obj.username
+
+
+class HouseUserForm(forms.ModelForm):
+    user = UserModelChoiceField(
+        queryset=User.objects.all(),
+        widget=forms.Select(
+            attrs={"class": "form-control useradmin-select", "prompt": "Выберите..."}
+        ),
+    )
+
+    class Meta:
+        model = HouseUser
+        fields = ["user"]
+
+
+HouseUserFormSet = inlineformset_factory(
+    House, HouseUser, form=HouseUserForm, extra=0, can_delete=True
+)
+
+
+class SectionForm(forms.ModelForm):
+    class Meta:
+        model = Section
+        fields = ["name"]
+
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+        }
+
+
+class FloorForm(forms.ModelForm):
+    class Meta:
+        model = Floor
+        fields = ["name"]
+
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+        }
+
+
+SectionFormSet = inlineformset_factory(
+    House, Section, form=SectionForm, extra=0, can_delete=True
+)
+FloorFormSet = inlineformset_factory(
+    House, Floor, form=FloorForm, extra=0, can_delete=True
+)

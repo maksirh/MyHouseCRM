@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField
 
-from src.house.models import Apartments
+from src.house.models import Apartment
 from src.user.models import Roles, User
 
 
@@ -50,7 +50,7 @@ class TariffService(models.Model):
 
 class Counter(models.Model):
     serial_number = models.IntegerField()
-    apartment = ForeignKey(Apartments, on_delete=models.CASCADE)
+    apartment = ForeignKey(Apartment, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
 
 
@@ -70,7 +70,7 @@ class ServiceReceipts(models.Model):
 class Receipts(models.Model):
     STATUSES = (("P", "Оплачена"), ("N", "Неоплачена"), ("P", "Частково оплачена"))
     service_receipt = ManyToManyField(ServiceReceipts)
-    apartment = ForeignKey(Apartments, on_delete=models.CASCADE)
+    apartment = ForeignKey(Apartment, on_delete=models.CASCADE)
     number = models.IntegerField()
     date = models.DateField()
     status = models.CharField(choices=STATUSES, max_length=2)
@@ -106,7 +106,7 @@ class Message(models.Model):
 class CallMaster(models.Model):
     STATUSES = (("N", "Нове"), ("W", "В роботі"), ("C", "Виконано"))
     status = models.CharField(choices=STATUSES, max_length=2)
-    apartment = ForeignKey(Apartments, on_delete=models.CASCADE)
+    apartment = ForeignKey(Apartment, on_delete=models.CASCADE)
     master_type = ForeignKey(Roles, on_delete=models.CASCADE)
     master = ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     description = models.TextField()

@@ -7,7 +7,7 @@
 <section class="content-header">
     <h1>Дома</h1>
     <ul class="breadcrumb">
-        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Главная</a></li>
         <li class="active">Дома</li>
     </ul>
 </section>
@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="pull-right margin-bottom">
-                <a class="btn btn-success" href="{% url 'house_create' %}">Добавить дом</a>
+                <a class="btn btn-success" href="{% url 'adminlte:house_create' %}">Добавить дом</a>
             </div>
         </div>
     </div>
@@ -27,7 +27,7 @@
                 <div class="box-header with-border">
                     <h3 class="box-title"></h3>
                     <div class="box-tools">
-                        <a href="{% url 'house_list' %}" class="btn btn-default btn-sm">
+                        <a href="{% url 'adminlte:house_list' %}" class="btn btn-default btn-sm">
                             <span class="hidden-xs">Очистить</span><i class="fa fa-eraser visible-xs" aria-hidden="true"></i>
                         </a>
                     </div>
@@ -35,88 +35,80 @@
 
                 <div id="w0" class="grid-view">
                     <div class="box-body table-responsive no-padding">
-                        <table class="table table-bordered table-hover table-striped linkedRow">
-                            <thead>
-                                <tr>
-                                    <th style="width: 40px; min-width: 40px">#</th>
-                                    <th><a href="?sort=name">Название</a></th>
-                                    <th><a href="?sort=address">Адрес</a></th>
-                                    <th style="width: 80px; min-width: 80px">&nbsp;</th>
-                                </tr>
-                                <tr id="w0-filters" class="filters">
-                                    <form method="GET">
+                        <form method="GET" id="filter-form">
+                            <table class="table table-bordered table-hover table-striped linkedRow">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40px; min-width: 40px">#</th>
+                                        <th><a href="?sort={% if request.GET.sort == 'name' %}-name{% else %}name{% endif %}&name={{ request.GET.name|default:'' }}&address={{ request.GET.address|default:'' }}">Название</a></th>
+                                        <th><a href="?sort={% if request.GET.sort == 'address' %}-address{% else %}address{% endif %}&name={{ request.GET.name|default:'' }}&address={{ request.GET.address|default:'' }}">Адрес</a></th>
+                                        <th style="width: 80px; min-width: 80px">&nbsp;</th>
+                                    </tr>
+                                    <tr id="w0-filters" class="filters">
                                         <td>&nbsp;</td>
-                                        <td><input type="text" class="form-control" name="name" value="{{ request.GET.name }}"></td>
-                                        <td><input type="text" class="form-control" name="address" value="{{ request.GET.address }}"></td>
+                                        <td><input type="text" class="form-control" name="name" value="{{ request.GET.name|default:'' }}" onchange="document.getElementById('filter-form').submit();"></td>
+                                        <td><input type="text" class="form-control" name="address" value="{{ request.GET.address|default:'' }}" onchange="document.getElementById('filter-form').submit();"></td>
                                         <td>&nbsp;</td>
-                                    </form>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for house in houses %}
-                                    <tr data-href="{% url 'house_detail' house.id %}" data-key="{{ house.id }}">
-                                        <td>{{ forloop.counter }}</td>
-                                        <td>{{ house.name|default:"" }}</td>
-                                        <td>{{ house.address|default:"" }}</td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="{% url 'house_update' house.id %}" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
-                                                <a class="btn btn-default btn-sm" href="{% url 'house_delete' house.id %}" title="Удалить" data-toggle="tooltip" data-method="post" data-confirm="Вы уверены, что хотите удалить этот элемент?"><i class="fa fa-trash"></i></a>
-                                            </div>
-                                        </td>
                                     </tr>
-                                {% empty %}
-                                    <tr data-href="/admin/house/414" data-key="414">
-                                        <td>1</td>
-                                        <td>Дом 2</td>
-                                        <td>ул. Барбина</td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
-                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr data-href="/admin/house/412" data-key="412">
-                                        <td>2</td>
-                                        <td>Nan's House</td>
-                                        <td>st. Saint Maria, 34</td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
-                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr data-href="/admin/house/377" data-key="377">
-                                        <td>3</td>
-                                        <td>ЖК Акрополь</td>
-                                        <td>Фонтанская дорога, 25</td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
-                                                <a class="btn btn-default btn-sm" href="#" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {% for house in object_list %}
+                                        <tr data-href="{% url 'adminlte:house_detail' house.id %}" style="cursor: pointer;">
+                                            <td>{{ house.id }}</td>
+                                            <td>{{ house.name|default:"" }}</td>
+                                            <td>{{ house.address|default:"" }}</td>
+                                            <td>
+                                                <div class="btn-group pull-right">
+                                                    <a class="btn btn-default btn-sm" href="{% url 'adminlte:house_update' house.id %}" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                    <form action="{% url 'adminlte:house_delete' house.id %}" method="post" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить этот элемент?');">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-default btn-sm" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted" style="padding: 20px;">
+                                                Дома не найдены.
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </form>
                     </div>
 
                     <div class="box-footer clearfix">
+                        {% if is_paginated %}
                         <ul class="pagination pagination-sm no-margin pull-right">
-                            <li class="prev disabled"><span>&laquo;</span></li>
-                            <li class="active"><a href="?page=1">1</a></li>
-                            <li><a href="?page=2">2</a></li>
-                            <li><a href="?page=3">3</a></li>
-                            <li class="next"><a href="?page=2">&raquo;</a></li>
+                            {% if page_obj.has_previous %}
+                                <li class="prev"><a href="?page={{ page_obj.previous_page_number }}&sort={{ request.GET.sort|default:'' }}&name={{ request.GET.name|default:'' }}&address={{ request.GET.address|default:'' }}"><span>&laquo;</span></a></li>
+                            {% else %}
+                                <li class="prev disabled"><span>&laquo;</span></li>
+                            {% endif %}
+
+                            {% for i in paginator.page_range %}
+                                {% if page_obj.number == i %}
+                                    <li class="active"><a href="?page={{ i }}&sort={{ request.GET.sort|default:'' }}&name={{ request.GET.name|default:'' }}&address={{ request.GET.address|default:'' }}">{{ i }}</a></li>
+                                {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                                    <li><a href="?page={{ i }}&sort={{ request.GET.sort|default:'' }}&name={{ request.GET.name|default:'' }}&address={{ request.GET.address|default:'' }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="next"><a href="?page={{ page_obj.next_page_number }}&sort={{ request.GET.sort|default:'' }}&name={{ request.GET.name|default:'' }}&address={{ request.GET.address|default:'' }}">&raquo;</a></li>
+                            {% else %}
+                                <li class="next disabled"><span>&raquo;</span></li>
+                            {% endif %}
                         </ul>
+                        {% endif %}
                     </div>
+
                 </div>
 
                 <div class="box-footer">
-                    <div>Количество домов: <span class="text-bold">{{ houses|length|default:"110" }}</span></div>
+                    <div>Количество домов: <span class="text-bold">{{ paginator.count|default:0 }}</span></div>
                 </div>
             </div>
         </div>
@@ -128,6 +120,12 @@
 <script>
 $(function () {
     $('[data-toggle="tooltip"]').tooltip();
+
+    $('tr[data-href]').on('click', function(e) {
+        if (!$(e.target).closest('a, button, input').length) {
+            window.location = $(this).data('href');
+        }
+    });
 });
 </script>
 {% endblock %}
