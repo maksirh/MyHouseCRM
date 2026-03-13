@@ -17,6 +17,7 @@ from django.views.generic import (
 
 from src.core.adminlte.forms import (
     AboutUsPageForm,
+    ApartmentForm,
     ArticleForm,
     ContactsPage,
     ContactsPageForm,
@@ -39,7 +40,7 @@ from src.core.adminlte.forms import (
     UserProfileForm,
 )
 from src.crm.models import Article, Measure, Service, Tariffs
-from src.house.models import House
+from src.house.models import Apartment, Floor, House, Section
 from src.user.models import Roles, User
 from src.website.models import AboutUsPage, MainPage, ServicePage
 
@@ -775,3 +776,117 @@ class HouseDetailView(DetailView):
 class HouseDeleteView(DeleteView):
     model = House
     success_url = reverse_lazy("adminlte:house_list")
+
+
+class ApartmentCreateView(CreateView):
+    model = Apartment
+    template_name = "adminlte/apartment_edit.html"
+    form_class = ApartmentForm
+    success_url = reverse_lazy("adminlte:apartment_list")
+
+
+class ApartmentUpdateView(UpdateView):
+    model = Apartment
+    template_name = "adminlte/apartment_edit.html"
+    form_class = ApartmentForm
+    success_url = reverse_lazy("adminlte:apartment_list")
+
+
+class ApartmentDeleteView(DeleteView):
+    model = Apartment
+    success_url = reverse_lazy("adminlte:apartment_list")
+
+
+class ApartmentListView(ListView):
+    model = Apartment
+    template_name = "adminlte/apartment_list.html"
+    paginate_by = 10
+    context_object_name = "flats"
+
+    def get_queryset(self):
+        qs = (
+            super()
+            .get_queryset()
+            .select_related("house", "section", "floor", "owner", "account")
+        )
+
+        number = self.request.GET.get("number")
+        house_id = self.request.GET.get("house_id")
+        section_id = self.request.GET.get("section_id")
+        floor_id = self.request.GET.get("floor_id")
+        user_id = self.request.GET.get("user_id")
+        has_debt = self.request.GET.get("has_debt")
+        sort = self.request.GET.get("sort")
+
+        if number:
+            qs = qs.filter(number__icontains=number)
+        if house_id:
+            qs = qs.filter(house_id=house_id)
+        if section_id:
+            qs = qs.filter(section_id=section_id)
+        if floor_id:
+            qs = qs.filter(floor_id=floor_id)
+        if user_id:
+            qs = qs.filter(owner_id=user_id)
+
+        if has_debt == "1":
+            qs = qs.filter(account__balance__lt=0)
+        elif has_debt == "0":
+            qs = qs.filter(account__balance__gte=0)
+
+        allowed_sorts = {
+            "number": "number",
+            "-number": "-number",
+            "house": "house__name",
+            "-house": "-house__name",
+            "section": "section__name",
+            "-section": "-section__name",
+            "floor": "floor__name",
+            "-floor": "-floor__name",
+            "owner": "owner__first_name",
+            "-owner": "-owner__first_name",
+        }
+
+        if sort in allowed_sorts:
+            qs = qs.order_by(allowed_sorts[sort])
+        else:
+            qs = qs.order_by("-id")
+
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["houses"] = House.objects.all()
+        context["owners"] = User.objects.filter(apartment__isnull=False).distinct()
+
+        house_id = self.request.GET.get("house_id")
+        if house_id:
+            context["filter_sections"] = Section.objects.filter(house_id=house_id)
+            context["filter_floors"] = Floor.objects.filter(house_id=house_id)
+
+        return context
+
+
+class ApartmentDetailView(DetailView):
+    model = Apartment
+    template_name = "adminlte/apartment.html"
+    context_object_name = "flat"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .select_related("house", "section", "floor", "owner", "tariff", "account")
+        )
+
+
+def get_sections_and_floors(request):
+    house_id = request.GET.get("house_id")
+
+    if house_id:
+        sections = list(Section.objects.filter(house_id=house_id).values("id", "name"))
+        floors = list(Floor.objects.filter(house_id=house_id).values("id", "name"))
+
+        return JsonResponse({"sections": sections, "floors": floors})
+
+    return JsonResponse({"sections": [], "floors": []})

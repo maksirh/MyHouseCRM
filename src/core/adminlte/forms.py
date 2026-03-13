@@ -10,7 +10,7 @@ from src.crm.models import (
     Tariffs,
     TariffService,
 )
-from src.house.models import Floor, House, HouseUser, Section
+from src.house.models import Apartment, Floor, House, HouseUser, Section
 from src.user.models import User
 from src.website.models import (
     AboutUsPage,
@@ -340,3 +340,18 @@ SectionFormSet = inlineformset_factory(
 FloorFormSet = inlineformset_factory(
     House, Floor, form=FloorForm, extra=0, can_delete=True
 )
+
+
+class ApartmentForm(forms.ModelForm):
+    class Meta:
+        model = Apartment
+        fields = ["number", "area", "house", "section", "floor", "owner", "tariff"]
+        widgets = {
+            "number": forms.NumberInput(attrs={"class": "form-control"}),
+            "area": forms.NumberInput(attrs={"class": "form-control"}),
+            "house": forms.Select(attrs={"class": "form-control"}),
+            "section": forms.Select(attrs={"class": "form-control"}),
+            "floor": forms.Select(attrs={"class": "form-control"}),
+            "owner": forms.Select(attrs={"class": "form-control"}),
+            "tariff": forms.Select(attrs={"class": "form-control"}),
+        }

@@ -2,6 +2,11 @@ from django.urls import path
 
 from .views import (
     AboutUsPageView,
+    ApartmentCreateView,
+    ApartmentDeleteView,
+    ApartmentDetailView,
+    ApartmentListView,
+    ApartmentUpdateView,
     ContactPageView,
     CreateArticleView,
     DeleteArticleView,
@@ -25,6 +30,7 @@ from .views import (
     UserEditView,
     UserListView,
     UserProfileView,
+    get_sections_and_floors,
     get_service_unit,
     get_user_role,
     send_user_invite,
@@ -64,4 +70,26 @@ urlpatterns = [
     path("house/edit/<int:pk>/", HouseView.as_view(), name="house_update"),
     path("house/delete/<int:pk>/", HouseDeleteView.as_view(), name="house_delete"),
     path("house/get-user-role/", get_user_role, name="get_user_role"),
+    path("apartment/list/", ApartmentListView.as_view(), name="apartment_list"),
+    path("apartment/create/", ApartmentCreateView.as_view(), name="apartment_create"),
+    path(
+        "aparment/edit/<int:pk>/",
+        ApartmentUpdateView.as_view(),
+        name="apartment_update",
+    ),
+    path(
+        "apartment/delete/<int:pk>/",
+        ApartmentDeleteView.as_view(),
+        name="apartment_delete",
+    ),
+    path(
+        "apartment/detail/<int:pk>/",
+        ApartmentDetailView.as_view(),
+        name="apartment_detail",
+    ),
+    path(
+        "apartment/getsecandfloor/",
+        get_sections_and_floors,
+        name="get_sections_and_floors",
+    ),
 ]

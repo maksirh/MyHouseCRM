@@ -1,17 +1,15 @@
 {% extends 'admin_base.html' %}
 {% load static %}
 
-{% block title %}Квартира №{{ flat.number|default:"34" }}, {{ flat.house.name|default:"ЖК &quot;Морская Симфония&quot;"|safe }}{% endblock %}
+{% block title %}Квартира №{{ flat.number }}, {{ flat.house.name }}{% endblock %}
 
 {% block content %}
 <section class="content-header">
-    <h1>
-        Квартира №{{ flat.number|default:"34" }}, {{ flat.house.name|default:"ЖК &quot;Морская Симфония&quot;"|safe }}
-    </h1>
+    <h1>Квартира №{{ flat.number }}, {{ flat.house.name }}</h1>
     <ul class="breadcrumb">
-        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
-        <li><a href="{% url 'flat_list' %}">Квартиры</a></li>
-        <li class="active">Квартира №{{ flat.number|default:"34" }}, {{ flat.house.name|default:"ЖК &quot;Морская Симфония&quot;"|safe }}</li>
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'adminlte:apartment_list' %}">Квартиры</a></li>
+        <li class="active">Квартира №{{ flat.number }}, {{ flat.house.name }}</li>
     </ul>
 </section>
 
@@ -30,14 +28,14 @@
                     </a>
                 {% else %}
                     <button class="btn btn-default btn-sm disabled" title="Лицевой счет неактивен или отсутствует" data-toggle="tooltip">
-                        <span class="hidden-xs"><i class="fa fa-dollar"></i> Принять платеж</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                        <span class="hidden-xs"><i class="fa fa-dollar"></i> Принять платеж</span>
                     </button>
                     <button class="btn btn-default btn-sm disabled" title="Лицевой счет неактивен или отсутствует" data-toggle="tooltip">
-                        <span class="hidden-xs"><i class="fa fa-files-o"></i> Оформить квитанцию</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                        <span class="hidden-xs"><i class="fa fa-files-o"></i> Оформить квитанцию</span>
                     </button>
                 {% endif %}
 
-                <a href="/admin/flat/update/{{ flat.id|default:'711' }}" class="btn btn-primary btn-sm">
+                <a href="{% url 'adminlte:apartment_update' flat.id %}" class="btn btn-primary btn-sm">
                     <span class="hidden-xs">Редактировать квартиру</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
                 </a>
             </div>
@@ -52,7 +50,7 @@
                                 <td>Лицевой счет</td>
                                 <td>
                                     {% if flat.account %}
-                                        <a href="{% url 'account_detail' flat.account.id %}">{{ flat.account.uid }}</a>
+                                        <a href="{% url 'account_detail' flat.account.id %}">{{ flat.account.uid|default:flat.account.id }}</a>
                                     {% else %}
                                         не указано
                                     {% endif %}
@@ -60,37 +58,35 @@
                             </tr>
                             <tr>
                                 <td>Номер квартиры</td>
-                                <td>{{ flat.number|default:"34" }}</td>
+                                <td>{{ flat.number }}</td>
                             </tr>
                             <tr>
                                 <td>Площадь</td>
-                                <td>
-                                    {{ flat.area|default:"0.00" }}м<sup>2</sup>
-                                </td>
+                                <td>{{ flat.area|default:"0" }} м<sup>2</sup></td>
                             </tr>
                             <tr>
                                 <td>Дом</td>
                                 <td>
                                     {% if flat.house %}
-                                        <a href="{% url 'house_detail' flat.house.id %}">{{ flat.house.name }}</a>
+                                        <a href="{% url 'adminlte:house_detail' flat.house.id %}">{{ flat.house.name }}</a>
                                     {% else %}
-                                        <a href="#">{{ mock_house|default:"ЖК &quot;Морская Симфония&quot;"|safe }}</a>
+                                        не указано
                                     {% endif %}
                                 </td>
                             </tr>
                             <tr>
                                 <td>Секция</td>
-                                <td>{{ flat.section.name|default:"" }}</td>
+                                <td>{{ flat.section.name|default:"не указано" }}</td>
                             </tr>
                             <tr>
                                 <td>Этаж</td>
-                                <td>{{ flat.floor.name|default:"" }}</td>
+                                <td>{{ flat.floor.name|default:"не указано" }}</td>
                             </tr>
                             <tr>
                                 <td>Владелец</td>
                                 <td>
                                     {% if flat.owner %}
-                                        <a href="{% url 'user_detail' flat.owner.id %}">{{ flat.owner }}</a>
+                                        <a href="{% url 'adminlte:user_detail' flat.owner.id %}">{{ flat.owner.first_name }} {{ flat.owner.last_name }}</a>
                                     {% else %}
                                         не указано
                                     {% endif %}
@@ -100,7 +96,7 @@
                                 <td>Тариф</td>
                                 <td>
                                     {% if flat.tariff %}
-                                        <a href="{% url 'tariff_detail' flat.tariff.id %}">{{ flat.tariff.name }}</a>
+                                        <a href="{% url 'adminlte:tariff_detail' flat.tariff.id %}">{{ flat.tariff.name }}</a>
                                     {% else %}
                                         не указано
                                     {% endif %}
@@ -110,17 +106,17 @@
                     </table>
 
                     <div class="margin-top-15">
-                        <p><a href="/admin/counter-data/counter-list?flat_id={{ flat.id|default:'711' }}">Посмотреть показания счетчиков</a></p>
+                        <p><a href="#">Посмотреть показания счетчиков</a></p>
 
                         <p>
                             {% if flat.account %}
-                                <a href="/admin/account-transaction/index?account_id={{ flat.account.id }}&type=in">Посмотреть приходы</a>
+                                <a href="#">Посмотреть приходы</a>
                             {% else %}
-                                <a href="/admin/account-transaction/index?account_id=0&type=in">Посмотреть приходы</a>
+                                <a href="#">Посмотреть приходы</a>
                             {% endif %}
                         </p>
 
-                        <p><a href="/admin/invoice/index?flat_id={{ flat.id|default:'711' }}">Посмотреть квитанции</a></p>
+                        <p><a href="#">Посмотреть квитанции</a></p>
                     </div>
                 </div>
             </div>
@@ -132,16 +128,7 @@
 {% block extra_js %}
 <script>
     $(function () {
-        // Ініціалізація тултипів для заблокованих кнопок
         $('[data-toggle="tooltip"]').tooltip();
-
-        // Для кнопок з data-confirm (якщо в майбутньому знадобиться JS підтвердження)
-        $('[data-confirm]').on('click', function(e) {
-            if ($(this).hasClass('disabled')) {
-                e.preventDefault();
-                alert($(this).data('confirm'));
-            }
-        });
     });
 </script>
 {% endblock %}

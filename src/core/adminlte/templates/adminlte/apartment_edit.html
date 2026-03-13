@@ -1,0 +1,134 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if form.instance.pk %}Редактирование квартиры{% else %}Новая квартира{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>{% if form.instance.pk %}Редактирование квартиры{% else %}Новая квартира{% endif %}</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'adminlte:apartment_list' %}">Квартиры</a></li>
+        <li class="active">{% if form.instance.pk %}Редактирование{% else %}Новая квартира{% endif %}</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="box">
+        <div class="box-body">
+            <form id="apartment-form" action="" method="post">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-lg-4">
+                        <div class="form-group {% if form.number.errors %}has-error{% endif %}">
+                            <label>Номер квартиры</label>
+                            {{ form.number }}
+                            <div class="help-block text-danger">{{ form.number.errors }}</div>
+                        </div>
+
+                        <div class="form-group {% if form.area.errors %}has-error{% endif %}">
+                            <label>Площадь (кв.м.)</label>
+                            {{ form.area }}
+                            <div class="help-block text-danger">{{ form.area.errors }}</div>
+                        </div>
+
+                        <div class="form-group {% if form.house.errors %}has-error{% endif %}">
+                            <label>Дом</label>
+                            {{ form.house }}
+                            <div class="help-block text-danger">{{ form.house.errors }}</div>
+                        </div>
+
+                        <div class="form-group {% if form.section.errors %}has-error{% endif %}">
+                            <label>Секция</label>
+                            {{ form.section }}
+                            <div class="help-block text-danger">{{ form.section.errors }}</div>
+                        </div>
+
+                        <div class="form-group {% if form.floor.errors %}has-error{% endif %}">
+                            <label>Этаж</label>
+                            {{ form.floor }}
+                            <div class="help-block text-danger">{{ form.floor.errors }}</div>
+                        </div>
+
+                        <div class="form-group {% if form.owner.errors %}has-error{% endif %}">
+                            <label>Владелец</label>
+                            {{ form.owner }}
+                            <div class="help-block text-danger">{{ form.owner.errors }}</div>
+                        </div>
+
+                        <div class="form-group {% if form.tariff.errors %}has-error{% endif %}">
+                            <label>Тариф</label>
+                            {{ form.tariff }}
+                            <div class="help-block text-danger">{{ form.tariff.errors }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 col-lg-4 col-lg-offset-1">
+                        <div class="form-group {% if form.account.errors %}has-error{% endif %}">
+                            <label>Лицевой счет</label>
+                            {{ form.account }}
+                            <div class="help-block text-danger">{{ form.account.errors }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 text-right">
+                        <div class="form-group margin-top-15">
+                            <a href="{% url 'adminlte:apartment_list' %}" class="btn btn-default">Отменить</a>
+                            <button type="submit" class="btn btn-success">Сохранить</button>
+                            <button type="submit" name="save_and_add" class="btn btn-success">Сохранить и добавить новую</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    var houseSelect = $('#id_house');
+    var sectionSelect = $('#id_section');
+    var floorSelect = $('#id_floor');
+
+    houseSelect.change(function() {
+        var houseId = $(this).val();
+
+        if (!houseId) {
+            sectionSelect.html('<option value="">Выберите...</option>');
+            floorSelect.html('<option value="">Выберите...</option>');
+            return;
+        }
+
+        $.ajax({
+            url: "{% url 'adminlte:get_sections_and_floors' %}?house_id=" + houseId,
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                sectionSelect.empty().append('<option value="">Выберите...</option>');
+                floorSelect.empty().append('<option value="">Выберите...</option>');
+
+                $.each(data.sections, function(index, item) {
+                    sectionSelect.append('<option value="' + item.id + '">' + item.name + '</option>');
+                });
+
+                $.each(data.floors, function(index, item) {
+                    floorSelect.append('<option value="' + item.id + '">' + item.name + '</option>');
+                });
+            },
+            error: function() {
+                alert('Ошибка при загрузке данных дома.');
+            }
+        });
+    });
+
+});
+</script>
+{% endblock %}
