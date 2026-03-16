@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import send_mail
-from django.db.models import Q
+from django.db.models import Case, Count, Q, Sum, When
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -30,6 +30,7 @@ from src.core.adminlte.forms import (
     MeasureFormSet,
     PaymentDetail,
     PaymentDetailForm,
+    PersonalAccountForm,
     SectionFormSet,
     SeoBlockForm,
     ServiceFormSet,
@@ -39,7 +40,7 @@ from src.core.adminlte.forms import (
     UserForm,
     UserProfileForm,
 )
-from src.crm.models import Article, Measure, Service, Tariffs
+from src.crm.models import Article, Measure, PersonalAccount, Service, Tariffs
 from src.house.models import Apartment, Floor, House, Section
 from src.user.models import Roles, User
 from src.website.models import AboutUsPage, MainPage, ServicePage
@@ -890,3 +891,232 @@ def get_sections_and_floors(request):
         return JsonResponse({"sections": sections, "floors": floors})
 
     return JsonResponse({"sections": [], "floors": []})
+
+
+class OwnerListView(ListView):
+    model = User
+    template_name = "adminlte/apartment_owners.html"
+    context_object_name = "owners"
+    paginate_by = 10
+
+    def get_queryset(self):
+        qs = User.objects.prefetch_related("apartment_set__house").annotate(
+            debt_flats=Count(Case(When(apartment__account__balance__lt=0, then=1)))
+        )
+
+        uid = self.request.GET.get("uid")
+        fullname = self.request.GET.get("fullname")
+        phone = self.request.GET.get("phone")
+        email = self.request.GET.get("email")
+        house_id = self.request.GET.get("house")
+        flat_number = self.request.GET.get("flat")
+        status = self.request.GET.get("status")
+        has_debt = self.request.GET.get("has_debt")
+        sort = self.request.GET.get("sort")
+
+        if uid:
+            qs = qs.filter(id__icontains=uid)
+        if fullname:
+            qs = qs.filter(
+                Q(first_name__icontains=fullname)
+                | Q(last_name__icontains=fullname)
+                | Q(surname__icontains=fullname)
+            )
+        if phone:
+            qs = qs.filter(phone_number__icontains=phone)
+        if email:
+            qs = qs.filter(email__icontains=email)
+        if house_id:
+            qs = qs.filter(apartment__house_id=house_id)
+        if flat_number:
+            qs = qs.filter(apartment__number__icontains=flat_number)
+        if status:
+            qs = qs.filter(status=status)
+
+        if has_debt == "1":
+            qs = qs.filter(debt_flats__gt=0)
+
+        qs = qs.distinct()
+
+        if sort == "fullname":
+            qs = qs.order_by("first_name", "last_name")
+        elif sort == "-fullname":
+            qs = qs.order_by("-first_name", "-last_name")
+        elif sort == "created":
+            qs = qs.order_by("date_joined")
+        elif sort == "-created":
+            qs = qs.order_by("-date_joined")
+        else:
+            qs = qs.order_by("-id")
+
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["houses"] = House.objects.all()
+        return context
+
+
+class AccountCreateView(CreateView):
+    model = PersonalAccount
+    form_class = PersonalAccountForm
+    template_name = "adminlte/account_edit.html"
+    success_url = reverse_lazy("adminlte:account_list")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        apartment = form.cleaned_data.get("apartment")
+
+        if apartment:
+            apartment.account = self.object
+            apartment.save()
+
+        return response
+
+
+def get_owner_by_apartment(request):
+    apartment_id = request.GET.get("apartment_id")
+    if apartment_id:
+        try:
+            apt = Apartment.objects.select_related("owner").get(id=apartment_id)
+            if apt.owner:
+                owner_name = (
+                    f"{apt.owner.first_name} {apt.owner.last_name}".strip()
+                    or apt.owner.username
+                )
+                owner_phone = apt.owner.phone_number or "не вказаний"
+                return JsonResponse({"name": owner_name, "phone": owner_phone})
+        except Apartment.DoesNotExist:
+            pass
+
+    return JsonResponse({"name": "не обраний", "phone": "не обраний"})
+
+
+class AccountListView(ListView):
+    model = PersonalAccount
+    template_name = "adminlte/account_list.html"
+    context_object_name = "accounts"
+    paginate_by = 10
+
+    def get_queryset(self):
+        qs = PersonalAccount.objects.prefetch_related(
+            "apartment_set__house", "apartment_set__section", "apartment_set__owner"
+        )
+
+        number = self.request.GET.get("number")
+        status = self.request.GET.get("status")
+        apartment = self.request.GET.get("apartment")
+        house_id = self.request.GET.get("house")
+        section_id = self.request.GET.get("section")
+        owner_id = self.request.GET.get("owner")
+        has_debt = self.request.GET.get("has_debt")
+        sort = self.request.GET.get("sort")
+
+        if number:
+            qs = qs.filter(number__icontains=number)
+        if status in ["True", "False"]:
+            qs = qs.filter(status=(status == "True"))
+        if apartment:
+            qs = qs.filter(apartment__number__icontains=apartment)
+        if house_id:
+            qs = qs.filter(apartment__house_id=house_id)
+        if section_id:
+            qs = qs.filter(apartment__section_id=section_id)
+        if owner_id:
+            qs = qs.filter(apartment__owner_id=owner_id)
+
+        if has_debt == "1":
+            qs = qs.filter(balance__lt=0)
+        elif has_debt == "0":
+            qs = qs.filter(balance__gte=0)
+
+        if sort == "number":
+            qs = qs.order_by("number")
+        elif sort == "-number":
+            qs = qs.order_by("-number")
+        elif sort == "balance":
+            qs = qs.order_by("balance")
+        elif sort == "-balance":
+            qs = qs.order_by("-balance")
+        else:
+            qs = qs.order_by("-id")
+
+        return qs.distinct()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["houses"] = House.objects.all()
+        context["owners"] = User.objects.filter(apartment__isnull=False).distinct()
+
+        house_id = self.request.GET.get("house")
+        if house_id:
+            context["filter_sections"] = Section.objects.filter(house_id=house_id)
+
+        balance_agg = PersonalAccount.objects.filter(balance__gt=0).aggregate(
+            total=Sum("balance")
+        )
+        context["accounts_balance"] = balance_agg["total"] or 0.00
+
+        debt_agg = PersonalAccount.objects.filter(balance__lt=0).aggregate(
+            total=Sum("balance")
+        )
+        context["accounts_debt"] = abs(debt_agg["total"]) if debt_agg["total"] else 0.00
+
+        context["cashbox_state"] = float(context["accounts_balance"]) - float(
+            context["accounts_debt"]
+        )
+
+        return context
+
+
+class AccountDetailView(DetailView):
+    model = PersonalAccount
+    template_name = "adminlte/account_detail.html"
+    context_object_name = "account"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .prefetch_related(
+                "apartment_set__house", "apartment_set__section", "apartment_set__owner"
+            )
+        )
+
+
+class AccountUpdateView(UpdateView):
+    model = PersonalAccount
+    form_class = PersonalAccountForm
+    template_name = "adminlte/account_edit.html"
+    success_url = reverse_lazy("adminlte:account_list")
+
+    def get_initial(self):
+        initial = super().get_initial()
+        flat = self.object.apartment_set.first()
+
+        if flat:
+            initial["apartment"] = flat.id
+            if flat.section:
+                initial["section"] = flat.section.id
+            if flat.house:
+                initial["house"] = flat.house.id
+
+        return initial
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        new_apartment = form.cleaned_data.get("apartment")
+
+        self.object.apartment_set.update(account=None)
+
+        if new_apartment:
+            new_apartment.account = self.object
+            new_apartment.save()
+
+        return response
+
+
+class AccountDeleteView(DeleteView):
+    model = PersonalAccount
+    success_url = reverse_lazy("adminlte:account_list")

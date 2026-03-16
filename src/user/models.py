@@ -38,3 +38,6 @@ class User(AbstractUser):
     viber = models.CharField(null=True, blank=True, max_length=255)
     telegram = models.CharField(null=True, blank=True, max_length=255)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="active")
+
+    def __str__(self):
+        return self.first_name + " " + self.last_name

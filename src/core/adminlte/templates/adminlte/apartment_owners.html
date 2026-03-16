@@ -7,7 +7,7 @@
 <section class="content-header">
     <h1>Владельцы квартир</h1>
     <ul class="breadcrumb">
-        <li><a href="{% url 'admin_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Главная</a></li>
         <li class="active">Владельцы квартир</li>
     </ul>
 </section>
@@ -20,9 +20,9 @@
                     Выберите действие <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a href="{% url 'user_create' %}">Добавить владельца квартиры</a></li>
-                    <li><a href="{% url 'message_create' %}?user_has_debt=1">Отправить сообщение должникам</a></li>
-                    <li><a href="{% url 'user_invite' %}">Отправить приглашение</a></li>
+                    <li><a href="{% url 'adminlte:user_create' %}">Добавить владельца квартиры</a></li>
+                    <li><a href="#">Отправить сообщение должникам</a></li>
+                    <li><a href="#">Отправить приглашение</a></li>
                 </ul>
             </div>
         </div>
@@ -34,7 +34,7 @@
                 <div class="box-header with-border">
                     <h3 class="box-title"></h3>
                     <div class="box-tools">
-                        <a href="{% url 'user_list' %}" class="btn btn-default btn-sm">
+                        <a href="{% url 'adminlte:owners_list' %}" class="btn btn-default btn-sm">
                             <span class="hidden-xs">Очистить</span><i class="fa fa-eraser visible-xs" aria-hidden="true"></i>
                         </a>
                     </div>
@@ -42,173 +42,151 @@
 
                 <div id="w0" class="grid-view">
                     <div class="box-body table-responsive no-padding">
-                        <table class="table table-bordered table-hover table-striped linkedRow">
-                            <thead>
-                                <tr>
-                                    <th style="width: 110px; min-width: 110px">ID</th>
-                                    <th><a href="?sort=fullname">ФИО</a></th>
-                                    <th style="width: 140px; min-width: 140px">Телефон</th>
-                                    <th style="width: 140px; min-width: 140px">Email</th>
-                                    <th style="min-width: 250px">Дом</th>
-                                    <th style="min-width: 300px">Квартира</th>
-                                    <th style="width: 110px; min-width: 110px"><a href="?sort=created">Добавлен</a></th>
-                                    <th>Статус</th>
-                                    <th style="width: 80px; min-width: 80px">Есть долг</th>
-                                    <th style="width: 114px; min-width: 114px">&nbsp;</th>
-                                </tr>
-                                <tr id="w0-filters" class="filters">
-                                    <form method="GET">
-                                        <td><input type="text" class="form-control" name="uid"></td>
-                                        <td><input type="text" class="form-control" name="fullname"></td>
-                                        <td><input type="text" class="form-control" name="phone"></td>
-                                        <td><input type="text" class="form-control" name="email"></td>
+                        <form method="GET" id="filter-form">
+                            {% if request.GET.sort %}<input type="hidden" name="sort" value="{{ request.GET.sort }}">{% endif %}
+
+                            <table class="table table-bordered table-hover table-striped linkedRow">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 110px; min-width: 110px">ID</th>
+                                        <th><a href="?sort={% if request.GET.sort == 'fullname' %}-fullname{% else %}fullname{% endif %}">ФИО</a></th>
+                                        <th style="width: 140px; min-width: 140px">Телефон</th>
+                                        <th style="width: 140px; min-width: 140px">Email</th>
+                                        <th style="min-width: 250px">Дом</th>
+                                        <th style="min-width: 300px">Квартира</th>
+                                        <th style="width: 110px; min-width: 110px"><a href="?sort={% if request.GET.sort == 'created' %}-created{% else %}created{% endif %}">Добавлен</a></th>
+                                        <th>Статус</th>
+                                        <th style="width: 80px; min-width: 80px">Есть долг</th>
+                                        <th style="width: 114px; min-width: 114px">&nbsp;</th>
+                                    </tr>
+                                    <tr id="w0-filters" class="filters">
+                                        <td><input type="text" class="form-control" name="uid" value="{{ request.GET.uid|default:'' }}" onchange="this.form.submit()"></td>
+                                        <td><input type="text" class="form-control" name="fullname" value="{{ request.GET.fullname|default:'' }}" onchange="this.form.submit()"></td>
+                                        <td><input type="text" class="form-control" name="phone" value="{{ request.GET.phone|default:'' }}" onchange="this.form.submit()"></td>
+                                        <td><input type="text" class="form-control" name="email" value="{{ request.GET.email|default:'' }}" onchange="this.form.submit()"></td>
                                         <td>
-                                            <select class="form-control" name="house">
+                                            <select class="form-control" name="house" onchange="this.form.submit()">
                                                 <option value=""></option>
-                                                <option value="1">ЖК "Башня Чкалов"</option>
+                                                {% for house in houses %}
+                                                    <option value="{{ house.id }}" {% if request.GET.house == house.id|stringformat:"s" %}selected{% endif %}>{{ house.name }}</option>
+                                                {% endfor %}
                                             </select>
                                         </td>
-                                        <td><input type="text" class="form-control" name="flat"></td>
-                                        <td><input type="text" class="form-control" name="created_date" placeholder="ДД.ММ.ГГГГ"></td>
+                                        <td><input type="text" class="form-control" name="flat" value="{{ request.GET.flat|default:'' }}" onchange="this.form.submit()"></td>
+                                        <td><input type="text" class="form-control" name="created_date" placeholder="ДД.ММ.ГГГГ" disabled title="Для фільтрації по даті потрібен JS-віджет"></td>
                                         <td>
-                                            <select class="form-control" name="status">
+                                            <select class="form-control" name="status" onchange="this.form.submit()">
                                                 <option value=""></option>
-                                                <option value="active">Активен</option>
-                                                <option value="new">Новый</option>
-                                                <option value="disabled">Отключен</option>
+                                                <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Активен</option>
+                                                <option value="new" {% if request.GET.status == 'new' %}selected{% endif %}>Новый</option>
+                                                <option value="disabled" {% if request.GET.status == 'disabled' %}selected{% endif %}>Отключен</option>
                                             </select>
                                         </td>
                                         <td>
-                                            <select class="form-control" name="has_debt">
+                                            <select class="form-control" name="has_debt" onchange="this.form.submit()">
                                                 <option value=""></option>
-                                                <option value="1">Да</option>
+                                                <option value="1" {% if request.GET.has_debt == '1' %}selected{% endif %}>Да</option>
                                             </select>
                                         </td>
                                         <td>&nbsp;</td>
-                                    </form>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for owner in owners %}
-                                    <tr data-href="{% url 'user_detail' owner.id %}" data-key="{{ owner.id }}">
-                                        <td>{{ owner.uid }}</td>
-                                        <td>{{ owner.full_name|default:"<span class='not-set'>(не задано)</span>"|safe }}</td>
-                                        <td>{{ owner.phone }}</td>
-                                        <td>{{ owner.email }}</td>
-                                        <td>
-                                            {% for flat in owner.flats.all %}
-                                                <a href="{% url 'house_detail' flat.house.id %}">{{ flat.house.name }}</a>{% if not forloop.last %},<br />{% endif %}
-                                            {% empty %}
-                                                <span class="not-set">(не задано)</span>
-                                            {% endfor %}
-                                        </td>
-                                        <td>
-                                            {% for flat in owner.flats.all %}
-                                                <a href="{% url 'flat_detail' flat.id %}">№{{ flat.number }}, {{ flat.house.name }}</a>{% if not forloop.last %},<br />{% endif %}
-                                            {% empty %}
-                                                <span class="not-set">(не задано)</span>
-                                            {% endfor %}
-                                        </td>
-                                        <td>{{ owner.created_at|date:"d.m.Y" }}</td>
-                                        <td>
-                                            {% if owner.status == 'active' %}
-                                                <small class="label label-success">Активен</small>
-                                            {% elif owner.status == 'new' %}
-                                                <small class="label label-warning">Новый</small>
-                                            {% else %}
-                                                <small class="label label-danger">Отключен</small>
-                                            {% endif %}
-                                        </td>
-                                        <td>{% if owner.has_debt %}<span>Да</span>{% endif %}</td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="{% url 'message_create' %}?user_id={{ owner.id }}" title="Отправить сообщение" data-toggle="tooltip"><i class="fa fa-envelope"></i></a>
-                                                <a class="btn btn-default btn-sm" href="{% url 'user_update' owner.id %}" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
-                                                <a class="btn btn-default btn-sm" href="{% url 'user_delete' owner.id %}" title="Удалить" data-toggle="tooltip" data-method="post" data-confirm="Вы уверены, что хотите удалить этот элемент?"><i class="fa fa-trash"></i></a>
-                                            </div>
-                                        </td>
                                     </tr>
-                                {% empty %}
-                                    <tr data-href="/admin/user/371" data-key="371">
-                                        <td>12123</td>
-                                        <td>Nana1</td>
-                                        <td>+380675487238</td>
-                                        <td>grettasavinsk@gmail.com</td>
-                                        <td>
-                                            <a href="#">Nan's House</a>,<br />
-                                            <a href="#">Nan's House</a>
-                                        </td>
-                                        <td>
-                                            <a href="#">№1, Nan's House</a>,<br />
-                                            <a href="#">№2, Nan's House</a>
-                                        </td>
-                                        <td>02.02.2026</td>
-                                        <td><small class="label label-success">Активен</small></td>
-                                        <td><span>Да</span></td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="#" title="Отправить сообщение"><i class="fa fa-envelope"></i></a>
-                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать"><i class="fa fa-pencil"></i></a>
-                                                <a class="btn btn-default btn-sm" href="#" title="Удалить"><i class="fa fa-trash"></i></a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr data-href="/admin/user/369" data-key="369">
-                                        <td>000370</td>
-                                        <td><span class="not-set">(не задано)</span></td>
-                                        <td></td>
-                                        <td>xuyebojuga-4877@yopmail.com</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>30.01.2026</td>
-                                        <td><small class="label label-warning">Новый</small></td>
-                                        <td></td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="#" title="Отправить сообщение"><i class="fa fa-envelope"></i></a>
-                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать"><i class="fa fa-pencil"></i></a>
-                                                <a class="btn btn-default btn-sm" href="#" title="Удалить"><i class="fa fa-trash"></i></a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr data-href="/admin/user/363" data-key="363">
-                                        <td>000363</td>
-                                        <td><span class="not-set">(не задано)</span></td>
-                                        <td></td>
-                                        <td>konstantinow.k.k@avada-media.com</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>01.12.2025</td>
-                                        <td><small class="label label-danger">Отключен</small></td>
-                                        <td></td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm" href="#" title="Отправить сообщение"><i class="fa fa-envelope"></i></a>
-                                                <a class="btn btn-default btn-sm" href="#" title="Редактировать"><i class="fa fa-pencil"></i></a>
-                                                <a class="btn btn-default btn-sm" href="#" title="Удалить"><i class="fa fa-trash"></i></a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {% for owner in owners %}
+                                        <tr data-href="{% url 'adminlte:user_detail' owner.id %}" style="cursor: pointer;">
+                                            <td>{{ owner.id|stringformat:"06d" }}</td>
+                                            <td>
+                                                {% if owner.first_name or owner.last_name %}
+                                                    {{ owner.first_name }} {{ owner.last_name }}
+                                                {% else %}
+                                                    <span class='not-set'>(не задано)</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ owner.phone_number|default:"" }}</td>
+                                            <td>{{ owner.email|default:"" }}</td>
+
+                                            <td>
+                                                {% for flat in owner.apartment_set.all %}
+                                                    <a href="{% url 'adminlte:house_detail' flat.house.id %}">{{ flat.house.name }}</a>{% if not forloop.last %},<br />{% endif %}
+                                                {% empty %}
+                                                    <span class="not-set">(не задано)</span>
+                                                {% endfor %}
+                                            </td>
+
+                                            <td>
+                                                {% for flat in owner.apartment_set.all %}
+                                                    <a href="{% url 'adminlte:apartment_detail' flat.id %}">№{{ flat.number }}, {{ flat.house.name }}</a>{% if not forloop.last %},<br />{% endif %}
+                                                {% empty %}
+                                                    <span class="not-set">(не задано)</span>
+                                                {% endfor %}
+                                            </td>
+
+                                            <td>{{ owner.date_joined|date:"d.m.Y" }}</td>
+
+                                            <td>
+                                                {% if owner.status == 'active' %}
+                                                    <small class="label label-success">Активен</small>
+                                                {% elif owner.status == 'new' %}
+                                                    <small class="label label-warning">Новый</small>
+                                                {% elif owner.status == 'disabled' %}
+                                                    <small class="label label-danger">Отключен</small>
+                                                {% endif %}
+                                            </td>
+
+                                            <td>{% if owner.debt_flats > 0 %}<span>Да</span>{% endif %}</td>
+
+                                            <td>
+                                                <div class="btn-group pull-right">
+                                                    <a class="btn btn-default btn-sm" href="#" title="Отправить сообщение" data-toggle="tooltip"><i class="fa fa-envelope"></i></a>
+
+                                                    <a class="btn btn-default btn-sm" href="{% url 'adminlte:user_edit' owner.id %}" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+
+                                                    <form action="{% url 'adminlte:user_delete' owner.id %}" method="post" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить этого владельца?');">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-default btn-sm" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="10" class="text-center text-muted">Владельцы не найдены.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </form>
                     </div>
 
                     <div class="box-footer clearfix">
+                        {% if is_paginated %}
                         <ul class="pagination pagination-sm no-margin pull-right">
-                            <li class="prev disabled"><span>&laquo;</span></li>
-                            <li class="active"><a href="?page=1">1</a></li>
-                            <li><a href="?page=2">2</a></li>
-                            <li><a href="?page=3">3</a></li>
-                            <li><a href="?page=4">4</a></li>
-                            <li><a href="?page=5">5</a></li>
-                            <li class="next"><a href="?page=2">&raquo;</a></li>
+                            {% if page_obj.has_previous %}
+                                <li class="prev"><a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo;</a></li>
+                            {% else %}
+                                <li class="prev disabled"><span>&laquo;</span></li>
+                            {% endif %}
+
+                            {% for i in paginator.page_range %}
+                                {% if page_obj.number == i %}
+                                    <li class="active"><span>{{ i }}</span></li>
+                                {% else %}
+                                    <li><a href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="next"><a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&raquo;</a></li>
+                            {% else %}
+                                <li class="next disabled"><span>&raquo;</span></li>
+                            {% endif %}
                         </ul>
+                        {% endif %}
                     </div>
                 </div>
 
                 <div class="box-footer">
-                    <div>Количество владельцев: <span class="text-bold">{{ owners|length|default:"260" }}</span></div>
+                    <div>Количество владельцев: <span class="text-bold">{{ paginator.count|default:"0" }}</span></div>
                 </div>
             </div>
         </div>
@@ -220,6 +198,12 @@
 <script>
 $(function () {
     $('[data-toggle="tooltip"]').tooltip();
+
+    $('tr[data-href]').on('click', function(e) {
+        if (!$(e.target).closest('a, button, input, select').length) {
+            window.location = $(this).data('href');
+        }
+    });
 });
 </script>
 {% endblock %}

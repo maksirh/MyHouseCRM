@@ -6,6 +6,7 @@ from src.crm.models import (
     Article,
     Measure,
     PaymentDetail,
+    PersonalAccount,
     Service,
     Tariffs,
     TariffService,
@@ -354,4 +355,34 @@ class ApartmentForm(forms.ModelForm):
             "floor": forms.Select(attrs={"class": "form-control"}),
             "owner": forms.Select(attrs={"class": "form-control"}),
             "tariff": forms.Select(attrs={"class": "form-control"}),
+        }
+
+
+class PersonalAccountForm(forms.ModelForm):
+    house = forms.ModelChoiceField(
+        queryset=House.objects.all(),
+        required=False,
+        empty_label="Оберіть...",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+    section = forms.ModelChoiceField(
+        queryset=Section.objects.all(),
+        required=False,
+        empty_label="Оберіть...",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+    apartment = forms.ModelChoiceField(
+        queryset=Apartment.objects.all(),
+        required=False,
+        empty_label="Оберіть...",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
+    class Meta:
+        model = PersonalAccount
+        fields = ["number", "status"]
+
+        widgets = {
+            "number": forms.TextInput(attrs={"class": "form-control"}),
+            "status": forms.Select(attrs={"class": "form-control"}),
         }

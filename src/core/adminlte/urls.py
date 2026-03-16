@@ -2,6 +2,11 @@ from django.urls import path
 
 from .views import (
     AboutUsPageView,
+    AccountCreateView,
+    AccountDeleteView,
+    AccountDetailView,
+    AccountListView,
+    AccountUpdateView,
     ApartmentCreateView,
     ApartmentDeleteView,
     ApartmentDetailView,
@@ -17,6 +22,7 @@ from .views import (
     HouseView,
     ListArticleView,
     MainPageView,
+    OwnerListView,
     PaymentDetailView,
     RolesUpdateView,
     ServiceEditView,
@@ -30,6 +36,7 @@ from .views import (
     UserEditView,
     UserListView,
     UserProfileView,
+    get_owner_by_apartment,
     get_sections_and_floors,
     get_service_unit,
     get_user_role,
@@ -91,5 +98,18 @@ urlpatterns = [
         "apartment/getsecandfloor/",
         get_sections_and_floors,
         name="get_sections_and_floors",
+    ),
+    path("owners/", OwnerListView.as_view(), name="owners_list"),
+    path("accounts/create/", AccountCreateView.as_view(), name="account_create"),
+    path("accounts/", AccountListView.as_view(), name="account_list"),
+    path(
+        "get_owner_by_apartment/", get_owner_by_apartment, name="get_owner_by_apartment"
+    ),
+    path("accounts/<int:pk>/", AccountDetailView.as_view(), name="account_detail"),
+    path(
+        "accounts/<int:pk>/update/", AccountUpdateView.as_view(), name="account_update"
+    ),
+    path(
+        "accounts/<int:pk>/delete/", AccountDeleteView.as_view(), name="account_delete"
     ),
 ]

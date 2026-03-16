@@ -6,8 +6,22 @@ from src.user.models import Roles, User
 
 
 class PersonalAccount(models.Model):
-    status = models.BooleanField(default=False)
-    balance = models.FloatField()
+    STATUS_CHOICES = (
+        (True, "Активний"),
+        (False, "Неактивний"),
+    )
+    number = models.CharField(
+        max_length=20, unique=True, verbose_name="№", null=True, blank=True
+    )
+    status = models.BooleanField(
+        default=True, choices=STATUS_CHOICES, verbose_name="Статус"
+    )
+    balance = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0.00, verbose_name="Залишок"
+    )
+
+    def __str__(self):
+        return self.number
 
 
 class Measure(models.Model):
@@ -62,20 +76,33 @@ class CounterReadings(models.Model):
     date = models.DateField()
 
 
-class ServiceReceipts(models.Model):
-    tariff_service = models.ForeignKey(TariffService, on_delete=models.CASCADE)
-    counter_reading = ForeignKey(CounterReadings, on_delete=models.CASCADE)
+class Receipt(models.Model):
+    STATUSES = (
+        ("PAID", "Оплачена"),
+        ("PART", "Частково оплачена"),
+        ("UNPD", "Неоплачена"),
+    )
 
-
-class Receipts(models.Model):
-    STATUSES = (("P", "Оплачена"), ("N", "Неоплачена"), ("P", "Частково оплачена"))
-    service_receipt = ManyToManyField(ServiceReceipts)
-    apartment = ForeignKey(Apartment, on_delete=models.CASCADE)
-    number = models.IntegerField()
-    date = models.DateField()
-    status = models.CharField(choices=STATUSES, max_length=2)
+    number = models.CharField(max_length=50, unique=True)
+    apartment = models.ForeignKey("house.Apartment", on_delete=models.CASCADE)
+    tariff = models.ForeignKey("Tariffs", on_delete=models.SET_NULL, null=True)
+    status = models.CharField(choices=STATUSES, max_length=4, default="UNPD")
     is_made_payment = models.BooleanField(default=False)
-    sum = models.FloatField()
+    total_sum = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return f"Квитанція №{self.number} від {self.date}"
+
+
+class ReceiptItem(models.Model):
+    receipt = models.ForeignKey(Receipt, on_delete=models.CASCADE, related_name="items")
+    service = models.ForeignKey("Service", on_delete=models.PROTECT)
+    counter_reading = models.ForeignKey(
+        "CounterReadings", on_delete=models.SET_NULL, null=True, blank=True
+    )
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
+    price_per_unit = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
 
 
 class Article(models.Model):
@@ -90,7 +117,7 @@ class CashBox(models.Model):
     article = ForeignKey(Article, on_delete=models.CASCADE)
     date = models.DateTimeField()
     comment = models.TextField()
-    receipts = ForeignKey(Receipts, on_delete=models.CASCADE)
+    receipts = ForeignKey(Receipt, on_delete=models.CASCADE)
 
 
 class Message(models.Model):

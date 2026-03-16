@@ -1,0 +1,105 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Новый лицевой счет{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Новый лицевой счет</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'adminlte:account_list' %}">Лицевые счета</a></li>
+        <li class="active">Новый лицевой счет</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="box">
+        <div class="box-body">
+            <form id="account-form" action="" method="post">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group {% if form.number.errors %}has-error{% endif %}">
+                            <div class="input-group">
+                                <div class="input-group-addon">№</div>
+                                {{ form.number }}
+                            </div>
+                            <div class="help-block text-danger">{{ form.number.errors }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <label>Статус</label>
+                            {{ form.status }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Дом</label>
+                            {{ form.house }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Секция</label>
+                            {{ form.section }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Квартира</label>
+                            {{ form.apartment }}
+                        </div>
+
+                        <p><b>Владелец:</b> <span id="owner-name-display">не выбран</span></p>
+                        <p><b>Телефон:</b> <span id="owner-phone-display">не выбран</span></p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 text-right">
+                        <div class="form-group margin-top-15">
+                            <a href="{% url 'adminlte:account_list' %}" class="btn btn-default">Отменить</a>
+                            <button type="submit" class="btn btn-success">Сохранить</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+
+    $('#id_apartment').change(function() {
+        var apartmentId = $(this).val();
+
+        if (!apartmentId) {
+            $('#owner-name-display').text('не выбран');
+            $('#owner-phone-display').text('не выбран');
+            return;
+        }
+
+        $.ajax({
+            url: "{% url 'adminlte:get_owner_by_apartment' %}?apartment_id=" + apartmentId,
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                $('#owner-name-display').text(data.name);
+                $('#owner-phone-display').text(data.phone);
+            },
+            error: function() {
+                $('#owner-name-display').text('Ошибка загрузки');
+                $('#owner-phone-display').text('Ошибка загрузки');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

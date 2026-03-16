@@ -1,0 +1,142 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Особовий рахунок{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Особовий рахунок</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li><a href="{% url 'adminlte:account_list' %}">Особові рахунки</a></li>
+        <li class="active">Особовий рахунок №{{ account.number }}</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12 col-md-7 col-lg-6">
+            <div class="page-header-spec">
+                <div class="form-group">
+                    <div class="input-group date">
+                        <div class="input-group-addon">№</div>
+                        <div class="form-control pull-right">{{ account.number }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box">
+        {% with flat=account.apartment_set.first %}
+        <div class="box-header with-border">
+            <h3 class="box-title">Перегляд особового рахунку</h3>
+            <div class="box-tools">
+                <a href="{% url 'adminlte:transaction_create' %}?type=in&account_id={{ account.id }}" class="btn btn-default btn-sm">
+                    <span class="hidden-xs"><i class="fa fa-dollar"></i> Прийняти платіж</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                </a>
+
+                {% if flat %}
+                    <a href="{% url 'adminlte:invoice_create' %}?flat_id={{ flat.id }}" class="btn btn-default btn-sm">
+                        <span class="hidden-xs"><i class="fa fa-files-o"></i> Оформити квитанцію</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                    </a>
+                {% else %}
+                    <button class="btn btn-default btn-sm disabled" title="Квартира не прив'язана">
+                        <span class="hidden-xs"><i class="fa fa-files-o"></i> Оформити квитанцію</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                    </button>
+                {% endif %}
+
+                <a href="{% url 'adminlte:account_update' account.id %}" class="btn btn-primary btn-sm">
+                    <span class="hidden-xs">Редагувати рахунок</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="col-xs-12">
+                    <table class="table table-bordered table-striped table-view">
+                        <tbody>
+                            <tr>
+                                <td>Статус</td>
+                                <td>
+                                    {% if account.status %}
+                                        <small class="label label-success">Активний</small>
+                                    {% else %}
+                                        <small class="label label-danger">Неактивний</small>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Будинок</td>
+                                <td>
+                                    {% if flat and flat.house %}
+                                        <a href="{% url 'adminlte:house_detail' flat.house.id %}">{{ flat.house.name }}</a>
+                                    {% else %}
+                                        <span class="not-set">(не задано)</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Секція</td>
+                                <td>
+                                    {% if flat and flat.section %}
+                                        {{ flat.section.name }}
+                                    {% else %}
+                                        <span class="not-set">(не задано)</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Квартира</td>
+                                <td>
+                                    {% if flat %}
+                                        <a href="{% url 'adminlte:apartment_detail' flat.id %}">{{ flat.number }}</a>
+                                    {% else %}
+                                        <span class="not-set">(не задано)</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Власник</td>
+                                <td>
+                                    {% if flat and flat.owner %}
+                                        <a href="{% url 'adminlte:user_detail' flat.owner.id %}">{{ flat.owner.first_name }} {{ flat.owner.last_name }}</a>
+                                    {% else %}
+                                        <span class="not-set">(не задано)</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Залишок, грн.</td>
+                                <td>
+                                    {% if account.balance > 0 %}
+                                        <span class="text-green">{{ account.balance }}</span>
+                                    {% elif account.balance < 0 %}
+                                        <span class="text-red">{{ account.balance }}</span>
+                                    {% else %}
+                                        <span class="text-default">0.00</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="margin-top-15">
+                        {% if flat %}
+                            <p><a href="{% url 'adminlte:counter_list' %}?flat_id={{ flat.id }}">Переглянути показання лічильників</a></p>
+                        {% endif %}
+
+                        <p><a href="{% url 'adminlte:transaction_list' %}?account_id={{ account.id }}&type=in">Переглянути надходження</a></p>
+
+                        {% if flat %}
+                            <p><a href="{% url 'adminlte:invoice_list' %}?flat_id={{ flat.id }}">Переглянути квитанції</a></p>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+    </div>
+</section>
+{% endblock %}

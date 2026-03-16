@@ -1,0 +1,261 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Особові рахунки{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Особові рахунки</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li class="active">Особові рахунки</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12 col-lg-9">
+            <div class="row">
+                <div class="col-xs-12 col-md-4">
+                    <div class="small-box bg-green overflow-hidden">
+                        <div class="inner">
+                            <h3>{{ cashbox_state|default:"0.00" }} грн</h3>
+                            <p>Стан каси</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-4">
+                    <div class="small-box bg-blue overflow-hidden">
+                        <div class="inner">
+                            <h3>{{ accounts_balance|default:"0.00" }} грн</h3>
+                            <p>Баланс по рахунках</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-4">
+                    <div class="small-box bg-red overflow-hidden">
+                        <div class="inner">
+                            <h3>{{ accounts_debt|default:"0.00" }} грн</h3>
+                            <p>Заборгованість по рахунках</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-lg-3">
+            <div class="btn-group pull-right margin-bottom">
+                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Виберіть дію <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="{% url 'adminlte:account_create' %}">Додати особовий рахунок</a></li>
+                    <li><a href="#">Вивантажити в Excel</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"></h3>
+                    <div class="box-tools">
+                        <a href="{% url 'adminlte:account_list' %}" class="btn btn-default btn-sm">
+                            <span class="hidden-xs">Очистити</span><i class="fa fa-eraser visible-xs" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="w0" class="grid-view">
+                    <div class="box-body table-responsive no-padding">
+                        <form method="GET" id="filter-form">
+                            {% if request.GET.sort %}<input type="hidden" name="sort" value="{{ request.GET.sort }}">{% endif %}
+                            <table class="table table-bordered table-hover table-striped linkedRow">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 125px; min-width: 125px"><a href="?sort={% if request.GET.sort == 'number' %}-number{% else %}number{% endif %}">№</a></th>
+                                        <th>Статус</th>
+                                        <th style="width: 100px; min-width: 100px">Квартира</th>
+                                        <th style="min-width: 200px">Будинок</th>
+                                        <th style="width: 160px; min-width: 65px">Секція</th>
+                                        <th style="min-width: 200px">Власник</th>
+                                        <th style="width: 120px; min-width: 120px"><a href="?sort={% if request.GET.sort == 'balance' %}-balance{% else %}balance{% endif %}">Залишок (грн)</a></th>
+                                        <th style="width: 80px; min-width: 80px">&nbsp;</th>
+                                    </tr>
+                                    <tr id="w0-filters" class="filters">
+                                        <td><input type="text" class="form-control" name="number" value="{{ request.GET.number|default:'' }}" onchange="this.form.submit()"></td>
+                                        <td>
+                                            <select class="form-control" name="status" onchange="this.form.submit()">
+                                                <option value=""></option>
+                                                <option value="True" {% if request.GET.status == 'True' %}selected{% endif %}>Активний</option>
+                                                <option value="False" {% if request.GET.status == 'False' %}selected{% endif %}>Неактивний</option>
+                                            </select>
+                                        </td>
+                                        <td><input type="text" class="form-control" name="apartment" value="{{ request.GET.apartment|default:'' }}" onchange="this.form.submit()"></td>
+                                        <td>
+                                            <select class="form-control" name="house" onchange="this.form.submit()">
+                                                <option value=""></option>
+                                                {% for house in houses %}
+                                                    <option value="{{ house.id }}" {% if request.GET.house == house.id|stringformat:"s" %}selected{% endif %}>{{ house.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="section" onchange="this.form.submit()">
+                                                <option value="">Виберіть будинок</option>
+                                                {% for section in filter_sections %}
+                                                    <option value="{{ section.id }}" {% if request.GET.section == section.id|stringformat:"s" %}selected{% endif %}>{{ section.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="owner" onchange="this.form.submit()">
+                                                <option value=""></option>
+                                                {% for owner in owners %}
+                                                    <option value="{{ owner.id }}" {% if request.GET.owner == owner.id|stringformat:"s" %}selected{% endif %}>{{ owner.first_name }} {{ owner.last_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="has_debt" onchange="this.form.submit()">
+                                                <option value=""></option>
+                                                <option value="1" {% if request.GET.has_debt == '1' %}selected{% endif %}>Є борг</option>
+                                                <option value="0" {% if request.GET.has_debt == '0' %}selected{% endif %}>Немає боргу</option>
+                                            </select>
+                                        </td>
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for account in accounts %}
+                                        {% with flat=account.apartment_set.first %}
+                                        <tr data-href="{% url 'adminlte:account_detail' account.id %}" style="cursor: pointer;">
+                                            <td>{{ account.number }}</td>
+                                            <td>
+                                                {% if account.status %}
+                                                    <small class="label label-success">Активний</small>
+                                                {% else %}
+                                                    <small class="label label-danger">Неактивний</small>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if flat %}
+                                                    {{ flat.number }}
+                                                {% else %}
+                                                    <span class='not-set'>(не задано)</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if flat and flat.house %}
+                                                    {{ flat.house.name }}
+                                                {% else %}
+                                                    <span class='not-set'>(не задано)</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if flat and flat.section %}
+                                                    {{ flat.section.name }}
+                                                {% else %}
+                                                    <span class='not-set'>(не задано)</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if flat and flat.owner %}
+                                                    {{ flat.owner.first_name }} {{ flat.owner.last_name }}
+                                                {% else %}
+                                                    <span class='not-set'>(не задано)</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if account.balance > 0 %}
+                                                    <span class="text-green">{{ account.balance }}</span>
+                                                {% elif account.balance < 0 %}
+                                                    <span class="text-red">{{ account.balance }}</span>
+                                                {% else %}
+                                                    <span class="text-default">{{ account.balance }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group pull-right">
+                                                    <a class="btn btn-default btn-sm" href="{% url 'adminlte:account_update' account.id %}" title="Редагувати" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+                                                    <form action="{% url 'adminlte:account_delete' account.id %}" method="post" style="display:inline;" onsubmit="return confirm('Ви впевнені, що хочете видалити цей рахунок?');">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-default btn-sm" title="Видалити" data-toggle="tooltip"><i class="fa fa-trash"></i></button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endwith %}
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted">Особові рахунки не знайдені.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
+
+                    <div class="box-footer clearfix">
+                        {% if is_paginated %}
+                        <ul class="pagination pagination-sm no-margin pull-right">
+                            {% if page_obj.has_previous %}
+                                <li class="prev"><a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo;</a></li>
+                            {% else %}
+                                <li class="prev disabled"><span>&laquo;</span></li>
+                            {% endif %}
+
+                            {% for i in paginator.page_range %}
+                                {% if page_obj.number == i %}
+                                    <li class="active"><span>{{ i }}</span></li>
+                                {% else %}
+                                    <li><a href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="next"><a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&raquo;</a></li>
+                            {% else %}
+                                <li class="next disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="box-footer">
+                    <div>Кількість рахунків: <span class="text-bold">{{ paginator.count|default:"0" }}</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+
+    $('tr[data-href]').on('click', function(e) {
+        if (!$(e.target).closest('a, button, input, select, form').length) {
+            window.location = $(this).data('href');
+        }
+    });
+
+    $('select[name="house"]').change(function() {
+        $('#filter-form').submit();
+    });
+});
+</script>
+{% endblock %}

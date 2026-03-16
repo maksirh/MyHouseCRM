@@ -50,6 +50,9 @@ class Apartment(models.Model):
         "crm.Tariffs", on_delete=models.SET_NULL, null=True, blank=True
     )
 
+    def __str__(self):
+        return str(self.number)
+
 
 class HouseUser(models.Model):
     house = models.ForeignKey(House, on_delete=models.CASCADE)
