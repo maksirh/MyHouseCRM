@@ -13,6 +13,11 @@ from .views import (
     ApartmentListView,
     ApartmentUpdateView,
     ContactPageView,
+    CounterReadingCreateView,
+    CounterReadingDeleteView,
+    CounterReadingDetailView,
+    CounterReadingHistoryView,
+    CounterReadingUpdateView,
     CreateArticleView,
     DeleteArticleView,
     EditArticleView,
@@ -36,6 +41,7 @@ from .views import (
     UserEditView,
     UserListView,
     UserProfileView,
+    get_lists_by_house,
     get_owner_by_apartment,
     get_sections_and_floors,
     get_service_unit,
@@ -112,4 +118,30 @@ urlpatterns = [
     path(
         "accounts/<int:pk>/delete/", AccountDeleteView.as_view(), name="account_delete"
     ),
+    path(
+        "counter_reading/",
+        CounterReadingCreateView.as_view(),
+        name="counter_reading_create",
+    ),
+    path(
+        "counter_reading/history/",
+        CounterReadingHistoryView.as_view(),
+        name="counter_reading_history",
+    ),
+    path(
+        "counter_reading/detail/<int:pk>/",
+        CounterReadingDetailView.as_view(),
+        name="counter_reading_detail",
+    ),
+    path(
+        "counter_reading/update/<int:pk>/",
+        CounterReadingUpdateView.as_view(),
+        name="counter_reading_update",
+    ),
+    path(
+        "counter_reading/delete/<int:pk>/",
+        CounterReadingDeleteView.as_view(),
+        name="counter_reading_delete",
+    ),
+    path("get-list-by-house/", get_lists_by_house, name="get_lists_by_house"),
 ]

@@ -4,6 +4,7 @@ from django.forms.models import inlineformset_factory
 
 from src.crm.models import (
     Article,
+    CounterReadings,
     Measure,
     PaymentDetail,
     PersonalAccount,
@@ -386,3 +387,25 @@ class PersonalAccountForm(forms.ModelForm):
             "number": forms.TextInput(attrs={"class": "form-control"}),
             "status": forms.Select(attrs={"class": "form-control"}),
         }
+
+
+class CounterReadingForm(forms.ModelForm):
+    house = forms.ModelChoiceField(
+        queryset=House.objects.all(), required=False, empty_label="Выберите..."
+    )
+    section = forms.ModelChoiceField(
+        queryset=Section.objects.all(), required=False, empty_label="Выберите..."
+    )
+
+    class Meta:
+        model = CounterReadings
+        fields = ["number", "date", "status", "apartment", "service", "meter"]
+
+        widgets = {
+            "date": forms.DateInput(format="%Y-%m-%d", attrs={"type": "date"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs["class"] = "form-control"

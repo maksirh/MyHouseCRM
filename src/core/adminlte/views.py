@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.db.models import Case, Count, Q, Sum, When
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import View
@@ -21,6 +21,7 @@ from src.core.adminlte.forms import (
     ArticleForm,
     ContactsPage,
     ContactsPageForm,
+    CounterReadingForm,
     FloorFormSet,
     GalleryFormSet,
     HouseForm,
@@ -40,7 +41,14 @@ from src.core.adminlte.forms import (
     UserForm,
     UserProfileForm,
 )
-from src.crm.models import Article, Measure, PersonalAccount, Service, Tariffs
+from src.crm.models import (
+    Article,
+    CounterReadings,
+    Measure,
+    PersonalAccount,
+    Service,
+    Tariffs,
+)
 from src.house.models import Apartment, Floor, House, Section
 from src.user.models import Roles, User
 from src.website.models import AboutUsPage, MainPage, ServicePage
@@ -1120,3 +1128,159 @@ class AccountUpdateView(UpdateView):
 class AccountDeleteView(DeleteView):
     model = PersonalAccount
     success_url = reverse_lazy("adminlte:account_list")
+
+
+class CounterReadingCreateView(CreateView):
+    model = CounterReadings
+    form_class = CounterReadingForm
+    template_name = "adminlte/counter_reading_edit.html"
+    success_url = reverse_lazy("adminlte:counter_reading_list")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if "save_and_add" in self.request.POST:
+            return HttpResponseRedirect(reverse_lazy("adminlte:counter_reading_create"))
+        return response
+
+
+class CounterReadingHistoryView(ListView):
+    model = CounterReadings
+    template_name = "adminlte/counter_history.html"
+    context_object_name = "counter_history"
+    paginate_by = 10
+
+    def get_queryset(self):
+        qs = (
+            super()
+            .get_queryset()
+            .select_related("apartment__house", "apartment__section", "service")
+        )
+
+        flat_id = self.request.GET.get("flat_id")
+        service_id = self.request.GET.get("service_id")
+        number = self.request.GET.get("number")
+        status = self.request.GET.get("status")
+        date_filter = self.request.GET.get("date")
+        house = self.request.GET.get("house")
+        section = self.request.GET.get("section")
+        flat_number = self.request.GET.get("flat_number")
+        service = self.request.GET.get("service")
+        sort = self.request.GET.get("sort")
+
+        if flat_id:
+            qs = qs.filter(apartment_id=flat_id)
+        if service_id:
+            qs = qs.filter(service_id=service_id)
+        if number:
+            qs = qs.filter(number__icontains=number)
+        if status:
+            qs = qs.filter(status=status)
+        if date_filter:
+            qs = qs.filter(date__icontains=date_filter)
+        if house:
+            qs = qs.filter(apartment__house_id=house)
+        if section:
+            qs = qs.filter(apartment__section_id=section)
+        if flat_number:
+            qs = qs.filter(apartment__number__icontains=flat_number)
+        if service:
+            qs = qs.filter(service_id=service)
+
+        if sort == "-date":
+            qs = qs.order_by("-date")
+        elif sort == "date":
+            qs = qs.order_by("date")
+        elif sort == "-month":
+            qs = qs.order_by("-date")
+        elif sort == "month":
+            qs = qs.order_by("date")
+        else:
+            qs = qs.order_by("-id")
+
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        flat_id = self.request.GET.get("flat_id")
+        service_id = self.request.GET.get("service_id")
+
+        if flat_id:
+            context["flat"] = get_object_or_404(Apartment, id=flat_id)
+        if service_id:
+            context["service"] = get_object_or_404(Service, id=service_id)
+
+        context["houses"] = House.objects.all()
+        context["services"] = Service.objects.all()
+
+        house_id = self.request.GET.get("house")
+        if house_id:
+            context["filter_sections"] = Section.objects.filter(house_id=house_id)
+
+        return context
+
+
+class CounterReadingUpdateView(UpdateView):
+    model = CounterReadings
+    form_class = CounterReadingForm
+    template_name = "adminlte/counter_reading_edit.html"
+    success_url = reverse_lazy("adminlte:counter_reading_history")
+
+    def get_initial(self):
+        initial = super().get_initial()
+        if self.object and self.object.apartment:
+            apartment = self.object.apartment
+            initial["apartment"] = apartment.id
+            if apartment.house:
+                initial["house"] = apartment.house.id
+            if apartment.section:
+                initial["section"] = apartment.section.id
+        return initial
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if "save_and_add" in self.request.POST:
+            return HttpResponseRedirect(reverse_lazy("adminlte:counter_reading_create"))
+        return response
+
+
+class CounterReadingDetailView(DetailView):
+    model = CounterReadings
+    template_name = "adminlte/counter_reading_detail.html"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .select_related(
+                "apartment__house", "apartment__section", "apartment__owner", "service"
+            )
+        )
+
+
+def get_lists_by_house(request):
+    house_id = request.GET.get("house_id")
+    section_id = request.GET.get("section_id")
+
+    sections_html = '<option value="">Оберіть...</option>'
+    flats_html = '<option value="">Оберіть...</option>'
+
+    if house_id:
+        sections = Section.objects.filter(house_id=house_id)
+        for section in sections:
+            sections_html += f'<option value="{section.id}">{section.name}</option>'
+
+        flats = Apartment.objects.filter(house_id=house_id)
+
+        if section_id:
+            flats = flats.filter(section_id=section_id)
+
+        for flat in flats:
+            flats_html += f'<option value="{flat.id}">{flat.number}</option>'
+
+    return JsonResponse({"sections": sections_html, "flats": flats_html})
+
+
+class CounterReadingDeleteView(DeleteView):
+    model = CounterReadings
+    success_url = reverse_lazy("adminlte:counter_reading_history")

@@ -62,18 +62,27 @@ class TariffService(models.Model):
     price_per_unit = models.FloatField()
 
 
-class Counter(models.Model):
-    serial_number = models.IntegerField()
-    apartment = ForeignKey(Apartment, on_delete=models.CASCADE)
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
-
-
 class CounterReadings(models.Model):
-    STATUSES = (("N", "Нове"), ("T", "Враховано"), ("Z", "Нуль"))
-    counter = ForeignKey(Counter, on_delete=models.CASCADE)
-    meter = models.FloatField()
-    status = models.CharField(choices=STATUSES, max_length=2)
+    STATUSES = (
+        ("new", "Нове"),
+        ("included", "Враховано"),
+        ("paid", "Враховано та оплачено"),
+        ("zero", "Нульове"),
+    )
+    apartment = models.ForeignKey(
+        Apartment, on_delete=models.CASCADE, related_name="readings", null=True
+    )
+    service = models.ForeignKey(
+        Service, on_delete=models.CASCADE, related_name="readings", null=True
+    )
+
+    number = models.CharField(max_length=50, unique=True, null=True)
     date = models.DateField()
+    meter = models.DecimalField(max_digits=10, decimal_places=1)
+    status = models.CharField(choices=STATUSES, max_length=15, default="new")
+
+    def __str__(self):
+        return f"{self.service.name} - {self.apartment.number} ({self.date})"
 
 
 class Receipt(models.Model):

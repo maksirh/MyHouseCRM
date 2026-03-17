@@ -1,0 +1,127 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Показання лічильника №{{ object.number }}{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Показання лічильника</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li><a href="{% url 'adminlte:counter_reading_list' %}">Лічильники</a></li>
+        <li>
+            {% if object.counter.apartment %}
+                <a href="{% url 'adminlte:counter_history' %}?flat_id={{ object.counter.apartment.id }}">Показання лічильників, кв.{{ object.counter.apartment.number }}</a>
+            {% else %}
+                <a href="#">Показання лічильників</a>
+            {% endif %}
+        </li>
+        <li class="active">Показання лічильника №{{ object.number }}</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12 col-md-7 col-lg-6">
+            <div class="page-header-spec">
+                <div class="form-group">
+                    <div class="input-group date">
+                        <div class="input-group-addon">№</div>
+                        <div class="form-control pull-right">{{ object.number }}</div>
+                    </div>
+                </div>
+                <span class="label-mid">від</span>
+                <div class="form-group">
+                    <div class="input-group date">
+                        <div class="input-group-addon">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </div>
+                        <div class="form-control pull-right">{{ object.date|date:"d.m.Y" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title"></h3>
+            <div class="box-tools">
+                <a href="{% url 'adminlte:counter_data_update' object.id %}" class="btn btn-primary btn-sm">
+                    <span class="hidden-xs">Редагувати показання</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="col-xs-12 col-lg-4">
+                    <table class="table table-bordered table-striped table-view">
+                        <tbody>
+                            <tr>
+                                <td>Лічильник</td>
+                                <td>{{ object.counter.service.name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Будинок</td>
+                                <td>
+                                    {% if object.counter.apartment.house %}
+                                        <a href="{% url 'adminlte:house_detail' object.counter.apartment.house.id %}">{{ object.counter.apartment.house.name }}</a>
+                                    {% else %}
+                                        <span class="not-set">(не задано)</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Секція</td>
+                                <td>{{ object.counter.apartment.section.name|default:"(не задано)" }}</td>
+                            </tr>
+                            <tr>
+                                <td>Квартира</td>
+                                <td>
+                                    {% if object.counter.apartment %}
+                                        <a href="{% url 'adminlte:apartment_detail' object.counter.apartment.id %}">{{ object.counter.apartment.number }}</a>
+                                    {% else %}
+                                        <span class="not-set">(не задано)</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Користувач</td>
+                                <td>
+                                    {% if object.counter.apartment.owner %}
+                                        <a href="{% url 'adminlte:user_detail' object.counter.apartment.owner.id %}">{{ object.counter.apartment.owner.first_name }} {{ object.counter.apartment.owner.last_name }}</a>
+                                    {% else %}
+                                        <span class="not-set">(не задано)</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Поточні показання</td>
+                                <td>{{ object.meter }}</td>
+                            </tr>
+                            <tr>
+                                <td>Од. вим.</td>
+                                <td>{{ object.counter.service.unit.name|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <td>Статус</td>
+                                <td>
+                                    {% if object.status == 'new' %}
+                                        <small class="label label-warning">Нове</small>
+                                    {% elif object.status == 'accounted' %}
+                                        <small class="label label-success">Враховано</small>
+                                    {% elif object.status == 'zero' %}
+                                        <small class="label label-default">Нульове</small>
+                                    {% elif object.status == 'paid' %}
+                                        <small class="label label-default"></small>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
