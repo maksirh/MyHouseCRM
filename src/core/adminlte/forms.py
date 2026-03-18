@@ -8,6 +8,8 @@ from src.crm.models import (
     Measure,
     PaymentDetail,
     PersonalAccount,
+    Receipt,
+    ReceiptItem,
     Service,
     Tariffs,
     TariffService,
@@ -409,3 +411,59 @@ class CounterReadingForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs["class"] = "form-control"
+
+
+class ReceiptForm(forms.ModelForm):
+    house = forms.ModelChoiceField(
+        queryset=House.objects.all(), required=False, empty_label="Оберіть..."
+    )
+    section = forms.ModelChoiceField(
+        queryset=Section.objects.all(), required=False, empty_label="Оберіть..."
+    )
+
+    class Meta:
+        model = Receipt
+        fields = [
+            "number",
+            "date",
+            "status",
+            "is_made_payment",
+            "apartment",
+            "tariff",
+            "period_start",
+            "period_end",
+        ]
+        widgets = {
+            "date": forms.DateInput(attrs={"type": "date"}),
+            "period_start": forms.DateInput(attrs={"type": "date"}),
+            "period_end": forms.DateInput(attrs={"type": "date"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs["class"] = "form-control"
+        self.fields["is_made_payment"].widget.attrs["class"] = ""
+
+
+class ReceiptItemForm(forms.ModelForm):
+    class Meta:
+        model = ReceiptItem
+        fields = ["service", "quantity", "price_per_unit", "total_price"]
+        widgets = {
+            "service": forms.Select(attrs={"class": "form-control service-select"}),
+            "quantity": forms.NumberInput(
+                attrs={"class": "form-control quantity-input", "step": "0.01"}
+            ),
+            "price_per_unit": forms.NumberInput(
+                attrs={"class": "form-control price-input", "step": "0.01"}
+            ),
+            "total_price": forms.NumberInput(
+                attrs={"class": "form-control total-input", "readonly": True}
+            ),
+        }
+
+
+ReceiptItemFormSet = inlineformset_factory(
+    Receipt, ReceiptItem, form=ReceiptItemForm, extra=1, can_delete=True
+)

@@ -1,0 +1,185 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Квитанція №{{ receipt.number }}{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Квитанція</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li><a href="{% url 'adminlte:receipt_list' %}">Квитанції</a></li>
+        <li class="active">Квитанція №{{ receipt.number }}</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12 col-md-7 col-lg-6">
+            <div class="page-header-spec">
+                <div class="form-group">
+                    <div class="input-group date">
+                        <div class="input-group-addon">№</div>
+                        <div class="form-control pull-right">{{ receipt.number }}</div>
+                    </div>
+                </div>
+                <span class="label-mid">від</span>
+                <div class="form-group">
+                    <div class="input-group date">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <div class="form-control pull-right">{{ receipt.date|date:"d.m.Y" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">Перегляд квитанції</h3>
+            <div class="box-tools">
+                <a href="#" class="btn btn-default btn-sm">
+                    <span class="hidden-xs">Друк</span><i class="fa fa-print visible-xs" aria-hidden="true"></i>
+                </a>
+                <a href="#" class="btn btn-default btn-sm">
+                    <span class="hidden-xs">Відправити на e-mail</span><i class="fa fa-envelope-o visible-xs" aria-hidden="true"></i>
+                </a>
+                <a href="{% url 'adminlte:receipt_update' receipt.id %}" class="btn btn-primary btn-sm">
+                    <span class="hidden-xs">Редагувати квитанцію</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <div class="box-body">
+            <table class="table table-bordered table-striped table-view">
+                <tbody>
+                    <tr>
+                        <td>Проведена</td>
+                        <td>
+                            {% if receipt.is_made_payment %}
+                                <small class="label label-success">Проведена</small>
+                            {% else %}
+                                <small class="label label-danger">Не проведена</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Статус</td>
+                        <td>
+                            {% if receipt.status == 'PAID' %}
+                                <small class="label label-success">Оплачена</small>
+                            {% elif receipt.status == 'UNPD' %}
+                                <small class="label label-danger">Неоплачена</small>
+                            {% elif receipt.status == 'PART' %}
+                                <small class="label label-warning">Частково оплачена</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Місяць (Період)</td>
+                        <td>
+                            {{ receipt.period|date:"F Y"|title }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Власник</td>
+                        <td>
+                            {% if receipt.apartment.owner %}
+                                <a href="#">{{ receipt.apartment.owner.first_name }} {{ receipt.apartment.owner.last_name }}</a>
+                            {% else %}
+                                <span class="text-muted">(не задано)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Особовий рахунок</td>
+                        <td>
+                            {% if receipt.apartment.account %}
+                                <a href="#">{{ receipt.apartment.account.number }}</a>
+                            {% else %}
+                                <span class="text-muted">(не задано)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Телефон</td>
+                        <td>{{ receipt.apartment.owner.phone_number|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <td>Будинок</td>
+                        <td>
+                            {% if receipt.apartment.house %}
+                                <a href="#">{{ receipt.apartment.house.name }}</a>
+                            {% else %}
+                                <span class="text-muted">(не задано)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Квартира</td>
+                        <td>
+                            {% if receipt.apartment %}
+                                <a href="#">{{ receipt.apartment.number }}</a>
+                            {% else %}
+                                <span class="text-muted">(не задано)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Секція</td>
+                        <td>{{ receipt.apartment.section.name|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <td>Тариф</td>
+                        <td>
+                            {% if receipt.tariff %}
+                                <a href="#">{{ receipt.tariff.name }}</a>
+                            {% else %}
+                                <span class="text-muted">(не задано)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="table-responsive no-padding margin-top-15">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px; min-width: 40px;">#</th>
+                            <th>Послуга</th>
+                            <th>Кількість споживання (витрата)</th>
+                            <th style="width: 80px; min-width: 80px;">Од. вим.</th>
+                            <th>Ціна за од., грн</th>
+                            <th>Вартість, грн</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <td colspan="5"></td>
+                            <td colspan="2"><b>Разом: {{ receipt.total_sum }}</b></td>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {% for item in receipt.items.all %}
+                            <tr role="row">
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ item.service.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ item.service.unit.name|default:"-" }}</td>
+                                <td>{{ item.price_per_unit }}</td>
+                                <td>{{ item.total_price }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr role="row">
+                                <td colspan="6" class="text-center text-muted">Послуги відсутні</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

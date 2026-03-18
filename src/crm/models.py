@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField
+from django.utils import timezone
 
 from src.house.models import Apartment
 from src.user.models import Roles, User
@@ -92,12 +93,24 @@ class Receipt(models.Model):
         ("UNPD", "Неоплачена"),
     )
 
-    number = models.CharField(max_length=50, unique=True)
-    apartment = models.ForeignKey("house.Apartment", on_delete=models.CASCADE)
-    tariff = models.ForeignKey("Tariffs", on_delete=models.SET_NULL, null=True)
-    status = models.CharField(choices=STATUSES, max_length=4, default="UNPD")
-    is_made_payment = models.BooleanField(default=False)
-    total_sum = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    number = models.CharField(max_length=50, unique=True, verbose_name="№ квитанції")
+    apartment = models.ForeignKey(
+        "house.Apartment", on_delete=models.CASCADE, verbose_name="Квартира"
+    )
+    tariff = models.ForeignKey(
+        "crm.Tariffs", on_delete=models.SET_NULL, null=True, verbose_name="Тариф"
+    )
+    date = models.DateField(default=timezone.now, verbose_name="Дата створення")
+    period_start = models.DateField(verbose_name="Період з", null=True, blank=True)
+    period_end = models.DateField(verbose_name="Період по", null=True, blank=True)
+
+    status = models.CharField(
+        choices=STATUSES, max_length=4, default="UNPD", verbose_name="Статус"
+    )
+    is_made_payment = models.BooleanField(default=False, verbose_name="Проведена")
+    total_sum = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0.00, verbose_name="Сума"
+    )
 
     def __str__(self):
         return f"Квитанція №{self.number} від {self.date}"

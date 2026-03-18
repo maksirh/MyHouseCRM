@@ -1,6 +1,9 @@
+import json
+
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.db import transaction
 from django.db.models import Case, Count, Q, Sum, When
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -32,6 +35,8 @@ from src.core.adminlte.forms import (
     PaymentDetail,
     PaymentDetailForm,
     PersonalAccountForm,
+    ReceiptForm,
+    ReceiptItemFormSet,
     SectionFormSet,
     SeoBlockForm,
     ServiceFormSet,
@@ -46,8 +51,10 @@ from src.crm.models import (
     CounterReadings,
     Measure,
     PersonalAccount,
+    Receipt,
     Service,
     Tariffs,
+    TariffService,
 )
 from src.house.models import Apartment, Floor, House, Section
 from src.user.models import Roles, User
@@ -1284,3 +1291,307 @@ def get_lists_by_house(request):
 class CounterReadingDeleteView(DeleteView):
     model = CounterReadings
     success_url = reverse_lazy("adminlte:counter_reading_history")
+
+
+class ReceiptListView(ListView):
+    model = Receipt
+    template_name = "adminlte/receipt_list.html"
+    context_object_name = "receipts"
+    paginate_by = 10
+
+    def get_queryset(self):
+        qs = (
+            super()
+            .get_queryset()
+            .select_related("apartment__owner", "apartment__house")
+        )
+
+        number = self.request.GET.get("number")
+        status = self.request.GET.get("status")
+        date_filter = self.request.GET.get("date")
+        period = self.request.GET.get("period")
+        apartment_number = self.request.GET.get("apartment")
+        owner_id = self.request.GET.get("owner")
+        is_made_payment = self.request.GET.get("is_made_payment")
+
+        if number:
+            qs = qs.filter(number__icontains=number)
+        if status:
+            qs = qs.filter(status=status)
+        if date_filter:
+            qs = qs.filter(date__icontains=date_filter)
+        if period:
+            qs = qs.filter(period__icontains=period)
+        if apartment_number:
+            qs = qs.filter(apartment__number__icontains=apartment_number)
+        if owner_id:
+            qs = qs.filter(apartment__owner_id=owner_id)
+        if is_made_payment:
+            is_made = True if is_made_payment == "1" else False
+            qs = qs.filter(is_made_payment=is_made)
+
+        qs = qs.order_by("-date", "-id")
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        balance_agg = PersonalAccount.objects.filter(balance__gt=0).aggregate(
+            total=Sum("balance")
+        )
+        context["accounts_balance"] = balance_agg["total"] or 0.00
+
+        debt_agg = PersonalAccount.objects.filter(balance__lt=0).aggregate(
+            total=Sum("balance")
+        )
+        context["accounts_debt"] = abs(debt_agg["total"]) if debt_agg["total"] else 0.00
+
+        context["cashbox_state"] = float(context["accounts_balance"]) - float(
+            context["accounts_debt"]
+        )
+
+        context["owners"] = User.objects.all()
+
+        return context
+
+
+def receipt_delete_many(request):
+    if request.method == "POST":
+        ids = request.POST.getlist("ids[]")
+        if ids:
+            Receipt.objects.filter(id__in=ids).delete()
+            return JsonResponse({"status": "success"})
+    return JsonResponse({"status": "error"}, status=400)
+
+
+class ReceiptDetailView(DetailView):
+    model = Receipt
+    template_name = "adminlte/receipt_detail.html"
+    context_object_name = "receipt"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .select_related(
+                "apartment__house", "apartment__section", "apartment__owner", "tariff"
+            )
+            .prefetch_related("items__service")
+        )
+
+
+class ReceiptCreateView(CreateView):
+    model = Receipt
+    form_class = ReceiptForm
+    template_name = "adminlte/receipt_form.html"
+    success_url = reverse_lazy("adminlte:receipt_list")
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data["formset"] = ReceiptItemFormSet(self.request.POST)
+        else:
+            data["formset"] = ReceiptItemFormSet()
+
+        services = Service.objects.select_related("measure").all()
+        units_dict = {
+            str(s.id): (str(s.measure) if s.measure else "-") for s in services
+        }
+        data["service_units"] = json.dumps(units_dict)
+
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        formset = context["formset"]
+
+        with transaction.atomic():
+            self.object = form.save()
+
+            if formset.is_valid():
+                formset.instance = self.object
+
+                formset.save()
+
+                receipt_total = sum(
+                    item.quantity * item.price_per_unit
+                    for item in self.object.items.all()
+                )
+
+                self.object.total_sum = receipt_total
+                self.object.save()
+
+            else:
+                return self.form_invalid(form)
+
+        return super().form_valid(form)
+
+
+def get_apartment_info(request):
+    apartment_id = request.GET.get("apartment_id")
+    if apartment_id:
+        try:
+            apt = Apartment.objects.get(id=apartment_id)
+            owner_name = (
+                f"{apt.owner.first_name} {apt.owner.last_name}"
+                if apt.owner
+                else "Не обрано"
+            )
+
+            owner_phone = (
+                apt.owner.phone_number
+                if apt.owner and getattr(apt.owner, "phone_number", None)
+                else "Немає телефону"
+            )
+            account = PersonalAccount.objects.filter(apartment=apt).first()
+            account_number = account.number if account else "Рахунок не створено"
+            tariff_id = (
+                apt.tariff_id if hasattr(apt, "tariff_id") and apt.tariff_id else ""
+            )
+
+            return JsonResponse(
+                {
+                    "owner_name": owner_name,
+                    "owner_phone": owner_phone,
+                    "account_number": account_number,
+                    "tariff_id": tariff_id,
+                }
+            )
+        except Apartment.DoesNotExist:
+            pass
+
+    return JsonResponse({"error": "Not found"}, status=404)
+
+
+class ReceiptUpdateView(UpdateView):
+    model = Receipt
+    form_class = ReceiptForm
+    template_name = "adminlte/receipt_form.html"
+    success_url = reverse_lazy("adminlte:receipt_list")
+
+    def get_initial(self):
+        initial = super().get_initial()
+        if self.object and self.object.apartment:
+            initial["house"] = self.object.apartment.house_id
+            if self.object.apartment.section:
+                initial["section"] = self.object.apartment.section_id
+        return initial
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data["formset"] = ReceiptItemFormSet(
+                self.request.POST, instance=self.object
+            )
+        else:
+            data["formset"] = ReceiptItemFormSet(instance=self.object)
+
+        if self.object and self.object.apartment:
+            apt = self.object.apartment
+            data["owner_name"] = (
+                f"{apt.owner.first_name} {apt.owner.last_name}"
+                if apt.owner
+                else "не обрано"
+            )
+
+            data["owner_phone"] = (
+                apt.owner.phone_number
+                if apt.owner and apt.owner.phone_number
+                else "Немає телефону"
+            )
+
+            account = PersonalAccount.objects.filter(apartment=apt).first()
+            data["account_number"] = (
+                account.number if account else "Рахунок не створено"
+            )
+
+        else:
+            data["owner_name"] = "не обрано"
+            data["owner_phone"] = "не обрано"
+            data["account_number"] = "не обрано"
+
+        services = Service.objects.select_related("measure").all()
+        units_dict = {
+            str(s.id): (str(s.measure) if s.measure else "-") for s in services
+        }
+        data["service_units"] = json.dumps(units_dict)
+
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        formset = context["formset"]
+
+        with transaction.atomic():
+            self.object = form.save()
+
+            if formset.is_valid():
+                formset.instance = self.object
+                formset.save()
+
+                receipt_total = sum(
+                    item.quantity * item.price_per_unit
+                    for item in self.object.items.all()
+                )
+
+                self.object.total_sum = receipt_total
+                self.object.save()
+
+            else:
+                return self.form_invalid(form)
+
+        return super().form_valid(form)
+
+
+class ReceiptDeleteView(DeleteView):
+    model = Receipt
+    template_name = "adminlte/receipt_confirm_delete.html"
+    success_url = reverse_lazy("adminlte:receipt_list")
+
+
+def get_counter_readings(request):
+    apartment_id = request.GET.get("apartment_id")
+    date_from = request.GET.get("date_from")
+    date_to = request.GET.get("date_to")
+
+    if not all([apartment_id, date_from, date_to]):
+        return JsonResponse({"error": "Missing parameters"}, status=400)
+
+    readings = CounterReadings.objects.filter(
+        apartment_id=apartment_id, date__gte=date_from, date__lte=date_to
+    ).select_related("service")
+
+    data = []
+    for r in readings:
+        data.append(
+            {
+                "service_id": r.service.id,
+                "quantity": r.meter,
+            }
+        )
+
+    return JsonResponse({"readings": data})
+
+
+def get_tariff_services(request):
+    tariff_id = request.GET.get("tariff_id")
+
+    if not tariff_id:
+        return JsonResponse({"error": "Tariff not provided"}, status=400)
+
+    try:
+        tariff_services = TariffService.objects.filter(tariff_id=tariff_id)
+
+        data = []
+        for ts in tariff_services:
+            data.append(
+                {
+                    "service_id": ts.service_id,
+                    "price": ts.price_per_unit,
+                }
+            )
+
+        return JsonResponse({"services": data})
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)

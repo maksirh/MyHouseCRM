@@ -1,0 +1,33 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Видалення квитанції{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Видалення квитанції</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li><a href="{% url 'adminlte:receipt_list' %}">Квитанції</a></li>
+        <li class="active">Видалення</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="box box-danger">
+        <div class="box-header with-border">
+            <h3 class="box-title">Підтвердження видалення</h3>
+        </div>
+        <div class="box-body">
+            <p>Ви впевнені, що хочете видалити квитанцію <b>№{{ object.number }}</b> від {{ object.date|date:"d.m.Y" }}?</p>
+            <p class="text-danger">Увага: Усі послуги, прив'язані до цієї квитанції, також будуть назавжди видалені!</p>
+        </div>
+        <div class="box-footer">
+            <form method="post">
+                {% csrf_token %}
+                <a href="{% url 'adminlte:receipt_list' %}" class="btn btn-default">Скасувати</a>
+                <button type="submit" class="btn btn-danger">Так, видалити</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

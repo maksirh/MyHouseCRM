@@ -1,0 +1,378 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Нова квитанція{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Нова квитанція</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li><a href="{% url 'adminlte:receipt_list' %}">Квитанції</a></li>
+        <li class="active">Нова квитанція</li>
+    </ul>
+</section>
+
+<section class="content">
+    <form id="receipt-form" method="post">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-xs-12 col-md-7 col-lg-6">
+                <div class="page-header-spec">
+                    <div class="form-group {% if form.number.errors %}has-error{% endif %}">
+                        <div class="input-group">
+                            <div class="input-group-addon">№</div>
+                            {{ form.number }}
+                        </div>
+                        <div class="help-block text-danger">{{ form.number.errors }}</div>
+                    </div>
+                    <span class="label-mid">від</span>
+                    <div class="form-group {% if form.date.errors %}has-error{% endif %}">
+                        <div class="input-group date">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            {{ form.date }}
+                        </div>
+                        <div class="help-block text-danger">{{ form.date.errors }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <label>Будинок</label>
+                            {{ form.house }}
+                        </div>
+                        <div class="form-group">
+                            <label>Секція</label>
+                            {{ form.section }}
+                        </div>
+                        <div class="form-group {% if form.apartment.errors %}has-error{% endif %}">
+                            <label>Квартира</label>
+                            {{ form.apartment }}
+                            <div class="help-block text-danger">{{ form.apartment.errors }}</div>
+                        </div>
+
+                        <div class="form-group">
+                            <b>Особовий рахунок:</b> <span id="account-info">{{ account_number|default:"не обрано" }}</span>
+                        </div>
+                        <div class="form-group">
+                            <b>Власник:</b> <span id="owner-info">{{ owner_name|default:"не обрано" }}</span>
+                        </div>
+                        <div class="form-group">
+                            <b>Телефон:</b> <span id="phone-info">{{ owner_phone|default:"не обрано" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <label>
+                                {{ form.is_made_payment }} <b>Проведена</b>
+                            </label>
+                        </div>
+                        <div class="form-group {% if form.status.errors %}has-error{% endif %}">
+                            <label>Статус</label>
+                            {{ form.status }}
+                        </div>
+                        <div class="form-group {% if form.tariff.errors %}has-error{% endif %}">
+                            <label>Тариф</label>
+                            {{ form.tariff }}
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <label>Період з</label>
+                                    {{ form.period_start }}
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <label>Період по</label>
+                                    {{ form.period_end }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive no-padding margin-top-15">
+                    {{ formset.management_form }}
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Послуга</th>
+                                <th style="width: 150px;">Витрата</th>
+                                <th style="width: 100px;">Од. вим.</th>
+                                <th style="width: 150px;">Ціна за од., грн</th>
+                                <th style="width: 150px;">Вартість, грн</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="formset-container">
+                            {% for item_form in formset %}
+                                <tr class="formset-row">
+                                    {% for hidden in item_form.hidden_fields %}
+                                        {{ hidden }}
+                                    {% endfor %}
+
+                                    <td>{{ item_form.service }}</td>
+                                    <td>{{ item_form.quantity }}</td>
+                                    <td class="unit-name text-center" style="vertical-align: middle;">-</td>
+                                    <td>{{ item_form.price_per_unit }}</td>
+                                    <td>{{ item_form.total_price }}</td>
+                                    <td class="text-center">
+                                        <div style="display:none;">{{ item_form.DELETE }}</div>
+                                        <button type="button" class="btn btn-default btn-sm remove-row" title="Видалити"><i class="fa fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3">
+                                    <button type="button" class="btn btn-default" id="add-service-btn">Додати послугу</button>
+                                    <button type="button" class="btn btn-default" id="set-tariff-services-btn">Встановити всі послуги згідно з тарифом</button>
+                                    <button type="button" class="btn btn-default" id="add-meters-btn">Додати показання лічильників</button>
+                                </td>
+                                <td colspan="3" class="text-right" style="font-size: 16px; vertical-align: middle;">
+                                    <b>Разом: <span id="grand-total">0.00</span> грн</b>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="row margin-top-15">
+                    <div class="col-xs-12 text-right">
+                        <a href="{% url 'adminlte:receipt_list' %}" class="btn btn-default">Скасувати</a>
+                        <button type="submit" class="btn btn-success">Зберегти</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</section>
+
+<table style="display: none;">
+    <tbody id="empty-form">
+        <tr class="formset-row">
+            {% for hidden in formset.empty_form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            <td>{{ formset.empty_form.service }}</td>
+            <td>{{ formset.empty_form.quantity }}</td>
+            <td class="unit-name text-center" style="vertical-align: middle;">-</td>
+            <td>{{ formset.empty_form.price_per_unit }}</td>
+            <td>{{ formset.empty_form.total_price }}</td>
+            <td class="text-center">
+                <div style="display:none;">{{ formset.empty_form.DELETE }}</div>
+                <button type="button" class="btn btn-default btn-sm remove-row"><i class="fa fa-trash"></i></button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    var serviceUnits = JSON.parse('{{ service_units|escapejs|default:"{}" }}');
+
+    $(document).on('change', '.service-select', function() {
+        var serviceId = $(this).val();
+        var unitName = serviceUnits[serviceId] || '-';
+        $(this).closest('tr').find('.unit-name').text(unitName);
+    });
+
+    $('#id_house').on('change', function() {
+        var houseId = $(this).val();
+        if(houseId) {
+            $.ajax({
+                url: "{% url 'adminlte:get_lists_by_house' %}",
+                data: { 'house_id': houseId },
+                success: function(data) {
+                    $("#id_section").html(data.sections);
+                    $("#id_apartment").html(data.flats).trigger('change');
+                }
+            });
+        }
+    });
+
+    $('#id_section').on('change', function() {
+        var sectionId = $(this).val();
+        var houseId = $('#id_house').val();
+        if(sectionId || houseId) {
+            $.ajax({
+                url: "{% url 'adminlte:get_lists_by_house' %}",
+                data: { 'house_id': houseId, 'section_id': sectionId },
+                success: function(data) {
+                    $("#id_apartment").html(data.flats).trigger('change');
+                }
+            });
+        }
+    });
+
+    $('#id_apartment').on('change', function() {
+        var apartmentId = $(this).val();
+        if(apartmentId) {
+            $.ajax({
+                url: "{% url 'adminlte:get_apartment_info' %}",
+                data: { 'apartment_id': apartmentId },
+                success: function(data) {
+                    $('#owner-info').text(data.owner_name);
+                    $('#phone-info').text(data.owner_phone);
+                    $('#account-info').text(data.account_number);
+                    if(data.tariff_id && !$('#id_tariff').val()) {
+                        $('#id_tariff').val(data.tariff_id);
+                    }
+                }
+            });
+        } else {
+            $('#owner-info').text('не обрано');
+            $('#phone-info').text('не обрано');
+            $('#account-info').text('не обрано');
+        }
+    });
+
+    function calculateTotal() {
+        var grandTotal = 0;
+        $('.formset-row:visible').each(function() {
+            var qty = parseFloat($(this).find('.quantity-input').val()) || 0;
+            var price = parseFloat($(this).find('.price-input').val()) || 0;
+            var rowTotal = qty * price;
+            $(this).find('.total-input').val(rowTotal.toFixed(2));
+            grandTotal += rowTotal;
+        });
+        $('#grand-total').text(grandTotal.toFixed(2));
+    }
+
+    $(document).on('input', '.quantity-input, .price-input', function() {
+        calculateTotal();
+    });
+
+    $('#add-service-btn').click(function(e) {
+        e.preventDefault();
+        var totalFormsInput = $('input[name$="-TOTAL_FORMS"]');
+        var formIdx = totalFormsInput.val();
+        var newRow = $('#empty-form tr').clone();
+        newRow.html(newRow.html().replace(/__prefix__/g, formIdx));
+        $('#formset-container').append(newRow);
+        totalFormsInput.val(parseInt(formIdx) + 1);
+        newRow.find('.service-select').trigger('change');
+    });
+
+    $(document).on('click', '.remove-row', function() {
+        var row = $(this).closest('.formset-row');
+        row.find('input[type="checkbox"][name$="-DELETE"]').prop('checked', true);
+        row.hide();
+        calculateTotal();
+    });
+
+    $('#add-meters-btn').click(function(e) {
+        e.preventDefault();
+        var apartmentId = $('#id_apartment').val();
+        var dateFrom = $('#id_period_start').val();
+        var dateTo = $('#id_period_end').val();
+
+        if (!apartmentId || !dateFrom || !dateTo) {
+            alert('Будь ласка, оберіть квартиру та вкажіть "Період з" і "Період по"!');
+            return;
+        }
+
+        $.ajax({
+            url: "{% url 'adminlte:get_counter_readings' %}",
+            data: {
+                'apartment_id': apartmentId,
+                'date_from': dateFrom,
+                'date_to': dateTo
+            },
+            success: function(data) {
+                if(data.readings.length === 0) {
+                    alert('За вказаний період показань для цієї квартири не знайдено.');
+                    return;
+                }
+
+                $.each(data.readings, function(index, item) {
+                    var existingSelect = $('.formset-row:visible .service-select').filter(function() {
+                        return $(this).val() == item.service_id;
+                    });
+
+                    if (existingSelect.length > 0) {
+                        var existingRow = existingSelect.closest('.formset-row');
+                        existingRow.find('.quantity-input').val(item.quantity).trigger('input');
+                    } else {
+                        $('#add-service-btn').click();
+                        var lastRow = $('.formset-row:visible').last();
+                        lastRow.find('.service-select').val(item.service_id).trigger('change');
+                        lastRow.find('.quantity-input').val(item.quantity).trigger('input');
+                    }
+                });
+            },
+            error: function() {
+                alert('Помилка при завантаженні показань лічильників.');
+            }
+        });
+    });
+
+    $('#set-tariff-services-btn').click(function(e) {
+        e.preventDefault();
+        var tariffId = $('#id_tariff').val();
+
+        if (!tariffId) {
+            alert('Будь ласка, оберіть тариф зі списку вище!');
+            return;
+        }
+
+        if (confirm('Увага! Це оновить послуги згідно з обраним тарифом. Продовжити?')) {
+            $.ajax({
+                url: "{% url 'adminlte:get_tariff_services' %}",
+                data: { 'tariff_id': tariffId },
+                success: function(data) {
+                    if(data.services.length === 0) {
+                        alert('У цьому тарифі немає жодної послуги.');
+                        return;
+                    }
+
+                    $.each(data.services, function(index, item) {
+                        var existingSelect = $('.formset-row:visible .service-select').filter(function() {
+                            return $(this).val() == item.service_id;
+                        });
+
+                        if (existingSelect.length > 0) {
+                            var existingRow = existingSelect.closest('.formset-row');
+                            existingRow.find('.price-input').val(item.price).trigger('input');
+                        } else {
+                            $('#add-service-btn').click();
+                            var lastRow = $('.formset-row:visible').last();
+                            lastRow.find('.service-select').val(item.service_id).trigger('change');
+                            lastRow.find('.price-input').val(item.price);
+                            lastRow.find('.quantity-input').val(0);
+                            lastRow.find('.price-input').trigger('input');
+                        }
+                    });
+                },
+                error: function() {
+                    alert('Помилка при завантаженні послуг тарифу. Перевірте консоль.');
+                }
+            });
+        }
+    });
+
+    setTimeout(function() {
+        $('.service-select').each(function() {
+            if ($(this).val()) {
+                $(this).trigger('change');
+            }
+        });
+    }, 100);
+
+    calculateTotal();
+});
+</script>
+{% endblock %}

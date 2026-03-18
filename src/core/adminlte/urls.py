@@ -29,6 +29,11 @@ from .views import (
     MainPageView,
     OwnerListView,
     PaymentDetailView,
+    ReceiptCreateView,
+    ReceiptDeleteView,
+    ReceiptDetailView,
+    ReceiptListView,
+    ReceiptUpdateView,
     RolesUpdateView,
     ServiceEditView,
     ServicePageView,
@@ -41,11 +46,15 @@ from .views import (
     UserEditView,
     UserListView,
     UserProfileView,
+    get_apartment_info,
+    get_counter_readings,
     get_lists_by_house,
     get_owner_by_apartment,
     get_sections_and_floors,
     get_service_unit,
+    get_tariff_services,
     get_user_role,
+    receipt_delete_many,
     send_user_invite,
     tariff_update,
 )
@@ -144,4 +153,19 @@ urlpatterns = [
         name="counter_reading_delete",
     ),
     path("get-list-by-house/", get_lists_by_house, name="get_lists_by_house"),
+    path("receipts/list/", ReceiptListView.as_view(), name="receipt_list"),
+    path(
+        "receipt/detail/<int:pk>/", ReceiptDetailView.as_view(), name="receipt_detail"
+    ),
+    path("receipt/delete-many/", receipt_delete_many, name="receipt_delete_many"),
+    path("receipt/create/", ReceiptCreateView.as_view(), name="receipt_create"),
+    path("receipt/get-apartment-info/", get_apartment_info, name="get_apartment_info"),
+    path(
+        "receipts/update/<int:pk>/", ReceiptUpdateView.as_view(), name="receipt_update"
+    ),
+    path(
+        "receipts/delete/<int:pk>/", ReceiptDeleteView.as_view(), name="receipt_delete"
+    ),
+    path("get_counter_reading/", get_counter_readings, name="get_counter_readings"),
+    path("get-tariff-services/", get_tariff_services, name="get_tariff_services"),
 ]
