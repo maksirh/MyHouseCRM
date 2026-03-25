@@ -108,7 +108,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: "{% url 'adminlte:get_sections_and_floors' %}?house_id=" + houseId,
+            url: "adminpanel/api/sections-and-floors?house_id=" + houseId,
             type: 'GET',
             dataType: 'json',
             success: function(data) {

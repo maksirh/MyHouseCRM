@@ -1,5 +1,6 @@
 from django.urls import path
 
+from .api import api
 from .views import (
     AboutUsPageView,
     AccountCreateView,
@@ -38,25 +39,17 @@ from .views import (
     ServiceEditView,
     ServicePageView,
     StatisticPageView,
+    TariffCreateView,
     TariffDetailView,
     TariffListView,
+    TariffUpdateView,
     UserCreateView,
     UserDeleteView,
     UserDetailView,
     UserEditView,
     UserListView,
     UserProfileView,
-    get_apartment_info,
-    get_counter_readings,
-    get_lists_by_house,
-    get_owner_by_apartment,
-    get_sections_and_floors,
-    get_service_unit,
-    get_tariff_services,
-    get_user_role,
-    receipt_delete_many,
     send_user_invite,
-    tariff_update,
 )
 
 app_name = "adminlte"
@@ -74,13 +67,11 @@ urlpatterns = [
     path("user/profile", UserProfileView.as_view(), name="user_profile"),
     path("user/detail/<int:pk>", UserDetailView.as_view(), name="user_detail"),
     path("user/delete/<int:pk>", UserDeleteView.as_view(), name="user_delete"),
-    path("user/invite/<int:pk>", send_user_invite, name="user_invite"),
     path("service/edit/", ServiceEditView.as_view(), name="service_edit"),
     path("tariff/list/", TariffListView.as_view(), name="tariff_list"),
-    path("tariff/create/", tariff_update, name="tariff_create"),
-    path("tariff/edit/<int:pk>", tariff_update, name="tariff_update"),
-    path("tariff/getservice/", get_service_unit, name="get_service_unit"),
     path("tariff/detail/<int:pk>", TariffDetailView.as_view(), name="tariff_detail"),
+    path("tariffs/create/", TariffCreateView.as_view(), name="tariff_create"),
+    path("tariffs/<int:pk>/update/", TariffUpdateView.as_view(), name="tariff_update"),
     path("payment/detail/", PaymentDetailView.as_view(), name="payment_detail"),
     path("article/list/", ListArticleView.as_view(), name="article_list"),
     path("article/edit/<int:pk>", EditArticleView.as_view(), name="article_edit"),
@@ -91,7 +82,6 @@ urlpatterns = [
     path("house/create/", HouseView.as_view(), name="house_create"),
     path("house/edit/<int:pk>/", HouseView.as_view(), name="house_update"),
     path("house/delete/<int:pk>/", HouseDeleteView.as_view(), name="house_delete"),
-    path("house/get-user-role/", get_user_role, name="get_user_role"),
     path("apartment/list/", ApartmentListView.as_view(), name="apartment_list"),
     path("apartment/create/", ApartmentCreateView.as_view(), name="apartment_create"),
     path(
@@ -109,17 +99,9 @@ urlpatterns = [
         ApartmentDetailView.as_view(),
         name="apartment_detail",
     ),
-    path(
-        "apartment/getsecandfloor/",
-        get_sections_and_floors,
-        name="get_sections_and_floors",
-    ),
     path("owners/", OwnerListView.as_view(), name="owners_list"),
     path("accounts/create/", AccountCreateView.as_view(), name="account_create"),
     path("accounts/", AccountListView.as_view(), name="account_list"),
-    path(
-        "get_owner_by_apartment/", get_owner_by_apartment, name="get_owner_by_apartment"
-    ),
     path("accounts/<int:pk>/", AccountDetailView.as_view(), name="account_detail"),
     path(
         "accounts/<int:pk>/update/", AccountUpdateView.as_view(), name="account_update"
@@ -152,20 +134,17 @@ urlpatterns = [
         CounterReadingDeleteView.as_view(),
         name="counter_reading_delete",
     ),
-    path("get-list-by-house/", get_lists_by_house, name="get_lists_by_house"),
     path("receipts/list/", ReceiptListView.as_view(), name="receipt_list"),
     path(
         "receipt/detail/<int:pk>/", ReceiptDetailView.as_view(), name="receipt_detail"
     ),
-    path("receipt/delete-many/", receipt_delete_many, name="receipt_delete_many"),
     path("receipt/create/", ReceiptCreateView.as_view(), name="receipt_create"),
-    path("receipt/get-apartment-info/", get_apartment_info, name="get_apartment_info"),
     path(
         "receipts/update/<int:pk>/", ReceiptUpdateView.as_view(), name="receipt_update"
     ),
     path(
         "receipts/delete/<int:pk>/", ReceiptDeleteView.as_view(), name="receipt_delete"
     ),
-    path("get_counter_reading/", get_counter_readings, name="get_counter_readings"),
-    path("get-tariff-services/", get_tariff_services, name="get_tariff_services"),
+    path("send_user_invite/<int:pk>/", send_user_invite, name="user_invite"),
+    path("api/", api.urls),
 ]

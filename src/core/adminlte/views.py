@@ -54,7 +54,6 @@ from src.crm.models import (
     Receipt,
     Service,
     Tariffs,
-    TariffService,
 )
 from src.house.models import Apartment, Floor, House, Section
 from src.user.models import Roles, User
@@ -486,42 +485,6 @@ class UserDeleteView(DeleteView):
     success_url = reverse_lazy("adminlte:users_list")
 
 
-def send_user_invite(request, pk):
-    target_user = get_object_or_404(User, pk=pk)
-
-    if not target_user.email:
-        messages.error(
-            request, "Неможливо надіслати запрошення: у користувача немає Email."
-        )
-        return redirect("users_list")
-
-    subject = "Запрошення до системи MyHouseCRM"
-    message = f"""Вітаємо, {target_user.first_name or 'Користувачу'}!
-
-Вас запрошено до системи управління MyHouseCRM.
-Ваш логін для входу: {target_user.email}
-
-Для входу перейдіть за посиланням:
-
-З повагою, Адміністрація."""
-
-    try:
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[target_user.email],
-            fail_silently=False,
-        )
-        messages.success(
-            request, f"Запрошення успішно надіслано на {target_user.email}"
-        )
-    except Exception as e:
-        messages.error(request, f"Помилка при відправці листа: {e}")
-
-    return redirect("adminlte:users_list")
-
-
 class ServiceEditView(View):
     template_name = "adminlte/service_edit.html"
 
@@ -557,50 +520,6 @@ class ServiceEditView(View):
         }
 
         return render(request, self.template_name, context)
-
-
-def tariff_update(request, pk=None):
-    if pk:
-        tariff = get_object_or_404(Tariffs, pk=pk)
-    else:
-        tariff = Tariffs()
-
-    if request.method == "POST":
-        form = TariffsForm(request.POST, instance=tariff)
-        formset = TariffServiceFormSet(request.POST, instance=tariff)
-
-        if form.is_valid() and formset.is_valid():
-            saved_tariff = form.save()
-            formset.instance = saved_tariff
-            formset.save()
-            return redirect("adminlte:tariff_list")
-    else:
-        form = TariffsForm(instance=tariff)
-        formset = TariffServiceFormSet(instance=tariff)
-
-    return render(
-        request,
-        "adminlte/tariff_edit.html",
-        {
-            "tariff": tariff,
-            "form": form,
-            "formset": formset,
-        },
-    )
-
-
-def get_service_unit(request):
-    service_id = request.GET.get("service_id")
-    if service_id:
-        service = Service.objects.filter(id=service_id).first()
-        if service:
-            return JsonResponse(
-                {
-                    "unit_name": service.measure.name if service.measure else "",
-                    "currency": service.currency.name if service.currency else "грн",
-                }
-            )
-    return JsonResponse({"unit_name": "", "currency": ""})
 
 
 class TariffListView(ListView):
@@ -736,20 +655,6 @@ class HouseView(View):
             "user_formset": user_formset,
         }
         return render(request, self.template_name, context)
-
-
-def get_user_role(request):
-    user_id = request.GET.get("user_id")
-    if user_id:
-        try:
-            user = User.objects.select_related("role").get(pk=user_id)
-            role_name = user.role.name if user.role else "Без ролі"
-
-            return JsonResponse({"role_name": role_name})
-        except User.DoesNotExist:
-            pass
-
-    return JsonResponse({"role_name": "Помилка"}, status=400)
 
 
 class HouseListView(ListView):
@@ -896,18 +801,6 @@ class ApartmentDetailView(DetailView):
         )
 
 
-def get_sections_and_floors(request):
-    house_id = request.GET.get("house_id")
-
-    if house_id:
-        sections = list(Section.objects.filter(house_id=house_id).values("id", "name"))
-        floors = list(Floor.objects.filter(house_id=house_id).values("id", "name"))
-
-        return JsonResponse({"sections": sections, "floors": floors})
-
-    return JsonResponse({"sections": [], "floors": []})
-
-
 class OwnerListView(ListView):
     model = User
     template_name = "adminlte/apartment_owners.html"
@@ -987,24 +880,6 @@ class AccountCreateView(CreateView):
             apartment.save()
 
         return response
-
-
-def get_owner_by_apartment(request):
-    apartment_id = request.GET.get("apartment_id")
-    if apartment_id:
-        try:
-            apt = Apartment.objects.select_related("owner").get(id=apartment_id)
-            if apt.owner:
-                owner_name = (
-                    f"{apt.owner.first_name} {apt.owner.last_name}".strip()
-                    or apt.owner.username
-                )
-                owner_phone = apt.owner.phone_number or "не вказаний"
-                return JsonResponse({"name": owner_name, "phone": owner_phone})
-        except Apartment.DoesNotExist:
-            pass
-
-    return JsonResponse({"name": "не обраний", "phone": "не обраний"})
 
 
 class AccountListView(ListView):
@@ -1141,7 +1016,7 @@ class CounterReadingCreateView(CreateView):
     model = CounterReadings
     form_class = CounterReadingForm
     template_name = "adminlte/counter_reading_edit.html"
-    success_url = reverse_lazy("adminlte:counter_reading_list")
+    success_url = reverse_lazy("adminlte:counter_reading")
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -1355,15 +1230,6 @@ class ReceiptListView(ListView):
         return context
 
 
-def receipt_delete_many(request):
-    if request.method == "POST":
-        ids = request.POST.getlist("ids[]")
-        if ids:
-            Receipt.objects.filter(id__in=ids).delete()
-            return JsonResponse({"status": "success"})
-    return JsonResponse({"status": "error"}, status=400)
-
-
 class ReceiptDetailView(DetailView):
     model = Receipt
     template_name = "adminlte/receipt_detail.html"
@@ -1549,49 +1415,99 @@ class ReceiptDeleteView(DeleteView):
     success_url = reverse_lazy("adminlte:receipt_list")
 
 
-def get_counter_readings(request):
-    apartment_id = request.GET.get("apartment_id")
-    date_from = request.GET.get("date_from")
-    date_to = request.GET.get("date_to")
+class TariffCreateView(CreateView):
+    model = Tariffs
+    form_class = TariffsForm
+    template_name = "adminlte/tariff_edit.html"
+    success_url = reverse_lazy("adminlte:tariff_list")
 
-    if not all([apartment_id, date_from, date_to]):
-        return JsonResponse({"error": "Missing parameters"}, status=400)
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data["formset"] = TariffServiceFormSet(self.request.POST)
+        else:
+            data["formset"] = TariffServiceFormSet()
+        return data
 
-    readings = CounterReadings.objects.filter(
-        apartment_id=apartment_id, date__gte=date_from, date__lte=date_to
-    ).select_related("service")
+    def form_valid(self, form):
+        context = self.get_context_data()
+        formset = context["formset"]
 
-    data = []
-    for r in readings:
-        data.append(
-            {
-                "service_id": r.service.id,
-                "quantity": r.meter,
-            }
+        with transaction.atomic():
+            self.object = form.save()
+
+            if formset.is_valid():
+                formset.instance = self.object
+                formset.save()
+            else:
+                return self.form_invalid(form)
+
+        return super().form_valid(form)
+
+
+class TariffUpdateView(UpdateView):
+    model = Tariffs
+    form_class = TariffsForm
+    template_name = "adminlte/tariff_edit.html"
+    success_url = reverse_lazy("adminlte:tariff_list")
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data["formset"] = TariffServiceFormSet(
+                self.request.POST, instance=self.object
+            )
+        else:
+            data["formset"] = TariffServiceFormSet(instance=self.object)
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        formset = context["formset"]
+
+        with transaction.atomic():
+            self.object = form.save()
+
+            if formset.is_valid():
+                formset.instance = self.object
+                formset.save()
+            else:
+                return self.form_invalid(form)
+
+        return super().form_valid(form)
+
+
+def send_user_invite(request, pk):
+    target_user = get_object_or_404(User, pk=pk)
+
+    if not target_user.email:
+        messages.error(
+            request, "Неможливо надіслати запрошення: у користувача немає Email."
         )
+        return redirect("users_list")
 
-    return JsonResponse({"readings": data})
+    subject = "Запрошення до системи MyHouseCRM"
+    message = f"""Вітаємо, {target_user.first_name or 'Користувачу'}!
 
+Вас запрошено до системи управління MyHouseCRM.
+Ваш логін для входу: {target_user.email}
 
-def get_tariff_services(request):
-    tariff_id = request.GET.get("tariff_id")
+Для входу перейдіть за посиланням:
 
-    if not tariff_id:
-        return JsonResponse({"error": "Tariff not provided"}, status=400)
+З повагою, Адміністрація."""
 
     try:
-        tariff_services = TariffService.objects.filter(tariff_id=tariff_id)
-
-        data = []
-        for ts in tariff_services:
-            data.append(
-                {
-                    "service_id": ts.service_id,
-                    "price": ts.price_per_unit,
-                }
-            )
-
-        return JsonResponse({"services": data})
-
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[target_user.email],
+            fail_silently=False,
+        )
+        messages.success(
+            request, f"Запрошення успішно надіслано на {target_user.email}"
+        )
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=400)
+        messages.error(request, f"Помилка при відправці листа: {e}")
+
+    return redirect("adminlte:users_list")

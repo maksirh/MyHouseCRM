@@ -120,7 +120,7 @@ $(function () {
         var houseId = $(this).val();
         if(houseId) {
             $.ajax({
-                url: "{% url 'adminlte:get_lists_by_house' %}",
+                url: "adminpanel/api/get_apartment_info",
                 data: { 'house_id': houseId },
                 success: function(data) {
                     $("#id_section").html(data.sections);
@@ -138,7 +138,7 @@ $(function () {
         var houseId = $('#id_house').val();
         if(sectionId || houseId) {
             $.ajax({
-                url: "{% url 'adminlte:get_lists_by_house' %}",
+                url: "aminpanel/api/get_lists_by_house",
                 data: { 'house_id': houseId, 'section_id': sectionId },
                 success: function(data) {
                     $("#id_apartment").html(data.flats);

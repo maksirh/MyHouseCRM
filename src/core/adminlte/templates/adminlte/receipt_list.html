@@ -58,7 +58,7 @@
                 </button>
                 <ul class="dropdown-menu">
                     <li><a href="{% url 'adminlte:receipt_create' %}">Створити загальну квитанцію</a></li>
-                    <li><a href="{% url 'adminlte:receipt_delete_many' %}" class="delete-many">Видалити</a></li>
+                    <li><a href="/adminlte/api/receipts/delete-many" class="delete-many">Видалити</a></li>
                 </ul>
             </div>
         </div>
@@ -233,7 +233,7 @@ $(function () {
                 var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
 
                 $.ajax({
-                    url: "{% url 'adminlte:receipt_delete_many' %}",
+                    url: "/adminlte/api/receipts/delete-many",
                     data: {
                         'ids': ids,
                         'csrfmiddlewaretoken': csrfToken

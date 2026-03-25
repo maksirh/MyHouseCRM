@@ -194,7 +194,7 @@ $(document).ready(function() {
         var houseId = $(this).val();
         if(houseId) {
             $.ajax({
-                url: "{% url 'adminlte:get_lists_by_house' %}",
+                url: "/adminpanel/api/lists-by-house",
                 data: { 'house_id': houseId },
                 success: function(data) {
                     $("#id_section").html(data.sections);
@@ -209,7 +209,7 @@ $(document).ready(function() {
         var houseId = $('#id_house').val();
         if(sectionId || houseId) {
             $.ajax({
-                url: "{% url 'adminlte:get_lists_by_house' %}",
+                url: "/adminpanel/api/lists-by-house",
                 data: { 'house_id': houseId, 'section_id': sectionId },
                 success: function(data) {
                     $("#id_apartment").html(data.flats).trigger('change');
@@ -222,7 +222,7 @@ $(document).ready(function() {
         var apartmentId = $(this).val();
         if(apartmentId) {
             $.ajax({
-                url: "{% url 'adminlte:get_apartment_info' %}",
+                url: "/adminpanel/api/apartment-info",
                 data: { 'apartment_id': apartmentId },
                 success: function(data) {
                     $('#owner-info').text(data.owner_name);
@@ -286,7 +286,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: "{% url 'adminlte:get_counter_readings' %}",
+            url: "/adminpanel/api/counter-readings",
             data: {
                 'apartment_id': apartmentId,
                 'date_from': dateFrom,
@@ -331,7 +331,7 @@ $(document).ready(function() {
 
         if (confirm('Увага! Це оновить послуги згідно з обраним тарифом. Продовжити?')) {
             $.ajax({
-                url: "{% url 'adminlte:get_tariff_services' %}",
+                url: "/adminpanel/api/tariff-services",
                 data: { 'tariff_id': tariffId },
                 success: function(data) {
                     if(data.services.length === 0) {

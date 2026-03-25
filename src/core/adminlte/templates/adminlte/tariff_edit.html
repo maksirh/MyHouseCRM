@@ -159,7 +159,7 @@ jQuery(function ($) {
 
         if (serviceId) {
             $.ajax({
-                url: "{% url 'adminlte:get_service_unit' %}?service_id=" + serviceId,
+                url: "/adminpanel/api/service-unit?service_id=" + serviceId,
                 dataType: 'json',
                 success: function(json) {
                     row.find('.serviceunit-name').val(json.unit_name);

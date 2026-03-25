@@ -50,7 +50,7 @@
                                 <td>Лицевой счет</td>
                                 <td>
                                     {% if flat.account %}
-                                        <a href="{% url 'account_detail' flat.account.id %}">{{ flat.account.uid|default:flat.account.id }}</a>
+                                        <a href="{% url 'adminlte:account_detail' flat.account.id %}">{{ flat.account.uid|default:flat.account.id }}</a>
                                     {% else %}
                                         не указано
                                     {% endif %}
