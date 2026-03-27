@@ -62,6 +62,10 @@ class ListsByHouseOut(Schema):
     flats: str
 
 
+class AccountOwnerOut(Schema):
+    owner_name: str
+
+
 @api.get("/service-unit", response=ServiceUnitOut)
 def get_service_unit(request, service_id: int):
     service = (
@@ -155,3 +159,23 @@ def get_lists_by_house(
             flats_html += f'<option value="{flat.id}">{flat.number}</option>'
 
     return {"sections": sections_html, "flats": flats_html}
+
+
+@api.get("/account-owner", response=AccountOwnerOut)
+def get_account_owner(request, account_id: int):
+
+    try:
+        account = PersonalAccount.objects.get(id=account_id)
+        apt = getattr(account, "apartment", None)
+
+        if not apt and hasattr(account, "apartment_set"):
+            apt = account.apartment_set.first()
+
+        if apt and apt.owner:
+            owner_name = f"{apt.owner.first_name} {apt.owner.last_name}"
+            return {"owner_name": owner_name}
+
+    except PersonalAccount.DoesNotExist:
+        pass
+
+    return {"owner_name": "(не задано)"}

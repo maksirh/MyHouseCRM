@@ -22,6 +22,8 @@ from src.core.adminlte.forms import (
     AboutUsPageForm,
     ApartmentForm,
     ArticleForm,
+    CashBoxExpenseForm,
+    CashBoxIncomeForm,
     ContactsPage,
     ContactsPageForm,
     CounterReadingForm,
@@ -48,6 +50,7 @@ from src.core.adminlte.forms import (
 )
 from src.crm.models import (
     Article,
+    CashBox,
     CounterReadings,
     Measure,
     PersonalAccount,
@@ -1511,3 +1514,98 @@ def send_user_invite(request, pk):
         messages.error(request, f"Помилка при відправці листа: {e}")
 
     return redirect("adminlte:users_list")
+
+
+class CashBoxListView(ListView):
+    model = CashBox
+    template_name = "adminlte/cashbox_list.html"
+    context_object_name = "cashbox_list"
+    paginate_by = 10
+
+    def get_queryset(self):
+        qs = (
+            super()
+            .get_queryset()
+            .select_related("article", "manager", "personal_account")
+        )
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        balance_agg = PersonalAccount.objects.filter(balance__gt=0).aggregate(
+            total=Sum("balance")
+        )
+        context["accounts_balance"] = balance_agg["total"] or 0.00
+
+        debt_agg = PersonalAccount.objects.filter(balance__lt=0).aggregate(
+            total=Sum("balance")
+        )
+        context["accounts_debt"] = abs(debt_agg["total"]) if debt_agg["total"] else 0.00
+
+        income = (
+            CashBox.objects.filter(is_completed=True, article__article="I").aggregate(
+                total=Sum("amount")
+            )["total"]
+            or 0
+        )
+        expense = (
+            CashBox.objects.filter(is_completed=True, article__article="E").aggregate(
+                total=Sum("amount")
+            )["total"]
+            or 0
+        )
+        context["cashbox_state"] = income - expense
+
+        context["total_income"] = income
+        context["total_expense"] = expense
+
+        return context
+
+
+class CashBoxIncomeCreateView(CreateView):
+    model = CashBox
+    form_class = CashBoxIncomeForm
+    template_name = "adminlte/cashbox_income_form.html"
+    success_url = reverse_lazy("adminlte:cashbox_list")
+
+    def get_initial(self):
+        initial = super().get_initial()
+        last_cashbox = CashBox.objects.order_by("id").last()
+        next_id = last_cashbox.id + 1 if last_cashbox else 1
+        initial["number"] = f"{next_id:010d}"
+        return initial
+
+
+class CashBoxExpenseCreateView(CreateView):
+    model = CashBox
+    form_class = CashBoxExpenseForm
+    template_name = "adminlte/cashbox_expense_form.html"
+    success_url = reverse_lazy("adminlte:cashbox_list")
+
+    def get_initial(self):
+        initial = super().get_initial()
+        last_cashbox = CashBox.objects.order_by("id").last()
+        next_id = last_cashbox.id + 1 if last_cashbox else 1
+        initial["number"] = f"{next_id:010d}"
+        return initial
+
+
+class CashBoxUpdateView(UpdateView):
+    model = CashBox
+    success_url = reverse_lazy("adminlte:cashbox_list")
+
+    def get_form_class(self):
+        if self.object.article.article == "I":
+            return CashBoxIncomeForm
+        return CashBoxExpenseForm
+
+    def get_template_names(self):
+        if self.object.article.article == "I":
+            return ["adminlte/cashbox_income_form.html"]
+        return ["adminlte/cashbox_expense_form.html"]
+
+
+class CashBoxDeleteView(DeleteView):
+    model = CashBox
+    success_url = reverse_lazy("adminlte:cashbox_list")

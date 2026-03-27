@@ -13,6 +13,11 @@ from .views import (
     ApartmentDetailView,
     ApartmentListView,
     ApartmentUpdateView,
+    CashBoxDeleteView,
+    CashBoxExpenseCreateView,
+    CashBoxIncomeCreateView,
+    CashBoxListView,
+    CashBoxUpdateView,
     ContactPageView,
     CounterReadingCreateView,
     CounterReadingDeleteView,
@@ -147,4 +152,21 @@ urlpatterns = [
     ),
     path("send_user_invite/<int:pk>/", send_user_invite, name="user_invite"),
     path("api/", api.urls),
+    path("cashbox/", CashBoxListView.as_view(), name="cashbox_list"),
+    path(
+        "cashbox/income/create/",
+        CashBoxIncomeCreateView.as_view(),
+        name="cashbox_income_create",
+    ),
+    path(
+        "cashbox/expense/create/",
+        CashBoxExpenseCreateView.as_view(),
+        name="cashbox_expense_create",
+    ),
+    path(
+        "cashbox/<int:pk>/update/", CashBoxUpdateView.as_view(), name="cashbox_update"
+    ),
+    path(
+        "cashbox/<int:pk>/delete/", CashBoxDeleteView.as_view(), name="cashbox_delete"
+    ),
 ]

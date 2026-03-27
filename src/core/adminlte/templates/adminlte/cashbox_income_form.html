@@ -1,0 +1,133 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Нова прибуткова відомість{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Нова прибуткова відомість</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li><a href="{% url 'adminlte:cashbox_list' %}">Каса</a></li>
+        <li class="active">Нова прибуткова відомість</li>
+    </ul>
+</section>
+
+<section class="content">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-xs-12 col-md-7 col-lg-6">
+                <div class="page-header-spec" style="display: flex; align-items: center; margin-bottom: 20px;">
+                    <div class="form-group margin-bottom-none {% if form.number.errors %}has-error{% endif %}" style="margin-right: 15px;">
+                        <div class="input-group">
+                            <div class="input-group-addon">№</div>
+                            {{ form.number }}
+                        </div>
+                        <div class="help-block text-danger" style="margin-bottom: 0;">{{ form.number.errors }}</div>
+                    </div>
+                    <span class="label-mid" style="margin-right: 15px;">від</span>
+                    <div class="form-group margin-bottom-none {% if form.date.errors %}has-error{% endif %}">
+                        <div class="input-group date">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            {{ form.date }}
+                        </div>
+                        <div class="help-block text-danger" style="margin-bottom: 0;">{{ form.date.errors }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group {% if form.personal_account.errors %}has-error{% endif %}">
+                            <label>Особовий рахунок</label>
+                            {{ form.personal_account }}
+                            <div class="help-block text-danger">{{ form.personal_account.errors }}</div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: -10px; margin-bottom: 15px;">
+                            <b>Власник:</b> <span id="owner-info" class="text-muted">не обрано</span>
+                        </div>
+
+                        <div class="form-group {% if form.article.errors %}has-error{% endif %}">
+                            <label>Стаття</label>
+                            {{ form.article }}
+                            <div class="help-block text-danger">{{ form.article.errors }}</div>
+                        </div>
+
+                        <div class="form-group {% if form.amount.errors %}has-error{% endif %}">
+                            <label>Сума</label>
+                            {{ form.amount }}
+                            <div class="help-block text-danger">{{ form.amount.errors }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                {{ form.is_completed }} <b>Проведений</b>
+                            </label>
+                        </div>
+
+                        <div class="form-group {% if form.manager.errors %}has-error{% endif %}">
+                            <label>Менеджер</label>
+                            {{ form.manager }}
+                            <div class="help-block text-danger">{{ form.manager.errors }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group {% if form.comment.errors %}has-error{% endif %}">
+                            <label>Коментар</label>
+                            {{ form.comment }}
+                            <div class="help-block text-danger">{{ form.comment.errors }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row margin-top-15">
+                    <div class="col-xs-12 text-right">
+                        <a href="{% url 'adminlte:cashbox_list' %}" class="btn btn-default">Скасувати</a>
+                        <button type="submit" class="btn btn-success">Зберегти</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        $('input[type="text"], input[type="number"], select, textarea').addClass('form-control');
+        $('input[name="amount"]').attr('step', '0.01').attr('min', '0');
+
+        $('#id_personal_account').on('change', function() {
+            var accountId = $(this).val();
+
+            if(accountId) {
+                $.ajax({
+                    url: "/adminpanel/api/account-owner",
+                    data: { 'account_id': accountId },
+                    success: function(data) {
+                        $('#owner-info').text(data.owner_name).removeClass('text-muted');
+                    },
+                    error: function() {
+                        $('#owner-info').text('Помилка завантаження').addClass('text-muted');
+                    }
+                });
+            } else {
+                $('#owner-info').text('не обрано').addClass('text-muted');
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -128,18 +128,78 @@ class ReceiptItem(models.Model):
 
 
 class Article(models.Model):
-    ARTICLE_TYPES = (("I", "Прихід"), ("E", "Витрата"))
-    name = models.CharField(max_length=128)
-    article = models.CharField(choices=ARTICLE_TYPES, max_length=2)
+    ARTICLE_TYPES = (("I", "Прибуток"), ("E", "Витрата"))
+    name = models.CharField(max_length=128, verbose_name="Назва статті")
+    article = models.CharField(choices=ARTICLE_TYPES, max_length=2, verbose_name="Тип")
+
+    def __str__(self):
+        return self.name
 
 
 class CashBox(models.Model):
-    personal_account = ForeignKey(PersonalAccount, on_delete=models.CASCADE)
-    cash_state = models.IntegerField()
-    article = ForeignKey(Article, on_delete=models.CASCADE)
-    date = models.DateTimeField()
-    comment = models.TextField()
-    receipts = ForeignKey(Receipt, on_delete=models.CASCADE)
+    number = models.CharField(
+        max_length=20, unique=True, verbose_name="№ ордера", null=True, blank=True
+    )
+    date = models.DateField(default=timezone.now, verbose_name="Дата")
+    is_completed = models.BooleanField(default=True, verbose_name="Проведена")
+    manager = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Менеджер"
+    )
+
+    article = models.ForeignKey(
+        Article, on_delete=models.PROTECT, verbose_name="Стаття"
+    )
+    personal_account = models.ForeignKey(
+        PersonalAccount,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="cashbox_records",
+    )
+    receipt = models.ForeignKey(
+        Receipt,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="cashbox_records",
+    )
+
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Сума")
+    comment = models.TextField(null=True, blank=True, verbose_name="Коментар")
+
+    def __str__(self):
+        return f"Ордер №{self.number} від {self.date}"
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            super().save(*args, **kwargs)
+            self._update_account_balance()
+            return
+
+        old_record = CashBox.objects.get(pk=self.pk)
+
+        if (
+            old_record.is_completed
+            and old_record.article.article == "I"
+            and old_record.personal_account
+        ):
+            old_record.personal_account.balance -= old_record.amount
+            old_record.personal_account.save()
+
+        super().save(*args, **kwargs)
+
+        self._update_account_balance()
+
+    def _update_account_balance(self):
+        if self.is_completed and self.article.article == "I" and self.personal_account:
+            self.personal_account.balance += self.amount
+            self.personal_account.save()
+
+    def delete(self, *args, **kwargs):
+        if self.is_completed and self.article.article == "I" and self.personal_account:
+            self.personal_account.balance -= self.amount
+            self.personal_account.save()
+        super().delete(*args, **kwargs)
 
 
 class Message(models.Model):

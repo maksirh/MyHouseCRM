@@ -4,6 +4,7 @@ from django.forms.models import inlineformset_factory
 
 from src.crm.models import (
     Article,
+    CashBox,
     CounterReadings,
     Measure,
     PaymentDetail,
@@ -467,3 +468,40 @@ class ReceiptItemForm(forms.ModelForm):
 ReceiptItemFormSet = inlineformset_factory(
     Receipt, ReceiptItem, form=ReceiptItemForm, extra=1, can_delete=True
 )
+
+
+class CashBoxIncomeForm(forms.ModelForm):
+    class Meta:
+        model = CashBox
+        fields = [
+            "number",
+            "date",
+            "is_completed",
+            "manager",
+            "personal_account",
+            "article",
+            "amount",
+            "comment",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["article"].queryset = Article.objects.filter(article="I")
+
+
+class CashBoxExpenseForm(forms.ModelForm):
+    class Meta:
+        model = CashBox
+        fields = [
+            "number",
+            "date",
+            "is_completed",
+            "manager",
+            "article",
+            "amount",
+            "comment",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["article"].queryset = Article.objects.filter(article="E")
