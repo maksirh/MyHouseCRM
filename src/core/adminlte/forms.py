@@ -4,6 +4,7 @@ from django.forms.models import inlineformset_factory
 
 from src.crm.models import (
     Article,
+    CallMaster,
     CashBox,
     CounterReadings,
     Measure,
@@ -505,3 +506,37 @@ class CashBoxExpenseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["article"].queryset = Article.objects.filter(article="E")
+
+
+class CallMasterForm(forms.ModelForm):
+    owner = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        required=False,
+        widget=forms.Select(attrs={"class": "form-control"}),
+        label="Власник квартири",
+    )
+
+    class Meta:
+        model = CallMaster
+        fields = [
+            "date",
+            "time",
+            "owner",
+            "apartment",
+            "master_type",
+            "master",
+            "status",
+            "description",
+            "comment",
+        ]
+
+        widgets = {
+            "date": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+            "time": forms.TimeInput(attrs={"class": "form-control", "type": "time"}),
+            "status": forms.Select(attrs={"class": "form-control"}),
+            "apartment": forms.Select(attrs={"class": "form-control"}),
+            "master_type": forms.Select(attrs={"class": "form-control"}),
+            "master": forms.Select(attrs={"class": "form-control"}),
+            "description": forms.Textarea(attrs={"class": "form-control", "rows": 5}),
+            "comment": forms.Textarea(attrs={"class": "form-control summernote"}),
+        }

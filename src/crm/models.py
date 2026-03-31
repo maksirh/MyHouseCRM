@@ -214,11 +214,14 @@ class Message(models.Model):
 
 class CallMaster(models.Model):
     STATUSES = (("N", "Нове"), ("W", "В роботі"), ("C", "Виконано"))
-    status = models.CharField(choices=STATUSES, max_length=2)
+    date = models.DateField(default=timezone.now, verbose_name="Дата")
+    time = models.TimeField(default=timezone.now, verbose_name="Час")
+    status = models.CharField(choices=STATUSES, max_length=2, default="N")
     apartment = ForeignKey(Apartment, on_delete=models.CASCADE)
     master_type = ForeignKey(Roles, on_delete=models.CASCADE)
     master = ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     description = models.TextField()
+    comment = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 

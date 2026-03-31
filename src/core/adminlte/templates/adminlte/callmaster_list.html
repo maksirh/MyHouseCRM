@@ -1,0 +1,201 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Заявки виклику майстра{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Заявки виклику майстра</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li class="active">Заявки виклику майстра</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="pull-right margin-bottom">
+                <a class="btn btn-success" href="{% url 'adminlte:callmaster_create' %}">Додати заявку</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"></h3>
+                    <div class="box-tools">
+                        <a href="{% url 'adminlte:callmaster_list' %}" class="btn btn-default btn-sm">
+                            <span class="hidden-xs">Очистити</span><i class="fa fa-eraser visible-xs" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="w0" class="grid-view">
+                    <div class="box-body table-responsive no-padding">
+                        <form method="GET" id="filter-form">
+                            <table class="table table-bordered table-hover table-striped linkedRow">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 100px; min-width: 100px"><a class="desc" href="?sort=id">№ заявки</a></th>
+                                        <th style="width: 135px; min-width: 135px"><a href="?sort=date">Зручний час</a></th>
+                                        <th style="min-width: 125px"><a href="?sort=master_type">Тип майстра</a></th>
+                                        <th style="min-width: 350px">Опис</th>
+                                        <th>Квартира</th>
+                                        <th style="min-width: 200px">Власник</th>
+                                        <th>Телефон</th>
+                                        <th style="min-width: 125px">Майстер</th>
+                                        <th style="width: 135px; min-width: 135px">Статус</th>
+                                        <th style="width: 80px; min-width: 80px">&nbsp;</th>
+                                    </tr>
+                                    <tr id="w0-filters" class="filters">
+                                        <td><input type="text" class="form-control" name="id" value="{{ request.GET.id|default:'' }}" onchange="this.form.submit()"></td>
+                                        <td><input type="text" class="form-control" name="date" placeholder="Оберіть дату" value="{{ request.GET.date|default:'' }}" onchange="this.form.submit()"></td>
+                                        <td>
+                                            <select class="form-control" name="master_type" onchange="this.form.submit()">
+                                                <option value=""></option>
+                                                </select>
+                                        </td>
+                                        <td><input type="text" class="form-control" name="description" value="{{ request.GET.description|default:'' }}" onchange="this.form.submit()"></td>
+                                        <td><input type="text" class="form-control" name="apartment" value="{{ request.GET.apartment|default:'' }}" onchange="this.form.submit()"></td>
+                                        <td>
+                                            <select class="form-control" name="owner" onchange="this.form.submit()">
+                                                <option value=""></option>
+                                            </select>
+                                        </td>
+                                        <td><input type="text" class="form-control" name="phone" value="{{ request.GET.phone|default:'' }}" onchange="this.form.submit()"></td>
+                                        <td>
+                                            <select class="form-control" name="master" onchange="this.form.submit()">
+                                                <option value=""></option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="status" onchange="this.form.submit()">
+                                                <option value=""></option>
+                                                <option value="N" {% if request.GET.status == 'N' %}selected{% endif %}>Нове</option>
+                                                <option value="W" {% if request.GET.status == 'W' %}selected{% endif %}>В роботі</option>
+                                                <option value="C" {% if request.GET.status == 'C' %}selected{% endif %}>Виконано</option>
+                                            </select>
+                                        </td>
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for req in callmaster_list %}
+                                        <tr data-href="#" style="cursor: pointer;">
+                                            <td>{{ req.id }}</td>
+                                            <td>{{ req.date|date:"d.m.Y" }} - {{ req.time|time:"H:i" }}</td>
+                                            <td>{{ req.master_type.name|default:req.master_type }}</td>
+                                            <td>{{ req.description|truncatechars:50 }}</td>
+                                            <td>
+                                                {% if req.apartment %}
+                                                    <a href="#">кв.{{ req.apartment.number }}, {{ req.apartment.house.name|default:"-" }}</a>
+                                                {% else %}
+                                                    <span class="text-muted">(не задано)</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if req.apartment and req.apartment.owner %}
+                                                    <a href="#">{{ req.apartment.owner.first_name }} {{ req.apartment.owner.last_name }}</a>
+                                                {% else %}
+                                                    <span class="text-muted">(не задано)</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if req.apartment and req.apartment.owner and req.apartment.owner.phone_number %}
+                                                    {{ req.apartment.owner.phone_number }}
+                                                {% else %}
+                                                    <span class="text-muted">(не задано)</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if req.master %}
+                                                    <a href="#">{{ req.master.first_name }} {{ req.master.last_name }}</a>
+                                                {% else %}
+                                                    <span class="text-muted">(не задано)</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if req.status == 'N' %}
+                                                    <small class="label label-primary">Нове</small>
+                                                {% elif req.status == 'W' %}
+                                                    <small class="label label-warning">В роботі</small>
+                                                {% elif req.status == 'C' %}
+                                                    <small class="label label-success">Виконано</small>
+                                                {% else %}
+                                                    <small class="label label-default">{{ req.get_status_display }}</small>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group pull-right">
+                                                    <a class="btn btn-default btn-sm" href="{% url 'adminlte:callmaster_update' req.id %}" title="Редагувати" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+
+                                                    <button type="submit" form="delete-form-{{ req.id }}" class="btn btn-default btn-sm" title="Видалити" data-toggle="tooltip" onclick="return confirm('Ви впевнені, що хочете видалити цю заявку?');">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="10" class="text-center text-muted">Заявок не знайдено.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </form>
+
+                        {% for req in callmaster_list %}
+                            <form id="delete-form-{{ req.id }}" action="{% url 'adminlte:callmaster_delete' req.id %}" method="POST" style="display: none;">
+                                {% csrf_token %}
+                            </form>
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="box-footer clearfix">
+                        {% if is_paginated %}
+                        <ul class="pagination pagination-sm no-margin pull-right">
+                            {% if page_obj.has_previous %}
+                                <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&laquo;</span></li>
+                            {% endif %}
+
+                            {% for i in paginator.page_range %}
+                                {% if page_obj.number == i %}
+                                    <li class="active"><span>{{ i }}</span></li>
+                                {% else %}
+                                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+
+    $('tr[data-href]').on('click', function(e) {
+        if (!$(e.target).closest('a, button, input').length) {
+        }
+    });
+});
+</script>
+{% endblock %}

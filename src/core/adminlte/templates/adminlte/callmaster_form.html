@@ -1,0 +1,167 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}{% if is_new %}Нова заявка{% else %}Заявка №{{ object.id }}{% endif %}{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>{% if is_new %}Нова заявка{% else %}Заявка №{{ object.id }}{% endif %}</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li><a href="#">Виклик майстра</a></li>
+        <li class="active">{% if is_new %}Нова заявка{% else %}Заявка №{{ object.id }}{% endif %}</li>
+    </ul>
+</section>
+
+<section class="content">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-xs-12 col-md-7 col-lg-6">
+                <div class="page-header-spec" style="display: flex; align-items: center; margin-bottom: 20px;">
+                    <div class="form-group margin-bottom-none {% if form.date.errors %}has-error{% endif %}" style="margin-right: 15px;">
+                        <div class="input-group date">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            {{ form.date }}
+                        </div>
+                        <div class="help-block text-danger" style="margin-bottom: 0;">{{ form.date.errors }}</div>
+                    </div>
+                    <span class="label-mid" style="margin-right: 15px;">від</span>
+                    <div class="form-group margin-bottom-none {% if form.time.errors %}has-error{% endif %}">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                            {{ form.time }}
+                        </div>
+                        <div class="help-block text-danger" style="margin-bottom: 0;">{{ form.time.errors }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group {% if form.owner.errors %}has-error{% endif %}">
+                            <label>Власник квартири</label>
+                            {{ form.owner }}
+                            <div class="help-block text-danger">{{ form.owner.errors }}</div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <b>Телефон:</b> <a href="#" id="info-phone" class="text-muted">не обрано</a>
+                        </div>
+
+                        <div class="form-group {% if form.description.errors %}has-error{% endif %}">
+                            <label>Опис</label>
+                            {{ form.description }}
+                            <div class="help-block text-danger">{{ form.description.errors }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="well well-sm">
+                            <p style="margin-bottom: 5px;"><b>Будинок:</b> <span id="info-house" class="text-muted">не обрано</span></p>
+                            <p style="margin-bottom: 5px;"><b>Секція:</b> <span id="info-section" class="text-muted">не обрано</span></p>
+                            <p style="margin-bottom: 0;"><b>Поверх:</b> <span id="info-floor" class="text-muted">не обрано</span></p>
+                        </div>
+
+                        <div class="form-group {% if form.apartment.errors %}has-error{% endif %}">
+                            <label>Квартира</label>
+                            {{ form.apartment }}
+                            <div class="help-block text-danger">{{ form.apartment.errors }}</div>
+                        </div>
+
+                        <div class="form-group {% if form.master_type.errors %}has-error{% endif %}">
+                            <label>Тип майстра</label>
+                            {{ form.master_type }}
+                            <div class="help-block text-danger">{{ form.master_type.errors }}</div>
+                        </div>
+
+                        <div class="form-group {% if form.status.errors %}has-error{% endif %}">
+                            <label>Статус</label>
+                            {{ form.status }}
+                            <div class="help-block text-danger">{{ form.status.errors }}</div>
+                        </div>
+
+                        <div class="form-group {% if form.master.errors %}has-error{% endif %}">
+                            <label>Майстер</label>
+                            {{ form.master }}
+                            <div class="help-block text-danger">{{ form.master.errors }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group {% if form.comment.errors %}has-error{% endif %}">
+                            <label>Коментар</label>
+                            {{ form.comment }}
+                            <div class="help-block text-danger">{{ form.comment.errors }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row margin-top-15">
+                    <div class="col-xs-12 text-right">
+                        <a href="#" class="btn btn-default">Скасувати</a>
+                        <button type="submit" class="btn btn-success">Зберегти</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        if (typeof $.fn.summernote === 'function') {
+            $('.summernote').summernote({ height: 150 });
+        } else {
+            console.warn("Плагін Summernote не знайдено. Буде відображено звичайне текстове поле.");
+        }
+
+        $('#id_apartment').on('change', function() {
+            var aptId = $(this).val();
+
+            if(aptId) {
+                $.ajax({
+                    url: "/adminpanel/api/apartment-info",
+                    data: { 'apartment_id': aptId },
+                    success: function(data) {
+                        console.log("Успішно отримано дані від сервера:", data);
+
+                        $('#info-house').text(data.house_name || 'Не вказано').removeClass('text-muted');
+                        $('#info-section').text(data.section_name || 'Не вказано').removeClass('text-muted');
+                        $('#info-floor').text(data.floor || 'Не вказано').removeClass('text-muted');
+
+                        if (data.owner_phone && data.owner_phone !== "Немає телефону") {
+                            $('#info-phone').text(data.owner_phone).removeClass('text-muted');
+                            $('#info-phone').attr('href', 'tel:' + data.owner_phone);
+                        } else {
+                            $('#info-phone').text('Немає телефону').addClass('text-muted').attr('href', '#');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Помилка AJAX запиту:", error);
+                        $('#info-house, #info-section, #info-floor, #info-phone').text('Помилка завантаження').addClass('text-muted');
+                    }
+                });
+            } else {
+                $('#info-house, #info-section, #info-floor, #info-phone').text('не обрано').addClass('text-muted');
+                $('#info-phone').attr('href', '#');
+            }
+        });
+
+
+        if($('#id_apartment').val()) {
+            $('#id_apartment').trigger('change');
+        }
+
+    });
+</script>
+{% endblock %}

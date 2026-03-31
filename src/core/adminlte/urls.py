@@ -13,6 +13,10 @@ from .views import (
     ApartmentDetailView,
     ApartmentListView,
     ApartmentUpdateView,
+    CallMasterCreateView,
+    CallMasterDeleteView,
+    CallMasterListView,
+    CallMasterUpdateView,
     CashBoxDeleteView,
     CashBoxExpenseCreateView,
     CashBoxIncomeCreateView,
@@ -168,5 +172,21 @@ urlpatterns = [
     ),
     path(
         "cashbox/<int:pk>/delete/", CashBoxDeleteView.as_view(), name="cashbox_delete"
+    ),
+    path(
+        "call-requests/create/",
+        CallMasterCreateView.as_view(),
+        name="callmaster_create",
+    ),
+    path("call-requests/", CallMasterListView.as_view(), name="callmaster_list"),
+    path(
+        "call-requests/<int:pk>/update/",
+        CallMasterUpdateView.as_view(),
+        name="callmaster_update",
+    ),
+    path(
+        "call-requests/<int:pk>/delete/",
+        CallMasterDeleteView.as_view(),
+        name="callmaster_delete",
     ),
 ]

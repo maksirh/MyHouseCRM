@@ -41,6 +41,9 @@ class ApartmentInfoOut(Schema):
     owner_phone: str
     account_number: str
     tariff_id: Optional[int] = None
+    house_name: str = "Не вказано"
+    section_name: str = "Не вказано"
+    floor: str = "Не вказано"
 
 
 class ReadingOut(Schema):
@@ -96,21 +99,39 @@ def get_sections_and_floors(request, house_id: int):
 
 @api.get("/apartment-info", response=ApartmentInfoOut)
 def get_apartment_info(request, apartment_id: int):
-    apt = get_object_or_404(Apartment.objects.select_related("owner"), id=apartment_id)
+    try:
+        apt = Apartment.objects.get(id=apartment_id)
 
-    owner_name = (
-        f"{apt.owner.first_name} {apt.owner.last_name}" if apt.owner else "Не обрано"
-    )
-    owner_phone = getattr(apt.owner, "phone_number", None) if apt.owner else None
-
-    account = PersonalAccount.objects.filter(apartment=apt).first()
-
-    return {
-        "owner_name": owner_name,
-        "owner_phone": owner_phone or "Немає телефону",
-        "account_number": account.number if account else "Рахунок не створено",
-        "tariff_id": getattr(apt, "tariff_id", None),
-    }
+        return {
+            "owner_name": (
+                f"{apt.owner.first_name} {apt.owner.last_name}"
+                if apt.owner
+                else "(не задано)"
+            ),
+            "owner_phone": (
+                apt.owner.phone_number
+                if apt.owner and getattr(apt.owner, "phone_number", None)
+                else "Немає телефону"
+            ),
+            "account_number": (
+                getattr(apt, "account", None).number
+                if hasattr(apt, "account") and apt.account
+                else "(не задано)"
+            ),
+            "tariff_id": apt.tariff_id if hasattr(apt, "tariff_id") else None,
+            "house_name": apt.house.name if apt.house else "Не вказано",
+            "section_name": apt.section.name if apt.section else "Не вказано",
+            "floor": str(apt.floor) if apt.floor else "Не вказано",
+        }
+    except Apartment.DoesNotExist:
+        return {
+            "owner_name": "-",
+            "owner_phone": "-",
+            "account_number": "-",
+            "house_name": "-",
+            "section_name": "-",
+            "floor": "-",
+        }
 
 
 @api.get("/counter-readings", response=List[ReadingOut])

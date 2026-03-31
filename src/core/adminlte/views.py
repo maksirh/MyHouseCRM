@@ -22,6 +22,7 @@ from src.core.adminlte.forms import (
     AboutUsPageForm,
     ApartmentForm,
     ArticleForm,
+    CallMasterForm,
     CashBoxExpenseForm,
     CashBoxIncomeForm,
     ContactsPage,
@@ -50,6 +51,7 @@ from src.core.adminlte.forms import (
 )
 from src.crm.models import (
     Article,
+    CallMaster,
     CashBox,
     CounterReadings,
     Measure,
@@ -1609,3 +1611,55 @@ class CashBoxUpdateView(UpdateView):
 class CashBoxDeleteView(DeleteView):
     model = CashBox
     success_url = reverse_lazy("adminlte:cashbox_list")
+
+
+class CallMasterCreateView(CreateView):
+    model = CallMaster
+    form_class = CallMasterForm
+    template_name = "adminlte/callmaster_form.html"
+    success_url = reverse_lazy("adminlte:callmaster_list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_new"] = True
+        return context
+
+
+class CallMasterListView(ListView):
+    model = CallMaster
+    template_name = "adminlte/callmaster_list.html"
+    context_object_name = "callmaster_list"
+    paginate_by = 10
+
+    def get_queryset(self):
+        qs = (
+            super()
+            .get_queryset()
+            .select_related(
+                "apartment",
+                "apartment__house",
+                "apartment__owner",
+                "master_type",
+                "master",
+            )
+            .order_by("-date", "-time")
+        )
+
+        return qs
+
+
+class CallMasterUpdateView(UpdateView):
+    model = CallMaster
+    form_class = CallMasterForm
+    template_name = "adminlte/callmaster_form.html"
+    success_url = reverse_lazy("adminlte:callmaster_list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_new"] = False
+        return context
+
+
+class CallMasterDeleteView(DeleteView):
+    model = CallMaster
+    success_url = reverse_lazy("adminlte:callmaster_list")
