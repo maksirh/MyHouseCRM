@@ -1,0 +1,115 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Заявка №{{ object.id }}{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Заявка №{{ object.id }}</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li><a href="{% url 'adminlte:callmaster_list' %}">Заявки виклику майстра</a></li>
+        <li class="active">Заявка №{{ object.id }}</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12 col-md-7 col-lg-6">
+            <div class="page-header-spec" style="display: flex; align-items: center; margin-bottom: 20px;">
+                <div class="form-group margin-bottom-none" style="margin-right: 15px;">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input type="text" class="form-control" value="{{ object.date|date:'d.m.Y' }}" disabled style="background-color: #fff; cursor: default;">
+                    </div>
+                </div>
+                <span class="label-mid" style="margin-right: 15px;">від</span>
+                <div class="form-group margin-bottom-none">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                        <input type="text" class="form-control" value="{{ object.time|time:'H:i' }}" disabled style="background-color: #fff; cursor: default;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="box-header with-border text-right">
+            <a href="{% url 'adminlte:callmaster_update' object.id %}" class="btn btn-primary btn-sm">Редагувати заявку</a>
+        </div>
+        <div class="box-body no-padding">
+            <table class="table table-bordered table-striped table-view">
+                <tbody>
+                    <tr>
+                        <th style="width: 30%;">Статус</th>
+                        <td>
+                            {% if object.status == 'N' %}
+                                <small class="label label-primary">Нове</small>
+                            {% elif object.status == 'W' %}
+                                <small class="label label-warning">В роботі</small>
+                            {% elif object.status == 'C' %}
+                                <small class="label label-success">Виконано</small>
+                            {% else %}
+                                <small class="label label-default">{{ object.get_status_display }}</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Власник</th>
+                        <td>
+                            {% if object.apartment and object.apartment.owner %}
+                                <a href="#">{{ object.apartment.owner.first_name }} {{ object.apartment.owner.last_name }}</a>
+                            {% else %}
+                                <span class="text-muted">(не задано)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Телефон</th>
+                        <td>
+                            {% if object.apartment and object.apartment.owner and object.apartment.owner.phone_number %}
+                                <a href="tel:{{ object.apartment.owner.phone_number }}">{{ object.apartment.owner.phone_number }}</a>
+                            {% else %}
+                                <span class="text-muted">(не задано)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Квартира</th>
+                        <td>
+                            {% if object.apartment %}
+                                <a href="#">{{ object.apartment.number }}, {{ object.apartment.house.name|default:"-" }}</a>
+                            {% else %}
+                                <span class="text-muted">(не задано)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Тип майстра</th>
+                        <td>{{ object.master_type.name|default:object.master_type }}</td>
+                    </tr>
+                    <tr>
+                        <th>Майстер</th>
+                        <td>
+                            {% if object.master %}
+                                <a href="#">{{ object.master.first_name }} {{ object.master.last_name }}</a>
+                            {% else %}
+                                <span class="text-muted">(не задано)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Опис</th>
+                        <td>{{ object.description|linebreaksbr }}</td>
+                    </tr>
+                    <tr>
+                        <th>Додано</th>
+                        <td>{{ object.created_at|date:"d.m.Y - H:i" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

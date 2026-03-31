@@ -84,7 +84,7 @@
                                 </thead>
                                 <tbody>
                                     {% for req in callmaster_list %}
-                                        <tr data-href="#" style="cursor: pointer;">
+                                        <tr data-href="{% url 'adminlte:callmaster_detail' req.id %}" style="cursor: pointer;">
                                             <td>{{ req.id }}</td>
                                             <td>{{ req.date|date:"d.m.Y" }} - {{ req.time|time:"H:i" }}</td>
                                             <td>{{ req.master_type.name|default:req.master_type }}</td>

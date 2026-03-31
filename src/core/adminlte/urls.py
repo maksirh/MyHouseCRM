@@ -15,6 +15,7 @@ from .views import (
     ApartmentUpdateView,
     CallMasterCreateView,
     CallMasterDeleteView,
+    CallMasterDetailView,
     CallMasterListView,
     CallMasterUpdateView,
     CashBoxDeleteView,
@@ -188,5 +189,10 @@ urlpatterns = [
         "call-requests/<int:pk>/delete/",
         CallMasterDeleteView.as_view(),
         name="callmaster_delete",
+    ),
+    path(
+        "call-requests/<int:pk>/",
+        CallMasterDetailView.as_view(),
+        name="callmaster_detail",
     ),
 ]

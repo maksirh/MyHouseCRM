@@ -1663,3 +1663,22 @@ class CallMasterUpdateView(UpdateView):
 class CallMasterDeleteView(DeleteView):
     model = CallMaster
     success_url = reverse_lazy("adminlte:callmaster_list")
+
+
+class CallMasterDetailView(DetailView):
+    model = CallMaster
+    template_name = "adminlte/callmaster_detail.html"
+    context_object_name = "object"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .select_related(
+                "apartment",
+                "apartment__house",
+                "apartment__owner",
+                "master_type",
+                "master",
+            )
+        )
