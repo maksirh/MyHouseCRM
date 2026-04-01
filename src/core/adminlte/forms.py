@@ -540,3 +540,51 @@ class CallMasterForm(forms.ModelForm):
             "description": forms.Textarea(attrs={"class": "form-control", "rows": 5}),
             "comment": forms.Textarea(attrs={"class": "form-control summernote"}),
         }
+
+
+class MessageForm(forms.Form):
+
+    title = forms.CharField(
+        max_length=255,
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "Тема повідомлення:"}
+        ),
+    )
+    text = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control summernote",
+                "placeholder": "Текст повідомлення:",
+            }
+        )
+    )
+
+    has_debt = forms.BooleanField(required=False, label="Власникам із заборгованостями")
+
+    house = forms.ModelChoiceField(
+        queryset=House.objects.all(),
+        required=False,
+        empty_label="Всім...",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
+    section = forms.ModelChoiceField(
+        queryset=Section.objects.all(),
+        required=False,
+        empty_label="Всім...",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
+    floor = forms.ModelChoiceField(
+        queryset=Floor.objects.all(),
+        required=False,
+        empty_label="Всім...",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
+    apartment = forms.ModelChoiceField(
+        queryset=Apartment.objects.all(),
+        required=False,
+        empty_label="Всім...",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )

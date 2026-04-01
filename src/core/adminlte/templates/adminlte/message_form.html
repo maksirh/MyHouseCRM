@@ -1,0 +1,94 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Нове повідомлення{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Нове повідомлення</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li><a href="{% url 'adminlte:message_list' %}">Повідомлення</a></li>
+        <li class="active">Нове повідомлення</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="box">
+        <form method="post">
+            {% csrf_token %}
+            <div class="box-body">
+                <div class="form-group {% if form.title.errors %}has-error{% endif %}">
+                    {{ form.title }}
+                    <div class="help-block text-danger" style="margin-bottom: 0;">{{ form.title.errors }}</div>
+                </div>
+
+                <div class="form-group {% if form.text.errors %}has-error{% endif %}">
+                    {{ form.text }}
+                    <div class="help-block text-danger" style="margin-bottom: 0;">{{ form.text.errors }}</div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-md-6 col-lg-4">
+                        <h4 style="margin-top: 15px; margin-bottom: 15px;">Кому відправити:</h4>
+
+                        <div class="form-group {% if form.has_debt.errors %}has-error{% endif %}" style="margin-bottom: 20px;">
+                            <div class="checkbox" style="margin: 0;">
+                                <label style="padding-left: 0; display: flex; align-items: center; gap: 8px;">
+                                    {{ form.has_debt }} <b>Власникам із заборгованостями</b>
+                                </label>
+                            </div>
+                            <div class="help-block text-danger">{{ form.has_debt.errors }}</div>
+                        </div>
+
+                        <div class="form-group {% if form.house.errors %}has-error{% endif %}">
+                            <label style="font-weight: bold;">Будинок</label>
+                            {{ form.house }}
+                        </div>
+
+                        <div class="form-group {% if form.section.errors %}has-error{% endif %}">
+                            <label style="font-weight: bold;">Секція</label>
+                            {{ form.section }}
+                        </div>
+
+                        <div class="form-group {% if form.floor.errors %}has-error{% endif %}">
+                            <label style="font-weight: bold;">Поверх</label>
+                            {{ form.floor }}
+                        </div>
+
+                        <div class="form-group {% if form.apartment.errors %}has-error{% endif %}">
+                            <label style="font-weight: bold;">Квартира</label>
+                            {{ form.apartment }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-footer text-right">
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-envelope-o"></i> Відправити
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        if (typeof $.fn.summernote === 'function') {
+            $('.summernote').summernote({
+                height: 250,
+                placeholder: 'Текст повідомлення:',
+                toolbar: [
+                    ['style', ['bold', 'italic', 'underline']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                ]
+            });
+        } else {
+            console.warn("Плагін Summernote не знайдено. Буде відображено звичайне текстове поле.");
+        }
+    });
+</script>
+{% endblock %}

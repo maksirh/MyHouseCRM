@@ -203,13 +203,28 @@ class CashBox(models.Model):
 
 
 class Message(models.Model):
-    sender = ForeignKey(User, on_delete=models.CASCADE, related_name="sent_message")
-    title = models.TextField()
-    text = models.TextField()
-    date = models.DateTimeField()
-    recipient = ForeignKey(
-        User, on_delete=models.CASCADE, related_name="received_message"
+    sender = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="sent_messages",
+        verbose_name="Відправник",
     )
+    recipient = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="received_messages",
+        verbose_name="Одержувач",
+    )
+
+    title = models.CharField(max_length=255, verbose_name="Тема повідомлення")
+    text = models.TextField(verbose_name="Текст повідомлення")
+    date = models.DateTimeField(default=timezone.now, verbose_name="Дата")
+
+    class Meta:
+        ordering = ["-date"]
+
+    def __str__(self):
+        return f"{self.title} (для {self.recipient})"
 
 
 class CallMaster(models.Model):

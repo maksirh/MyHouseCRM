@@ -38,6 +38,10 @@ from .views import (
     HouseView,
     ListArticleView,
     MainPageView,
+    MessageCreateView,
+    MessageDeleteView,
+    MessageDetailView,
+    MessageListView,
     OwnerListView,
     PaymentDetailView,
     ReceiptCreateView,
@@ -194,5 +198,11 @@ urlpatterns = [
         "call-requests/<int:pk>/",
         CallMasterDetailView.as_view(),
         name="callmaster_detail",
+    ),
+    path("messages/", MessageListView.as_view(), name="message_list"),
+    path("messages/create/", MessageCreateView.as_view(), name="message_create"),
+    path("messages/<int:pk>/", MessageDetailView.as_view(), name="message_detail"),
+    path(
+        "messages/<int:pk>/delete/", MessageDeleteView.as_view(), name="message_delete"
     ),
 ]

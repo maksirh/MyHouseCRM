@@ -13,6 +13,7 @@ from django.views.generic import (
     CreateView,
     DeleteView,
     DetailView,
+    FormView,
     ListView,
     TemplateView,
     UpdateView,
@@ -35,6 +36,7 @@ from src.core.adminlte.forms import (
     InfoItemsFormset,
     MainPageForm,
     MeasureFormSet,
+    MessageForm,
     PaymentDetail,
     PaymentDetailForm,
     PersonalAccountForm,
@@ -55,6 +57,7 @@ from src.crm.models import (
     CashBox,
     CounterReadings,
     Measure,
+    Message,
     PersonalAccount,
     Receipt,
     Service,
@@ -1682,3 +1685,89 @@ class CallMasterDetailView(DetailView):
                 "master",
             )
         )
+
+
+class MessageCreateView(FormView):
+    template_name = "adminlte/message_form.html"
+    form_class = MessageForm
+    success_url = reverse_lazy("adminlte:message_list")
+
+    def form_valid(self, form):
+        data = form.cleaned_data
+
+        apartments = Apartment.objects.exclude(owner__isnull=True)
+
+        if data.get("house"):
+            apartments = apartments.filter(house=data["house"])
+        if data.get("section"):
+            apartments = apartments.filter(section=data["section"])
+        if data.get("floor"):
+            apartments = apartments.filter(floor=data["floor"])
+        if data.get("apartment"):
+            apartments = apartments.filter(id=data["apartment"].id)
+
+        if data.get("has_debt"):
+            apartments = apartments.filter(account__balance__lt=0)
+
+        owner_ids = apartments.values_list("owner_id", flat=True).distinct()
+        owners = User.objects.filter(id__in=owner_ids)
+
+        messages_to_create = []
+        for owner in owners:
+            messages_to_create.append(
+                Message(
+                    sender=self.request.user,
+                    recipient=owner,
+                    title=data["title"],
+                    text=data["text"],
+                )
+            )
+
+        if messages_to_create:
+            Message.objects.bulk_create(messages_to_create)
+            messages.success(
+                self.request,
+                f"Повідомлення успішно"
+                f" відправлено {len(messages_to_create)} власникам.",
+            )
+        else:
+            messages.warning(
+                self.request,
+                "За обраними критеріями не знайдено жодного власника."
+                " Повідомлення не відправлено.",
+            )
+            return self.form_invalid(form)
+
+        return super().form_valid(form)
+
+
+class MessageListView(ListView):
+    model = Message
+    template_name = "adminlte/message_list.html"
+    context_object_name = "message_list"
+    paginate_by = 15
+
+    def get_queryset(self):
+        qs = super().get_queryset().select_related("recipient").order_by("-date")
+
+        search_query = self.request.GET.get("search", "")
+        if search_query:
+            qs = qs.filter(
+                Q(title__icontains=search_query)
+                | Q(text__icontains=search_query)
+                | Q(recipient__first_name__icontains=search_query)
+                | Q(recipient__last_name__icontains=search_query)
+            )
+
+        return qs
+
+
+class MessageDetailView(DetailView):
+    model = Message
+    template_name = "adminlte/message_detail.html"
+    context_object_name = "message"
+
+
+class MessageDeleteView(DeleteView):
+    model = Message
+    success_url = reverse_lazy("adminlte:message_list")

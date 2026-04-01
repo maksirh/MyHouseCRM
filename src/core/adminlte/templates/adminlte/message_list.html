@@ -1,0 +1,139 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Повідомлення{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Повідомлення</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li class="active">Повідомлення</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="pull-right margin-bottom">
+                <a class="btn btn-success" href="{% url 'adminlte:message_create' %}">Відправити повідомлення</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"></h3>
+                    <div class="box-tools">
+                        <form method="GET" action="{% url 'adminlte:message_list' %}">
+                            <div class="input-group input-group-sm" style="width: 250px;">
+                                <input type="text" name="search" class="form-control pull-right" placeholder="Пошук" value="{{ request.GET.search|default:'' }}">
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="box-body table-responsive no-padding">
+                    <form id="bulk-delete-form" method="POST" action="#">
+                        {% csrf_token %}
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px; text-align: center;">
+                                        <input type="checkbox" id="select-all" title="Вибрати всі">
+                                    </th>
+                                    <th style="width: 40px; text-align: center;">
+                                        <button type="button" class="btn btn-default btn-xs" id="bulk-delete-btn" title="Видалити обрані" onclick="alert('Функцію масового видалення додамо наступним кроком!');">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </th>
+                                    <th style="min-width: 200px;">Одержувачі</th>
+                                    <th>Текст</th>
+                                    <th style="width: 150px; min-width: 150px;">Дата</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for message in message_list %}
+                                    <tr data-href="{% url 'adminlte:message_detail' message.id %}" style="cursor: pointer;">
+                                        <td style="text-align: center;">
+                                            <input type="checkbox" name="message_ids" value="{{ message.id }}" class="message-checkbox">
+                                        </td>
+                                        <td>&nbsp;</td> <td>
+                                            {% if message.recipient %}
+                                                <a href="#">{{ message.recipient.first_name }} {{ message.recipient.last_name }}</a>
+                                            {% else %}
+                                                <span class="text-muted">(не задано)</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <b>{{ message.title }}</b> - {{ message.text|striptags|truncatechars:80 }}
+                                        </td>
+                                        <td>{{ message.date|date:"d.m.Y - H:i" }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">Повідомлень не знайдено.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+
+                <div class="box-footer clearfix">
+                    {% if is_paginated %}
+                    <ul class="pagination pagination-sm no-margin pull-right">
+                        {% if page_obj.has_previous %}
+                            <li><a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">&laquo;</a></li>
+                        {% else %}
+                            <li class="disabled"><span>&laquo;</span></li>
+                        {% endif %}
+
+                        {% for i in paginator.page_range %}
+                            {% if page_obj.number == i %}
+                                <li class="active"><span>{{ i }}</span></li>
+                            {% else %}
+                                <li><a href="?page={{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li><a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">&raquo;</a></li>
+                        {% else %}
+                            <li class="disabled"><span>&raquo;</span></li>
+                        {% endif %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function () {
+    $('#select-all').on('click', function() {
+        var isChecked = $(this).prop('checked');
+        $('.message-checkbox').prop('checked', isChecked);
+    });
+
+    $('.message-checkbox').on('change', function() {
+        if (!$(this).prop('checked')) {
+            $('#select-all').prop('checked', false);
+        }
+    });
+    $('tr[data-href]').on('click', function(e) {
+        if (!$(e.target).closest('input[type="checkbox"]').length) {
+            window.location = $(this).data('href');
+        }
+    });
+});
+</script>
+{% endblock %}
