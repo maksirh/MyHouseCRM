@@ -5,9 +5,11 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import Case, Count, Q, Sum, When
+from django.db.models.functions import ExtractMonth
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views import View
 from django.views.generic import (
     CreateView,
@@ -72,7 +74,76 @@ class StatisticPageView(TemplateView):
     template_name = "adminlte/statistics.html"
 
     def get_context_data(self, **kwargs):
-        context = super(StatisticPageView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+
+        context["houses_count"] = House.objects.count()
+        context["flats_count"] = Apartment.objects.count()
+        context["accounts_count"] = PersonalAccount.objects.count()
+
+        context["active_users_count"] = (
+            User.objects.filter(apartment__isnull=False).distinct().count()
+        )
+
+        context["new_master_requests"] = CallMaster.objects.filter(status="N").count()
+        context["master_requests_in_progress"] = CallMaster.objects.filter(
+            status="W"
+        ).count()
+
+        debts = (
+            PersonalAccount.objects.filter(balance__lt=0).aggregate(
+                total=Sum("balance")
+            )["total"]
+            or 0
+        )
+        balances = (
+            PersonalAccount.objects.filter(balance__gt=0).aggregate(
+                total=Sum("balance")
+            )["total"]
+            or 0
+        )
+
+        context["total_debt"] = abs(debts)  # Виводимо борг без мінуса
+        context["total_balance"] = balances
+
+        income = (
+            CashBox.objects.filter(is_completed=True, article__article="I").aggregate(
+                t=Sum("amount")
+            )["t"]
+            or 0
+        )
+        expense = (
+            CashBox.objects.filter(is_completed=True, article__article="E").aggregate(
+                t=Sum("amount")
+            )["t"]
+            or 0
+        )
+        context["cashbox_state"] = income - expense
+
+        current_year = timezone.now().year
+
+        income_data = [0] * 12
+        expense_data = [0] * 12
+
+        cashbox_qs = (
+            CashBox.objects.filter(is_completed=True, date__year=current_year)
+            .annotate(month=ExtractMonth("date"))
+            .values("month", "article__article")
+            .annotate(total=Sum("amount"))
+        )
+
+        for item in cashbox_qs:
+            month_idx = item["month"] - 1
+            if item["article__article"] == "I":
+                income_data[month_idx] = float(item["total"])
+            else:
+                expense_data[month_idx] = float(item["total"])
+
+        context["chart2_income_data"] = json.dumps(income_data)
+        context["chart2_expense_data"] = json.dumps(expense_data)
+
+        context["chart1_debt_data"] = json.dumps([0] * 12)
+        context["chart1_repayment_data"] = json.dumps([0] * 12)
+
         return context
 
 

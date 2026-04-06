@@ -11,7 +11,7 @@
 <section class="content">
     <div class="row">
         <div class="col-xs-12 col-sm-6">
-            <h2 class="page-header">В вашем обслуживании</h2>
+            <h2 class="page-header">У вашому обслуговуванні</h2>
         </div>
     </div>
 
@@ -19,84 +19,84 @@
         <div class="col-lg-4 col-sm-6 col-xs-12">
             <div class="small-box bg-primary">
                 <div class="inner">
-                    <h3>{{ houses_count|default:"110" }}</h3>
-                    <p>Домов</p>
+                    <h3>{{ houses_count|default:"0" }}</h3>
+                    <p>Будинків</p>
                 </div>
                 <div class="icon">
                     <i class="fa fa-building"></i>
                 </div>
                 <a href="/admin/house/index" class="small-box-footer">
-                    Перейти в дома <i class="fa fa-arrow-circle-right"></i>
+                    Перейти до будинків <i class="fa fa-arrow-circle-right"></i>
                 </a>
             </div>
         </div>
         <div class="col-lg-4 col-sm-6 col-xs-12">
             <div class="small-box bg-green">
                 <div class="inner">
-                    <h3>{{ active_users_count|default:"59" }}</h3>
-                    <p>Активных владельцев</p>
+                    <h3>{{ active_users_count|default:"0" }}</h3>
+                    <p>Активних власників</p>
                 </div>
                 <div class="icon">
                     <i class="fa fa-users"></i>
                 </div>
                 <a href="/admin/user/index" class="small-box-footer">
-                    Перейти к владельцам <i class="fa fa-arrow-circle-right"></i>
+                    Перейти до власників <i class="fa fa-arrow-circle-right"></i>
                 </a>
             </div>
         </div>
         <div class="col-lg-4 col-sm-6 col-xs-12">
             <div class="small-box bg-yellow">
                 <div class="inner">
-                    <h3>{{ master_requests_in_progress|default:"4" }}</h3>
-                    <p>Заявок мастера в работе</p>
+                    <h3>{{ master_requests_in_progress|default:"0" }}</h3>
+                    <p>Заявок майстра в роботі</p>
                 </div>
                 <div class="icon">
                     <i class="fa fa-wrench"></i>
                 </div>
                 <a href="/admin/master-request/index" class="small-box-footer">
-                    Перейти в заявки <i class="fa fa-arrow-circle-right"></i>
+                    Перейти до заявок <i class="fa fa-arrow-circle-right"></i>
                 </a>
             </div>
         </div>
         <div class="col-lg-4 col-sm-6 col-xs-12">
             <div class="small-box bg-primary">
                 <div class="inner">
-                    <h3>{{ flats_count|default:"156" }}</h3>
+                    <h3>{{ flats_count|default:"0" }}</h3>
                     <p>Квартир</p>
                 </div>
                 <div class="icon">
                     <i class="fa fa-key"></i>
                 </div>
                 <a href="/admin/flat/index" class="small-box-footer">
-                    Перейти в квартиры <i class="fa fa-arrow-circle-right"></i>
+                    Перейти до квартир <i class="fa fa-arrow-circle-right"></i>
                 </a>
             </div>
         </div>
         <div class="col-lg-4 col-sm-6 col-xs-12">
             <div class="small-box bg-green">
                 <div class="inner">
-                    <h3>{{ accounts_count|default:"10" }}</h3>
-                    <p>Лицевых счетов</p>
+                    <h3>{{ accounts_count|default:"0" }}</h3>
+                    <p>Особових рахунків</p>
                 </div>
                 <div class="icon">
                     <i class="fa fa-child"></i>
                 </div>
                 <a href="/admin/account/index" class="small-box-footer">
-                    Перейти к счетам <i class="fa fa-arrow-circle-right"></i>
+                    Перейти до рахунків <i class="fa fa-arrow-circle-right"></i>
                 </a>
             </div>
         </div>
         <div class="col-lg-4 col-sm-6 col-xs-12">
             <div class="small-box bg-yellow">
                 <div class="inner">
-                    <h3>{{ new_master_requests|default:"18" }}</h3>
-                    <p>Новых заявок мастера</p>
+                    <h3>{{ new_master_requests|default:"0" }}</h3>
+                    <p>Нових заявок майстра</p>
                 </div>
                 <div class="icon">
                     <i class="fa fa-user-plus"></i>
                 </div>
                 <a href="/admin/master-request/index" class="small-box-footer">
-                    Перейти в заявки <i class="fa fa-arrow-circle-right"></i>
+                    Перейти до заявок <i class="fa fa-arrow-circle-right"></i>
                 </a>
             </div>
         </div>
@@ -106,7 +106,7 @@
         <div class="col-lg-8 col-md-7 col-xs-12">
             <div class="box box-default">
                 <div class="box-header with-border">
-                    <h3 class="box-title">График погашения квитанций, грн</h3>
+                    <h3 class="box-title">Графік погашення квитанцій, грн</h3>
                 </div>
                 <div class="box-body">
                     <div class="chart">
@@ -121,22 +121,22 @@
             <div class="info-box">
                 <span class="info-box-icon bg-red"><i class="fa fa-money"></i></span>
                 <div class="info-box-content">
-                    <span class="info-box-text">Задолженность по счетам, грн</span>
+                    <span class="info-box-text">Заборгованість по рахунках, грн</span>
                     <span class="info-box-number">{{ total_debt|default:"0.00" }}</span>
                 </div>
             </div>
             <div class="info-box">
                 <span class="info-box-icon bg-blue"><i class="fa fa-money"></i></span>
                 <div class="info-box-content">
-                    <span class="info-box-text">Баланс по счетам, грн</span>
-                    <span class="info-box-number">{{ total_balance|default:"100.00" }}</span>
+                    <span class="info-box-text">Баланс по рахунках, грн</span>
+                    <span class="info-box-number">{{ total_balance|default:"0.00" }}</span>
                 </div>
             </div>
             <div class="info-box">
                 <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
                 <div class="info-box-content">
-                    <span class="info-box-text">Состояние кассы, грн</span>
-                    <span class="info-box-number">{{ cashbox_state|default:"500.00" }}</span>
+                    <span class="info-box-text">Стан каси, грн</span>
+                    <span class="info-box-number">{{ cashbox_state|default:"0.00" }}</span>
                 </div>
             </div>
         </div>
@@ -146,7 +146,7 @@
         <div class="col-xs-12">
             <div class="box box-default">
                 <div class="box-header with-border">
-                    <h3 class="box-title">График приходов и расходов по кассе, грн</h3>
+                    <h3 class="box-title">Графік прибутків та витрат по касі, грн</h3>
                 </div>
                 <div class="box-body">
                     <div class="chart">
@@ -166,26 +166,22 @@ jQuery(function ($) {
     $(function () {
         'use strict';
 
-        // Місяці для графіка (можна буде потім передавати з бекенду через JSON)
-        var chartLabels = ["янв., 2026","февр., 2026","март, 2026","апр., 2026","май, 2026","июнь, 2026","июль, 2026","авг., 2026","сент., 2026","окт., 2026","нояб., 2026","дек., 2026"];
+        var chartLabels = ["січ., 2026","лют., 2026","бер., 2026","квіт., 2026","трав., 2026","черв., 2026","лип., 2026","серп., 2026","вер., 2026","жовт., 2026","лист., 2026","груд., 2026"];
 
-        //-------------
-        //- BAR CHART 1 - Графік погашення квитанцій
-        //-------------
         var areaChartData = {
             labels  : chartLabels,
             datasets: [
                 {
-                    label               : 'Задолженность',
+                    label               : 'Заборгованість',
                     fillColor           : 'rgba(221, 75, 57, 1)',
                     strokeColor         : 'rgba(221, 75, 57, 1)',
-                    data                : {{ chart1_debt_data|default:"[200,100,0,0,0,0,0,0,0,0,0,0]" }}
+                    data                : {{ chart1_debt_data|default:"[0,0,0,0,0,0,0,0,0,0,0,0]"|safe }}
                 },
                 {
-                    label               : 'Погашение задолженности',
+                    label               : 'Погашення заборгованості',
                     fillColor           : 'rgba(0, 166, 90, 1)',
                     strokeColor         : 'rgba(0, 166, 90, 1)',
-                    data                : {{ chart1_repayment_data|default:"[100,100,0,0,0,0,0,0,0,0,0,0]" }}
+                    data                : {{ chart1_repayment_data|default:"[0,0,0,0,0,0,0,0,0,0,0,0]"|safe }}
                 }
             ]
         };
@@ -213,23 +209,20 @@ jQuery(function ($) {
         var myBarChart = barChart.Bar(barChartData, barChartOptions);
         document.getElementById('barChart-legend').innerHTML = myBarChart.generateLegend();
 
-        //-------------
-        //- BAR CHART 2 - Графік приходів і витрат
-        //-------------
         var areaChartData2 = {
             labels  : chartLabels,
             datasets: [
                 {
-                    label               : 'Приход',
+                    label               : 'Прибуток',
                     fillColor           : 'rgba(0, 166, 90, 1)',
                     strokeColor         : 'rgba(0, 166, 90, 1)',
-                    data                : {{ chart2_income_data|default:'["500.00","100.00",null,null,null,null,null,null,null,null,null,null]'|safe }}
+                    data                : {{ chart2_income_data|default:'[0,0,0,0,0,0,0,0,0,0,0,0]'|safe }}
                 },
                 {
-                    label               : 'Расход',
+                    label               : 'Витрата',
                     fillColor           : 'rgba(221, 75, 57, 1)',
                     strokeColor         : 'rgba(221, 75, 57, 1)',
-                    data                : {{ chart2_expense_data|default:'[null,"100.00",null,null,null,null,null,null,null,null,null,null]'|safe }}
+                    data                : {{ chart2_expense_data|default:'[0,0,0,0,0,0,0,0,0,0,0,0]'|safe }}
                 }
             ]
         };
@@ -237,7 +230,7 @@ jQuery(function ($) {
         var barChart2Canvas = $('#barChart2').get(0).getContext('2d');
         var barChart2 = new Chart(barChart2Canvas);
         var barChart2Data = areaChartData2;
-        var barChart2Options = barChartOptions; // Налаштування однакові
+        var barChart2Options = barChartOptions;
 
         barChart2Options.datasetFill = false;
         var myBarChart2 = barChart2.Bar(barChart2Data, barChart2Options);
