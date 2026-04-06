@@ -2,11 +2,12 @@ import json
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import Case, Count, Q, Sum, When
 from django.db.models.functions import ExtractMonth
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -53,6 +54,7 @@ from src.core.adminlte.forms import (
     UserForm,
     UserProfileForm,
 )
+from src.core.adminlte.mixins import RolePermissionMixin
 from src.crm.models import (
     Article,
     CallMaster,
@@ -70,8 +72,9 @@ from src.user.models import Roles, User
 from src.website.models import AboutUsPage, MainPage, ServicePage
 
 
-class StatisticPageView(TemplateView):
+class StatisticPageView(LoginRequiredMixin, RolePermissionMixin, TemplateView):
     template_name = "adminlte/statistics.html"
+    required_permission = "has_statistics"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -102,7 +105,7 @@ class StatisticPageView(TemplateView):
             or 0
         )
 
-        context["total_debt"] = abs(debts)  # Виводимо борг без мінуса
+        context["total_debt"] = abs(debts)
         context["total_balance"] = balances
 
         income = (
@@ -147,11 +150,12 @@ class StatisticPageView(TemplateView):
         return context
 
 
-class MainPageView(UpdateView):
+class MainPageView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
     model = MainPage
     form_class = MainPageForm
     template_name = "adminlte/main_page_edit.html"
     success_url = reverse_lazy("adminlte:edit_main_page")
+    required_permission = "has_manage_site"
 
     def get_object(self, queryset=None):
         obj, created = MainPage.objects.get_or_create(id=1)
@@ -219,11 +223,12 @@ class MainPageView(UpdateView):
             return self.render_to_response(self.get_context_data(form=form))
 
 
-class AboutUsPageView(UpdateView):
+class AboutUsPageView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
     model = AboutUsPage
     form_class = AboutUsPageForm
     template_name = "adminlte/about_us_page_edit.html"
     success_url = reverse_lazy("adminlte:edit_about_us_page")
+    required_permission = "has_manage_site"
 
     def get_object(self, **kwargs):
         obj, created = AboutUsPage.objects.get_or_create(id=1)
@@ -299,11 +304,12 @@ class AboutUsPageView(UpdateView):
             return self.render_to_response(self.get_context_data(form=form))
 
 
-class ServicePageView(UpdateView):
+class ServicePageView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
     model = ServicePage
     form_class = ServicePageForm
     template_name = "adminlte/services_page_edit.html"
     success_url = reverse_lazy("adminlte:edit_service_page")
+    required_permission = "has_manage_site"
 
     def get_object(self, **kwargs):
         obj, created = ServicePage.objects.get_or_create(id=1)
@@ -357,11 +363,12 @@ class ServicePageView(UpdateView):
             return self.render_to_response(self.get_context_data(form=form))
 
 
-class ContactPageView(UpdateView):
+class ContactPageView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
     model = ContactsPage
     form_class = ContactsPageForm
     template_name = "adminlte/contacts_page_edit.html"
     success_url = reverse_lazy("adminlte:contacts_edit")
+    required_permission = "has_manage_site"
 
     def get_object(self, queryset=None):
         return ContactsPage.load()
@@ -401,7 +408,7 @@ class ContactPageView(UpdateView):
             return self.render_to_response(self.get_context_data(form=form))
 
 
-class RolesUpdateView(View):
+class RolesUpdateView(LoginRequiredMixin, RolePermissionMixin, View):
     PERMISSIONS = [
         "has_statistics",
         "has_cashbox",
@@ -419,6 +426,7 @@ class RolesUpdateView(View):
         "has_user",
         "has_account_detail",
     ]
+    required_permission = "has_roles"
 
     def get(self, request):
         roles = Roles.objects.all()
@@ -439,11 +447,12 @@ class RolesUpdateView(View):
         return redirect("adminlte:roles_update")
 
 
-class UserEditView(UpdateView):
+class UserEditView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
     model = User
     form_class = UserForm
     template_name = "adminlte/edit_user.html"
     success_url = reverse_lazy("adminlte:users_list")
+    required_permission = "has_user"
 
     def form_valid(self, form):
         form.instance.username = form.cleaned_data.get("email")
@@ -464,11 +473,12 @@ class UserEditView(UpdateView):
         return context
 
 
-class UserCreateView(CreateView):
+class UserCreateView(LoginRequiredMixin, RolePermissionMixin, CreateView):
     model = User
     form_class = UserForm
     template_name = "adminlte/edit_user.html"
     success_url = reverse_lazy("adminlte:users_list")
+    required_permission = "has_user"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -489,11 +499,12 @@ class UserCreateView(CreateView):
         return super().form_valid(form)
 
 
-class UserListView(ListView):
+class UserListView(LoginRequiredMixin, RolePermissionMixin, ListView):
     model = User
     template_name = "adminlte/users_list.html"
     context_object_name = "users"
     paginate_by = 10
+    required_permission = "has_user"
 
     def get_queryset(self):
         queryset = User.objects.all()
@@ -539,11 +550,12 @@ class UserListView(ListView):
         return context
 
 
-class UserProfileView(UpdateView):
+class UserProfileView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
     model = User
     form_class = UserProfileForm
     template_name = "adminlte/user_profile.html"
     success_url = reverse_lazy("adminlte:user_profile")
+    required_permission = "has_user"
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -553,19 +565,22 @@ class UserProfileView(UpdateView):
         return super().form_valid(form)
 
 
-class UserDetailView(DetailView):
+class UserDetailView(LoginRequiredMixin, RolePermissionMixin, DetailView):
     model = User
     template_name = "adminlte/user_detail.html"
     context_object_name = "target_user"
+    required_permission = "has_user"
 
 
-class UserDeleteView(DeleteView):
+class UserDeleteView(LoginRequiredMixin, RolePermissionMixin, DeleteView):
     model = User
     success_url = reverse_lazy("adminlte:users_list")
+    required_permission = "has_user"
 
 
-class ServiceEditView(View):
+class ServiceEditView(LoginRequiredMixin, RolePermissionMixin, View):
     template_name = "adminlte/service_edit.html"
+    required_permission = "has_service"
 
     def get(self, request):
         service_formset = ServiceFormSet(
@@ -601,10 +616,11 @@ class ServiceEditView(View):
         return render(request, self.template_name, context)
 
 
-class TariffListView(ListView):
+class TariffListView(LoginRequiredMixin, RolePermissionMixin, ListView):
     model = Tariffs
     template_name = "adminlte/tariffs.html"
     context_object_name = "tariffs"
+    required_permission = "has_tariffs"
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -621,10 +637,11 @@ class TariffListView(ListView):
         return qs
 
 
-class TariffDetailView(DetailView):
+class TariffDetailView(LoginRequiredMixin, RolePermissionMixin, DetailView):
     model = Tariffs
     template_name = "adminlte/tariff_info.html"
     context_object_name = "tariff"
+    required_permission = "has_tariffs"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -636,44 +653,50 @@ class TariffDetailView(DetailView):
         return context
 
 
-class PaymentDetailView(UpdateView):
+class PaymentDetailView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
     model = PaymentDetail
     form_class = PaymentDetailForm
     template_name = "adminlte/payment_details.html"
     success_url = reverse_lazy("adminlte:payment_detail")
+    required_permission = "has_account_detail"
 
     def get_object(self, queryset=None):
         obj, created = PaymentDetail.objects.get_or_create(id=1)
         return obj
 
 
-class ListArticleView(ListView):
+class ListArticleView(LoginRequiredMixin, RolePermissionMixin, ListView):
     model = Article
     template_name = "adminlte/payments_articles.html"
     context_object_name = "articles"
+    required_permission = "has_cashbox"
 
 
-class CreateArticleView(CreateView):
+class CreateArticleView(LoginRequiredMixin, RolePermissionMixin, CreateView):
     model = Article
     form_class = ArticleForm
     template_name = "adminlte/payment_article_edit.html"
     success_url = reverse_lazy("adminlte:article_list")
+    required_permission = "has_cashbox"
 
 
-class EditArticleView(UpdateView):
+class EditArticleView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
     model = Article
     form_class = ArticleForm
     template_name = "adminlte/payment_article_edit.html"
     success_url = reverse_lazy("adminlte:article_list")
+    required_permission = "has_cashbox"
 
 
-class DeleteArticleView(DeleteView):
+class DeleteArticleView(LoginRequiredMixin, RolePermissionMixin, DeleteView):
     model = Article
     success_url = reverse_lazy("adminlte:article_list")
+    required_permission = "has_cashbox"
 
 
-class HouseView(View):
+class HouseView(LoginRequiredMixin, RolePermissionMixin, View):
     template_name = "adminlte/edit_house.html"
+    required_permission = "has_house"
 
     def get_object(self, pk):
         if pk:
@@ -736,10 +759,11 @@ class HouseView(View):
         return render(request, self.template_name, context)
 
 
-class HouseListView(ListView):
+class HouseListView(LoginRequiredMixin, RolePermissionMixin, ListView):
     model = House
     template_name = "adminlte/house_list.html"
     paginate_by = 10
+    required_permission = "has_house"
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -762,10 +786,11 @@ class HouseListView(ListView):
         return qs
 
 
-class HouseDetailView(DetailView):
+class HouseDetailView(LoginRequiredMixin, RolePermissionMixin, DetailView):
     model = House
     template_name = "adminlte/house_info.html"
     context_object_name = "house"
+    required_permission = "has_house"
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -773,35 +798,39 @@ class HouseDetailView(DetailView):
         return qs.prefetch_related("users")
 
 
-class HouseDeleteView(DeleteView):
+class HouseDeleteView(LoginRequiredMixin, RolePermissionMixin, DeleteView):
     model = House
     success_url = reverse_lazy("adminlte:house_list")
 
 
-class ApartmentCreateView(CreateView):
+class ApartmentCreateView(LoginRequiredMixin, RolePermissionMixin, CreateView):
     model = Apartment
     template_name = "adminlte/apartment_edit.html"
     form_class = ApartmentForm
     success_url = reverse_lazy("adminlte:apartment_list")
+    required_permission = "has_apartment"
 
 
-class ApartmentUpdateView(UpdateView):
+class ApartmentUpdateView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
     model = Apartment
     template_name = "adminlte/apartment_edit.html"
     form_class = ApartmentForm
     success_url = reverse_lazy("adminlte:apartment_list")
+    required_permission = "has_apartment"
 
 
-class ApartmentDeleteView(DeleteView):
+class ApartmentDeleteView(LoginRequiredMixin, RolePermissionMixin, DeleteView):
     model = Apartment
     success_url = reverse_lazy("adminlte:apartment_list")
+    required_permission = "has_apartment"
 
 
-class ApartmentListView(ListView):
+class ApartmentListView(LoginRequiredMixin, RolePermissionMixin, ListView):
     model = Apartment
     template_name = "adminlte/apartment_list.html"
     paginate_by = 10
     context_object_name = "flats"
+    required_permission = "has_apartment"
 
     def get_queryset(self):
         qs = (
@@ -867,10 +896,11 @@ class ApartmentListView(ListView):
         return context
 
 
-class ApartmentDetailView(DetailView):
+class ApartmentDetailView(LoginRequiredMixin, RolePermissionMixin, DetailView):
     model = Apartment
     template_name = "adminlte/apartment.html"
     context_object_name = "flat"
+    required_permission = "has_apartment"
 
     def get_queryset(self):
         return (
@@ -880,11 +910,12 @@ class ApartmentDetailView(DetailView):
         )
 
 
-class OwnerListView(ListView):
+class OwnerListView(LoginRequiredMixin, RolePermissionMixin, ListView):
     model = User
     template_name = "adminlte/apartment_owners.html"
     context_object_name = "owners"
     paginate_by = 10
+    required_permission = "has_owner_apartments"
 
     def get_queryset(self):
         qs = User.objects.prefetch_related("apartment_set__house").annotate(
@@ -944,11 +975,12 @@ class OwnerListView(ListView):
         return context
 
 
-class AccountCreateView(CreateView):
+class AccountCreateView(LoginRequiredMixin, RolePermissionMixin, CreateView):
     model = PersonalAccount
     form_class = PersonalAccountForm
     template_name = "adminlte/account_edit.html"
     success_url = reverse_lazy("adminlte:account_list")
+    required_permission = "has_own_account"
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -961,11 +993,12 @@ class AccountCreateView(CreateView):
         return response
 
 
-class AccountListView(ListView):
+class AccountListView(LoginRequiredMixin, RolePermissionMixin, ListView):
     model = PersonalAccount
     template_name = "adminlte/account_list.html"
     context_object_name = "accounts"
     paginate_by = 10
+    required_permission = "has_own_account"
 
     def get_queryset(self):
         qs = PersonalAccount.objects.prefetch_related(
@@ -1039,10 +1072,11 @@ class AccountListView(ListView):
         return context
 
 
-class AccountDetailView(DetailView):
+class AccountDetailView(LoginRequiredMixin, RolePermissionMixin, DetailView):
     model = PersonalAccount
     template_name = "adminlte/account_detail.html"
     context_object_name = "account"
+    required_permission = "has_own_account"
 
     def get_queryset(self):
         return (
@@ -1054,11 +1088,12 @@ class AccountDetailView(DetailView):
         )
 
 
-class AccountUpdateView(UpdateView):
+class AccountUpdateView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
     model = PersonalAccount
     form_class = PersonalAccountForm
     template_name = "adminlte/account_edit.html"
     success_url = reverse_lazy("adminlte:account_list")
+    required_permission = "has_own_account"
 
     def get_initial(self):
         initial = super().get_initial()
@@ -1086,16 +1121,18 @@ class AccountUpdateView(UpdateView):
         return response
 
 
-class AccountDeleteView(DeleteView):
+class AccountDeleteView(LoginRequiredMixin, RolePermissionMixin, DeleteView):
     model = PersonalAccount
     success_url = reverse_lazy("adminlte:account_list")
+    required_permission = "has_own_account"
 
 
-class CounterReadingCreateView(CreateView):
+class CounterReadingCreateView(LoginRequiredMixin, RolePermissionMixin, CreateView):
     model = CounterReadings
     form_class = CounterReadingForm
     template_name = "adminlte/counter_reading_edit.html"
-    success_url = reverse_lazy("adminlte:counter_reading")
+    success_url = reverse_lazy("adminlte:counter_reading_history")
+    required_permission = "has_counter"
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -1104,11 +1141,12 @@ class CounterReadingCreateView(CreateView):
         return response
 
 
-class CounterReadingHistoryView(ListView):
+class CounterReadingHistoryView(LoginRequiredMixin, RolePermissionMixin, ListView):
     model = CounterReadings
     template_name = "adminlte/counter_history.html"
     context_object_name = "counter_history"
     paginate_by = 10
+    required_permission = "has_counter"
 
     def get_queryset(self):
         qs = (
@@ -1181,11 +1219,12 @@ class CounterReadingHistoryView(ListView):
         return context
 
 
-class CounterReadingUpdateView(UpdateView):
+class CounterReadingUpdateView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
     model = CounterReadings
     form_class = CounterReadingForm
     template_name = "adminlte/counter_reading_edit.html"
     success_url = reverse_lazy("adminlte:counter_reading_history")
+    required_permission = "has_counter"
 
     def get_initial(self):
         initial = super().get_initial()
@@ -1205,9 +1244,10 @@ class CounterReadingUpdateView(UpdateView):
         return response
 
 
-class CounterReadingDetailView(DetailView):
+class CounterReadingDetailView(LoginRequiredMixin, RolePermissionMixin, DetailView):
     model = CounterReadings
     template_name = "adminlte/counter_reading_detail.html"
+    required_permission = "has_counter"
 
     def get_queryset(self):
         return (
@@ -1219,39 +1259,18 @@ class CounterReadingDetailView(DetailView):
         )
 
 
-def get_lists_by_house(request):
-    house_id = request.GET.get("house_id")
-    section_id = request.GET.get("section_id")
-
-    sections_html = '<option value="">Оберіть...</option>'
-    flats_html = '<option value="">Оберіть...</option>'
-
-    if house_id:
-        sections = Section.objects.filter(house_id=house_id)
-        for section in sections:
-            sections_html += f'<option value="{section.id}">{section.name}</option>'
-
-        flats = Apartment.objects.filter(house_id=house_id)
-
-        if section_id:
-            flats = flats.filter(section_id=section_id)
-
-        for flat in flats:
-            flats_html += f'<option value="{flat.id}">{flat.number}</option>'
-
-    return JsonResponse({"sections": sections_html, "flats": flats_html})
-
-
-class CounterReadingDeleteView(DeleteView):
+class CounterReadingDeleteView(LoginRequiredMixin, RolePermissionMixin, DeleteView):
     model = CounterReadings
     success_url = reverse_lazy("adminlte:counter_reading_history")
+    required_permission = "has_counter"
 
 
-class ReceiptListView(ListView):
+class ReceiptListView(LoginRequiredMixin, RolePermissionMixin, ListView):
     model = Receipt
     template_name = "adminlte/receipt_list.html"
     context_object_name = "receipts"
     paginate_by = 10
+    required_permission = "has_receipt"
 
     def get_queryset(self):
         qs = (
@@ -1309,10 +1328,11 @@ class ReceiptListView(ListView):
         return context
 
 
-class ReceiptDetailView(DetailView):
+class ReceiptDetailView(LoginRequiredMixin, RolePermissionMixin, DetailView):
     model = Receipt
     template_name = "adminlte/receipt_detail.html"
     context_object_name = "receipt"
+    required_permission = "has_receipt"
 
     def get_queryset(self):
         return (
@@ -1325,11 +1345,12 @@ class ReceiptDetailView(DetailView):
         )
 
 
-class ReceiptCreateView(CreateView):
+class ReceiptCreateView(LoginRequiredMixin, RolePermissionMixin, CreateView):
     model = Receipt
     form_class = ReceiptForm
     template_name = "adminlte/receipt_form.html"
     success_url = reverse_lazy("adminlte:receipt_list")
+    required_permission = "has_receipt"
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -1372,47 +1393,12 @@ class ReceiptCreateView(CreateView):
         return super().form_valid(form)
 
 
-def get_apartment_info(request):
-    apartment_id = request.GET.get("apartment_id")
-    if apartment_id:
-        try:
-            apt = Apartment.objects.get(id=apartment_id)
-            owner_name = (
-                f"{apt.owner.first_name} {apt.owner.last_name}"
-                if apt.owner
-                else "Не обрано"
-            )
-
-            owner_phone = (
-                apt.owner.phone_number
-                if apt.owner and getattr(apt.owner, "phone_number", None)
-                else "Немає телефону"
-            )
-            account = PersonalAccount.objects.filter(apartment=apt).first()
-            account_number = account.number if account else "Рахунок не створено"
-            tariff_id = (
-                apt.tariff_id if hasattr(apt, "tariff_id") and apt.tariff_id else ""
-            )
-
-            return JsonResponse(
-                {
-                    "owner_name": owner_name,
-                    "owner_phone": owner_phone,
-                    "account_number": account_number,
-                    "tariff_id": tariff_id,
-                }
-            )
-        except Apartment.DoesNotExist:
-            pass
-
-    return JsonResponse({"error": "Not found"}, status=404)
-
-
-class ReceiptUpdateView(UpdateView):
+class ReceiptUpdateView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
     model = Receipt
     form_class = ReceiptForm
     template_name = "adminlte/receipt_form.html"
     success_url = reverse_lazy("adminlte:receipt_list")
+    required_permission = "has_receipt"
 
     def get_initial(self):
         initial = super().get_initial()
@@ -1488,17 +1474,19 @@ class ReceiptUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class ReceiptDeleteView(DeleteView):
+class ReceiptDeleteView(LoginRequiredMixin, RolePermissionMixin, DeleteView):
     model = Receipt
     template_name = "adminlte/receipt_confirm_delete.html"
     success_url = reverse_lazy("adminlte:receipt_list")
+    required_permission = "has_receipt"
 
 
-class TariffCreateView(CreateView):
+class TariffCreateView(LoginRequiredMixin, RolePermissionMixin, CreateView):
     model = Tariffs
     form_class = TariffsForm
     template_name = "adminlte/tariff_edit.html"
     success_url = reverse_lazy("adminlte:tariff_list")
+    required_permission = "has_tariffs"
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -1524,11 +1512,12 @@ class TariffCreateView(CreateView):
         return super().form_valid(form)
 
 
-class TariffUpdateView(UpdateView):
+class TariffUpdateView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
     model = Tariffs
     form_class = TariffsForm
     template_name = "adminlte/tariff_edit.html"
     success_url = reverse_lazy("adminlte:tariff_list")
+    required_permission = "has_tariffs"
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -1592,11 +1581,12 @@ def send_user_invite(request, pk):
     return redirect("adminlte:users_list")
 
 
-class CashBoxListView(ListView):
+class CashBoxListView(LoginRequiredMixin, RolePermissionMixin, ListView):
     model = CashBox
     template_name = "adminlte/cashbox_list.html"
     context_object_name = "cashbox_list"
     paginate_by = 10
+    required_permission = "has_cashbox"
 
     def get_queryset(self):
         qs = (
@@ -1639,11 +1629,12 @@ class CashBoxListView(ListView):
         return context
 
 
-class CashBoxIncomeCreateView(CreateView):
+class CashBoxIncomeCreateView(LoginRequiredMixin, RolePermissionMixin, CreateView):
     model = CashBox
     form_class = CashBoxIncomeForm
     template_name = "adminlte/cashbox_income_form.html"
     success_url = reverse_lazy("adminlte:cashbox_list")
+    required_permission = "has_cashbox"
 
     def get_initial(self):
         initial = super().get_initial()
@@ -1653,11 +1644,12 @@ class CashBoxIncomeCreateView(CreateView):
         return initial
 
 
-class CashBoxExpenseCreateView(CreateView):
+class CashBoxExpenseCreateView(LoginRequiredMixin, RolePermissionMixin, CreateView):
     model = CashBox
     form_class = CashBoxExpenseForm
     template_name = "adminlte/cashbox_expense_form.html"
     success_url = reverse_lazy("adminlte:cashbox_list")
+    required_permission = "has_cashbox"
 
     def get_initial(self):
         initial = super().get_initial()
@@ -1667,9 +1659,10 @@ class CashBoxExpenseCreateView(CreateView):
         return initial
 
 
-class CashBoxUpdateView(UpdateView):
+class CashBoxUpdateView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
     model = CashBox
     success_url = reverse_lazy("adminlte:cashbox_list")
+    required_permission = "has_cashbox"
 
     def get_form_class(self):
         if self.object.article.article == "I":
@@ -1682,16 +1675,18 @@ class CashBoxUpdateView(UpdateView):
         return ["adminlte/cashbox_expense_form.html"]
 
 
-class CashBoxDeleteView(DeleteView):
+class CashBoxDeleteView(LoginRequiredMixin, RolePermissionMixin, DeleteView):
     model = CashBox
     success_url = reverse_lazy("adminlte:cashbox_list")
+    required_permission = "has_cashbox"
 
 
-class CallMasterCreateView(CreateView):
+class CallMasterCreateView(LoginRequiredMixin, RolePermissionMixin, CreateView):
     model = CallMaster
     form_class = CallMasterForm
     template_name = "adminlte/callmaster_form.html"
     success_url = reverse_lazy("adminlte:callmaster_list")
+    required_permission = "has_call_master"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1699,11 +1694,12 @@ class CallMasterCreateView(CreateView):
         return context
 
 
-class CallMasterListView(ListView):
+class CallMasterListView(LoginRequiredMixin, RolePermissionMixin, ListView):
     model = CallMaster
     template_name = "adminlte/callmaster_list.html"
     context_object_name = "callmaster_list"
     paginate_by = 10
+    required_permission = "has_call_master"
 
     def get_queryset(self):
         qs = (
@@ -1722,11 +1718,12 @@ class CallMasterListView(ListView):
         return qs
 
 
-class CallMasterUpdateView(UpdateView):
+class CallMasterUpdateView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
     model = CallMaster
     form_class = CallMasterForm
     template_name = "adminlte/callmaster_form.html"
     success_url = reverse_lazy("adminlte:callmaster_list")
+    required_permission = "has_call_master"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1734,15 +1731,17 @@ class CallMasterUpdateView(UpdateView):
         return context
 
 
-class CallMasterDeleteView(DeleteView):
+class CallMasterDeleteView(LoginRequiredMixin, RolePermissionMixin, DeleteView):
     model = CallMaster
     success_url = reverse_lazy("adminlte:callmaster_list")
+    required_permission = "has_call_master"
 
 
-class CallMasterDetailView(DetailView):
+class CallMasterDetailView(LoginRequiredMixin, RolePermissionMixin, DetailView):
     model = CallMaster
     template_name = "adminlte/callmaster_detail.html"
     context_object_name = "object"
+    required_permission = "has_call_master"
 
     def get_queryset(self):
         return (
@@ -1758,10 +1757,11 @@ class CallMasterDetailView(DetailView):
         )
 
 
-class MessageCreateView(FormView):
+class MessageCreateView(LoginRequiredMixin, RolePermissionMixin, FormView):
     template_name = "adminlte/message_form.html"
     form_class = MessageForm
     success_url = reverse_lazy("adminlte:message_list")
+    required_permission = "has_message"
 
     def form_valid(self, form):
         data = form.cleaned_data
@@ -1812,11 +1812,12 @@ class MessageCreateView(FormView):
         return super().form_valid(form)
 
 
-class MessageListView(ListView):
+class MessageListView(LoginRequiredMixin, RolePermissionMixin, ListView):
     model = Message
     template_name = "adminlte/message_list.html"
     context_object_name = "message_list"
     paginate_by = 15
+    required_permission = "has_message"
 
     def get_queryset(self):
         qs = super().get_queryset().select_related("recipient").order_by("-date")
@@ -1833,12 +1834,14 @@ class MessageListView(ListView):
         return qs
 
 
-class MessageDetailView(DetailView):
+class MessageDetailView(LoginRequiredMixin, RolePermissionMixin, DetailView):
     model = Message
     template_name = "adminlte/message_detail.html"
     context_object_name = "message"
+    required_permission = "has_message"
 
 
-class MessageDeleteView(DeleteView):
+class MessageDeleteView(LoginRequiredMixin, RolePermissionMixin, DeleteView):
     model = Message
     success_url = reverse_lazy("adminlte:message_list")
+    required_permission = "has_message"

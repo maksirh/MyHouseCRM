@@ -28,7 +28,7 @@
 <body class="hold-transition skin-black-light sidebar-mini fixed">
     <div class="wrapper">
         <header class="main-header">
-            <a href="#" class="logo">
+            <a href="{% url 'adminlte:statistic' %}" class="logo">
                 <span class="logo-mini">
                     <img src="{% static 'logo-mini.svg' %}" class="img-responsive" alt="Logo">
                 </span>
@@ -69,12 +69,15 @@
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <i class="fa fa-user-circle text-purple"></i>
-                                <span class="hidden-xs">Nana Nanovna</span>
+                                <span class="hidden-xs">{{ request.user.first_name|default:request.user.username }} {{ request.user.last_name|default:"" }}</span>
                             </a>
                             <ul class="dropdown-menu">
                                 <li class="user-header">
                                     <span><i class="fa fa-user-circle text-purple bg-gray-light img-circle"></i></span>
-                                    <p>Nana Nanovna (Директор)</p>
+                                    <p>
+                                        {{ request.user.first_name|default:request.user.username }} {{ request.user.last_name|default:"" }}
+                                        <small>({{ request.user.role.name|default:"Адміністратор" }})</small>
+                                    </p>
                                 </li>
                                 <li class="user-footer">
                                     <div class="pull-left">
@@ -94,37 +97,82 @@
         <aside class="main-sidebar">
             <section class="sidebar">
                 <ul class="sidebar-menu" data-widget="tree">
-                    <li class="active"><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-line-chart"></i> <span>Статистика</span></a></li>
-                    <li><a href="{% url 'adminlte:cashbox_list' %}"><i class="fa fa-dollar"></i> <span>Касса</span></a></li>
-                    <li><a href="{% url 'adminlte:receipt_list' %}"><i class="fa fa-files-o"></i> <span>Квитанції на оплату</span></a></li>
-                    <li><a href="{% url 'adminlte:account_list' %}"><i class="fa fa-credit-card"></i> <span>Персональні рахунки</span></a></li>
-                    <li><a href="{% url 'adminlte:apartment_list' %}"><i class="fa fa-key"></i> <span>Квартири</span></a></li>
-                    <li><a href="{% url 'adminlte:owners_list' %}"><i class="fa fa-users"></i> <span>Влаcники квартир</span></a></li>
-                    <li><a href="{% url 'adminlte:house_list' %}"><i class="fa fa-building"></i> <span>Дома</span></a></li>
-                    <li><a href="{% url 'adminlte:message_list' %}"><i class="fa fa-envelope-o"></i> <span>Повідомлення</span></a></li>
-                    <li><a href="{% url 'adminlte:callmaster_list' %}"><i class="fa fa-wrench"></i> <span>Заявки на виклик майстра</span></a></li>
-                    <li><a href="{% url 'adminlte:counter_reading_history' %}"><i class="fa fa-dashboard"></i> <span>Показання Лічільників</span></a></li>
 
-                    <li class="treeview">
-                        <a href="#!"><i class="fa fa-desktop"></i> <span>Управление сайтом</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
-                        <ul class="treeview-menu">
-                            <li><a href="{% url 'adminlte:edit_main_page' %}"><i class="fa fa-circle-o"></i> <span>Главная страница</span></a></li>
-                            <li><a href="{% url 'adminlte:edit_about_us_page' %}"><i class="fa fa-circle-o"></i> <span>О нас</span></a></li>
-                            <li><a href="{% url 'adminlte:edit_service_page' %}"><i class="fa fa-circle-o"></i> <span>Услуги</span></a></li>
-                            <li><a href="{% url 'adminlte:contacts_edit' %}"><i class="fa fa-circle-o"></i> <span>Контакты</span></a></li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="#!"><i class="fa fa-cogs"></i> <span>Настройки системы</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
-                        <ul class="treeview-menu">
-                            <li><a href="{% url "adminlte:service_edit" %}"><i class="fa fa-briefcase"></i> <span>Услуги</span></a></li>
-                            <li><a href="{% url 'adminlte:tariff_list' %}"><i class="fa fa-money"></i> <span>Тарифы</span></a></li>
-                            <li><a href="{% url 'adminlte:roles_update' %}"><i class="fa fa-user"></i> <span>Роли</span></a></li>
-                            <li><a href="{% url "adminlte:users_list" %}"><i class="fa fa-user-plus"></i> <span>Пользователи</span></a></li>
-                            <li><a href="{% url 'adminlte:payment_detail' %}"><i class="fa fa-credit-card"></i> <span>Платежные реквизиты</span></a></li>
-                            <li><a href="{% url 'adminlte:article_list' %}"><i class="fa fa-list-ol"></i> <span>Статьи платежей</span></a></li>
-                        </ul>
-                    </li>
+                    {% if request.user.is_superuser or request.user.role.has_statistics %}
+                        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-line-chart"></i> <span>Статистика</span></a></li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser or request.user.role.has_cashbox %}
+                        <li><a href="{% url 'adminlte:cashbox_list' %}"><i class="fa fa-dollar"></i> <span>Касса</span></a></li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser or request.user.role.has_receipt %}
+                        <li><a href="{% url 'adminlte:receipt_list' %}"><i class="fa fa-files-o"></i> <span>Квитанції на оплату</span></a></li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser or request.user.role.has_account_detail %}
+                        <li><a href="{% url 'adminlte:account_list' %}"><i class="fa fa-credit-card"></i> <span>Персональні рахунки</span></a></li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser or request.user.role.has_apartment %}
+                        <li><a href="{% url 'adminlte:apartment_list' %}"><i class="fa fa-key"></i> <span>Квартири</span></a></li>
+                        <li><a href="{% url 'adminlte:house_list' %}"><i class="fa fa-building"></i> <span>Дома</span></a></li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser or request.user.role.has_owner_apartments %}
+                        <li><a href="{% url 'adminlte:owners_list' %}"><i class="fa fa-users"></i> <span>Влаcники квартир</span></a></li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser or request.user.role.has_message %}
+                        <li><a href="{% url 'adminlte:message_list' %}"><i class="fa fa-envelope-o"></i> <span>Повідомлення</span></a></li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser or request.user.role.has_call_master %}
+                        <li><a href="{% url 'adminlte:callmaster_list' %}"><i class="fa fa-wrench"></i> <span>Заявки на виклик майстра</span></a></li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser or request.user.role.has_counter %}
+                        <li><a href="{% url 'adminlte:counter_reading_history' %}"><i class="fa fa-dashboard"></i> <span>Показання Лічільників</span></a></li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser or request.user.role.has_manage_site %}
+                        <li class="treeview">
+                            <a href="#!"><i class="fa fa-desktop"></i> <span>Управление сайтом</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+                            <ul class="treeview-menu">
+                                <li><a href="{% url 'adminlte:edit_main_page' %}"><i class="fa fa-circle-o"></i> <span>Главная страница</span></a></li>
+                                <li><a href="{% url 'adminlte:edit_about_us_page' %}"><i class="fa fa-circle-o"></i> <span>О нас</span></a></li>
+                                <li><a href="{% url 'adminlte:edit_service_page' %}"><i class="fa fa-circle-o"></i> <span>Услуги</span></a></li>
+                                <li><a href="{% url 'adminlte:contacts_edit' %}"><i class="fa fa-circle-o"></i> <span>Контакты</span></a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser or request.user.role.has_service or request.user.role.has_tariffs or request.user.role.has_roles or request.user.role.has_user %}
+                        <li class="treeview">
+                            <a href="#!"><i class="fa fa-cogs"></i> <span>Настройки системы</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+                            <ul class="treeview-menu">
+                                {% if request.user.is_superuser or request.user.role.has_service %}
+                                    <li><a href="{% url 'adminlte:service_edit' %}"><i class="fa fa-briefcase"></i> <span>Услуги</span></a></li>
+                                {% endif %}
+
+                                {% if request.user.is_superuser or request.user.role.has_tariffs %}
+                                    <li><a href="{% url 'adminlte:tariff_list' %}"><i class="fa fa-money"></i> <span>Тарифы</span></a></li>
+                                {% endif %}
+
+                                {% if request.user.is_superuser or request.user.role.has_roles %}
+                                    <li><a href="{% url 'adminlte:roles_update' %}"><i class="fa fa-user"></i> <span>Роли</span></a></li>
+                                {% endif %}
+
+                                {% if request.user.is_superuser or request.user.role.has_user %}
+                                    <li><a href="{% url 'adminlte:users_list' %}"><i class="fa fa-user-plus"></i> <span>Пользователи</span></a></li>
+                                {% endif %}
+
+                                <li><a href="{% url 'adminlte:payment_detail' %}"><i class="fa fa-credit-card"></i> <span>Платежные реквизиты</span></a></li>
+                                <li><a href="{% url 'adminlte:article_list' %}"><i class="fa fa-list-ol"></i> <span>Статьи платежей</span></a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+
                 </ul>
             </section>
         </aside>
@@ -136,8 +184,34 @@
             </section>
 
             <section class="content">
+
+                {% if messages %}
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {% for message in messages %}
+                                <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %} alert-dismissible" style="margin-bottom: 15px;">
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                    <h4>
+                                        {% if message.tags == 'error' %}
+                                            <i class="icon fa fa-ban"></i> Помилка!
+                                        {% elif message.tags == 'success' %}
+                                            <i class="icon fa fa-check"></i> Успіх!
+                                        {% elif message.tags == 'warning' %}
+                                            <i class="icon fa fa-warning"></i> Увага!
+                                        {% else %}
+                                            <i class="icon fa fa-info"></i> Інформація
+                                        {% endif %}
+                                    </h4>
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
                 {% block content %}
-                    {% endblock %}
+                {% endblock %}
+
             </section>
         </div>
 
