@@ -78,28 +78,28 @@
 $(document).ready(function() {
 
     $('#id_apartment').change(function() {
-        var apartmentId = $(this).val();
+    var apartmentId = $(this).val();
 
-        if (!apartmentId) {
-            $('#owner-name-display').text('не выбран');
-            $('#owner-phone-display').text('не выбран');
-            return;
+    if (!apartmentId) {
+        $('#owner-name-display').text('не выбран');
+        $('#owner-phone-display').text('не выбран');
+        return;
+    }
+
+    $.ajax({
+        url: "/adminpanel/api/apartment-info?apartment_id=" + apartmentId,
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            $('#owner-name-display').text(data.owner_name);
+            $('#owner-phone-display').text(data.owner_phone);
+        },
+        error: function() {
+            $('#owner-name-display').text('Ошибка загрузки');
+            $('#owner-phone-display').text('Ошибка загрузки');
         }
-
-        $.ajax({
-            url: "{% url 'adminlte:get_owner_by_apartment' %}?apartment_id=" + apartmentId,
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                $('#owner-name-display').text(data.name);
-                $('#owner-phone-display').text(data.phone);
-            },
-            error: function() {
-                $('#owner-name-display').text('Ошибка загрузки');
-                $('#owner-phone-display').text('Ошибка загрузки');
-            }
-        });
     });
+});
 });
 </script>
 {% endblock %}

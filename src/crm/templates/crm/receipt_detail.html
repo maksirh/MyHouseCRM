@@ -1,0 +1,138 @@
+{% extends 'cabinet_base.html' %}
+{% load static %}
+
+{% block title %}Квитанция №{{ receipt.number }}{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>
+        Просмотр квитанции №{{ receipt.number }}
+    </h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'crm:summary' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'crm:cabinet_invoices' %}">Квитанции</a></li>
+        <li class="active">Квитанция №{{ receipt.number }}</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="invoice" style="margin: 10px 0; border: 1px solid #f4f4f4; padding: 20px;">
+
+        <div class="row">
+            <div class="col-xs-12">
+                <h2 class="page-header" style="margin-top: 0;">
+                    <i class="fa fa-file-text-o"></i> Квитанция №{{ receipt.number }}
+                    <small class="pull-right">Дата: {{ receipt.date|date:"d.m.Y" }}</small>
+                </h2>
+            </div>
+        </div>
+
+        <div class="row invoice-info" style="margin-bottom: 20px;">
+            <div class="col-sm-4 invoice-col">
+                От кого:
+                <address>
+                    <strong>Управляющая компания "Мой Дом"</strong><br>
+                    Телефон: +38 (099) 123-45-67<br>
+                    Email: info@moydom.com
+                </address>
+            </div>
+
+            <div class="col-sm-4 invoice-col">
+                Кому:
+                <address>
+                    <strong>{{ receipt.apartment.owner.first_name }} {{ receipt.apartment.owner.last_name }}</strong><br>
+                    ЖК "{{ receipt.apartment.house.name }}"<br>
+                    Квартира: {{ receipt.apartment.number }}<br>
+                    Телефон: {{ receipt.apartment.owner.phone_number|default:"-" }}
+                </address>
+            </div>
+
+            <div class="col-sm-4 invoice-col">
+                <b>Лицевой счет:</b> {{ receipt.apartment.account.number|default:"-" }}<br>
+                <b>Период:</b> {{ receipt.period|date:"F Y"|default:"-" }}<br>
+                <b>Статус:</b>
+                {% if receipt.is_made_payment %}
+                    <span class="label label-success" style="font-size: 14px;">Оплачена</span>
+                {% else %}
+                    <span class="label label-danger" style="font-size: 14px;">Неоплачена</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12 table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Услуга</th>
+                            <th class="text-center">Количество</th>
+                            <th class="text-center">Ед. изм.</th>
+                            <th class="text-center">Цена за ед. (грн)</th>
+                            <th class="text-right">Сумма (грн)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in receipt.items.all %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ item.service.name }}</td>
+                            <td class="text-center">{{ item.quantity|floatformat:2 }}</td>
+                            <td class="text-center">{{ item.service.measure.name|default:"-" }}</td>
+                            <td class="text-center">{{ item.price_per_unit|floatformat:2 }}</td>
+                            <td class="text-right"><b>{% widthratio item.quantity 1 item.price_per_unit as item_total %}{{ item_total }}</b></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">Нет данных об услугах.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12 col-md-6 pull-right">
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <th style="width:50%; font-size: 18px;">Итого к оплате:</th>
+                            <td class="text-right" style="font-size: 18px;"><b>{{ receipt.total_sum|floatformat:2 }} грн</b></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row no-print" style="margin-top: 20px;">
+            <div class="col-xs-12">
+                <button type="button" class="btn btn-default" onclick="window.print();">
+                    <i class="fa fa-print"></i> Распечатать
+                </button>
+
+                {% if not receipt.is_made_payment %}
+                    <button type="button" class="btn btn-success pull-right">
+                        <i class="fa fa-credit-card"></i> Оплатить онлайн
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    @media print {
+        .no-print, .main-sidebar, .main-header, .main-footer, .breadcrumb {
+            display: none !important;
+        }
+        .content-wrapper {
+            margin-left: 0 !important;
+            background-color: white !important;
+        }
+        .invoice {
+            border: none !important;
+        }
+    }
+</style>
+{% endblock %}

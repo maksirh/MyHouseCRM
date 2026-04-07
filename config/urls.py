@@ -8,6 +8,7 @@ urlpatterns = [
     path("", include("src.website.urls", namespace="website")),
     path("adminpanel/", include("src.core.adminlte.urls", namespace="adminlte")),
     path("auth/", include("src.authentication.urls", namespace="authentication")),
+    path("cabinet/", include("src.crm.urls", namespace="crm")),
 ]
 
 

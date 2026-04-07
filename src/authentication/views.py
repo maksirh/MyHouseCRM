@@ -18,4 +18,4 @@ class CabinetLoginView(LoginView):
     extra_context = {"is_admin_login": False}
 
     def get_success_url(self):
-        return reverse_lazy("website:home_page")
+        return reverse_lazy("crm:summary")
