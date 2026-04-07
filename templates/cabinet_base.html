@@ -161,7 +161,7 @@
 </li>
 
                 <li class="{% if 'message' in request.path %}active{% endif %}">
-                    <a href="#"><i class="fa fa-envelope-o"></i> <span>Сообщения</span></a>
+                    <a href="{% url 'crm:cabinet_messages' %}"><i class="fa fa-envelope-o"></i> <span>Сообщения</span></a>
                 </li>
 
                 <li class="{% if 'master-request' in request.path %}active{% endif %}">
@@ -180,9 +180,6 @@
         {% block content %}{% endblock %}
     </div>
 
-    <footer class="main-footer">
-        Разработано <a href="https://avada-media.ua/" target="_blank">AVADA-MEDIA</a>. На базе системы управления <a href="https://avada-media.ua/moydom24/" target="_blank">"МойДом24"</a>.
-    </footer>
 </div>
 
 <script src="{% static 'cabinet/assets/137cc266/jquery.js' %}"></script>

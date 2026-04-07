@@ -1,6 +1,5 @@
 from django.urls import path
 
-from .api import api
 from .views import (
     AboutUsPageView,
     AccountCreateView,
@@ -160,7 +159,6 @@ urlpatterns = [
         "receipts/delete/<int:pk>/", ReceiptDeleteView.as_view(), name="receipt_delete"
     ),
     path("send_user_invite/<int:pk>/", send_user_invite, name="user_invite"),
-    path("api/", api.urls),
     path("cashbox/", CashBoxListView.as_view(), name="cashbox_list"),
     path(
         "cashbox/income/create/",

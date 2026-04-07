@@ -1,12 +1,12 @@
 import datetime
 import json
 
-from django.db.models import Sum
+from django.db.models import Q, Sum
 from django.db.models.functions import ExtractMonth
 from django.utils import timezone
 from django.views.generic import DetailView, ListView, TemplateView
 
-from src.crm.models import Receipt, ReceiptItem
+from src.crm.models import Message, Receipt, ReceiptItem
 from src.house.models import Apartment
 
 from .mixins import CabinetLoginRequiredMixin
@@ -161,3 +161,36 @@ class CabinetTariffView(CabinetLoginRequiredMixin, TemplateView):
             )
 
         return context
+
+
+class CabinetMessageListView(CabinetLoginRequiredMixin, ListView):
+    model = Message
+    template_name = "crm/message_list.html"
+    context_object_name = "messages"
+    paginate_by = 10
+
+    def get_queryset(self):
+        qs = Message.objects.filter(recipient=self.request.user).order_by("-date")
+
+        search_query = self.request.GET.get("search")
+        if search_query:
+            qs = qs.filter(
+                Q(title__icontains=search_query) | Q(text__icontains=search_query)
+            )
+        return qs
+
+
+class CabinetMessageDetailView(CabinetLoginRequiredMixin, DetailView):
+    model = Message
+    template_name = "crm/message_detail.html"
+    context_object_name = "message"
+
+    def get_queryset(self):
+        return Message.objects.filter(recipient=self.request.user)
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if hasattr(obj, "is_read") and getattr(obj, "is_read") is False:
+            obj.is_read = True
+            obj.save(update_fields=["is_read"])
+        return obj
