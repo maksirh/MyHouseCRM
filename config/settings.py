@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import environ
@@ -23,6 +24,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "django_recaptcha",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -37,6 +39,10 @@ INSTALLED_APPS = [
     "src.core.adminlte",
     "src.authentication",
 ]
+
+RECAPTCHA_PUBLIC_KEY = os.getenv("RECAPTCHA_PUBLIC_KEY")
+RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY")
+SILENCED_SYSTEM_CHECKS = ["django_recaptcha.recaptcha_test_key_error"]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

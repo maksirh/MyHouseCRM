@@ -210,6 +210,24 @@ phonenumbers = ["phonenumbers (>=7.0.2)"]
 phonenumberslite = ["phonenumberslite (>=7.0.2)"]
 
 [[package]]
+name = "django-recaptcha"
+version = "4.1.0"
+description = "Django recaptcha form field/widget app."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "django_recaptcha-4.1.0-py3-none-any.whl", hash = "sha256:463aa65967e973de466b28ce8e8b6abb2faffb1ce0c7faa1bf0e5b041e0497cb"},
+    {file = "django_recaptcha-4.1.0.tar.gz", hash = "sha256:73097b958733f65b729d4e4630c51fc2bf147aca6f026017d18898dfc25cb4c5"},
+]
+
+[package.dependencies]
+django = "*"
+
+[package.extras]
+testing = ["coveralls", "tox", "tox-gh-actions"]
+
+[[package]]
 name = "filelock"
 version = "3.24.2"
 description = "A platform independent file lock."
@@ -962,4 +980,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4.0"
-content-hash = "02bd34643249b003c0d3c99b0c589465e0a70fabd81e3cfe5415d57367e6b090"
+content-hash = "6ea963f9ea210993d745163376906f81a8e30d16da74a6d2b5e6153e93b1c4a1"

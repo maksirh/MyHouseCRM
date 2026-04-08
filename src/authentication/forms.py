@@ -1,8 +1,24 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV2Checkbox
+
+
+class CabinetLoginForm(AuthenticationForm):
+    captcha = ReCaptchaField(
+        widget=ReCaptchaV2Checkbox(),
+        label="",
+        error_messages={"required": "Будь ласка, підтвердіть, що ви не робот."},
+    )
 
 
 class AdminAuthForm(AuthenticationForm):
+    captcha = ReCaptchaField(
+        widget=ReCaptchaV2Checkbox(),
+        label="",
+        error_messages={"required": "Будь ласка, підтвердіть, що ви не робот."},
+    )
+
     def clean(self):
         cleaned_data = super().clean()
 

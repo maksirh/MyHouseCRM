@@ -5,7 +5,7 @@
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
-    <title>Вход - Личный кабинет жильца</title>
+    <title>Вхід - Личный кабинет жильца</title>
 
     <link href="{% static 'cabinet/bower_components/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'cabinet/bower_components/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
@@ -13,6 +13,8 @@
     <link href="{% static 'cabinet/dist/css/AdminLTE.min.css' %}" rel="stylesheet">
     <link href="{% static 'cabinet/custom.css' %}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic" rel="stylesheet">
+
+    {{ form.media }}
 
     <style>
         .login-box .nav-tabs-custom .nav-tabs > li {
@@ -36,13 +38,13 @@
 
     <div class="nav-tabs-custom">
         <ul class="nav nav-tabs" style="display: flex;">
-    <li class="{% if not is_admin_login %}active{% endif %}" style="width: 50%; text-align: center;">
-        <a href="{% url 'authentication:cabinet_login' %}">Для мешканця</a>
-    </li>
-    <li class="{% if is_admin_login %}active{% endif %}" style="width: 50%; text-align: center;">
-        <a href="{% url 'authentication:admin_login' %}">Для адміністрації</a>
-    </li>
-</ul>
+            <li class="{% if not is_admin_login %}active{% endif %}" style="width: 50%; text-align: center;">
+                <a href="{% url 'authentication:cabinet_login' %}">Для мешканця</a>
+            </li>
+            <li class="{% if is_admin_login %}active{% endif %}" style="width: 50%; text-align: center;">
+                <a href="{% url 'authentication:admin_login' %}">Для адміністрації</a>
+            </li>
+        </ul>
 
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
@@ -53,7 +55,7 @@
                     {% if is_admin_login %}
                         Вхід в панель управління
                     {% else %}
-                        Вход в особистий кабінет
+                        Вхід в особистий кабінет
                     {% endif %}
                     </p>
 
@@ -72,7 +74,7 @@
                             <input type="text" id="loginform-username" class="form-control" name="username" placeholder="E-mail або ID" required autofocus value="{{ form.username.value|default:'' }}">
                             <span class="fa fa-envelope form-control-feedback"></span>
                             {% if form.username.errors %}
-                                <div class="help-block">{{ form.username.errors|join:", " }}</div>
+                                <div class="help-block text-danger">{{ form.username.errors|join:", " }}</div>
                             {% endif %}
                         </div>
 
@@ -80,8 +82,17 @@
                             <input type="password" id="loginform-password" class="form-control" name="password" placeholder="Пароль" required>
                             <span class="fa fa-lock form-control-feedback"></span>
                             {% if form.password.errors %}
-                                <div class="help-block">{{ form.password.errors|join:", " }}</div>
+                                <div class="help-block text-danger">{{ form.password.errors|join:", " }}</div>
                             {% endif %}
+                        </div>
+
+                        <div class="form-group {% if form.captcha.errors %}has-error{% endif %}" style="margin-bottom: 15px; display: flex; justify-content: center;">
+                            <div>
+                                {{ form.captcha }}
+                                {% if form.captcha.errors %}
+                                    <div class="help-block text-danger" style="text-align: center; margin-top: 5px;">{{ form.captcha.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
                         </div>
 
                         <div class="row">
