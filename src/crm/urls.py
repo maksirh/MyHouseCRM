@@ -1,6 +1,8 @@
 from django.urls import path
 
 from src.crm.views import (
+    CabinetCallCreateView,
+    CabinetCallListView,
     CabinetMessageDetailView,
     CabinetMessageListView,
     CabinetReceiptDetailView,
@@ -26,4 +28,6 @@ urlpatterns = [
         CabinetMessageDetailView.as_view(),
         name="cabinet_message_detail",
     ),
+    path("calls/", CabinetCallListView.as_view(), name="cabinet_calls"),
+    path("calls/create/", CabinetCallCreateView.as_view(), name="cabinet_call_create"),
 ]

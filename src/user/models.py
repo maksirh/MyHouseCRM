@@ -21,6 +21,9 @@ class Roles(models.Model):
     has_user = models.BooleanField(default=False)
     has_account_detail = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.name
+
 
 class User(AbstractUser):
     STATUS_CHOICES = [

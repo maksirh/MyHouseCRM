@@ -7,7 +7,7 @@
 <section class="content-header">
     <h1>Вызов мастера</h1>
     <ul class="breadcrumb">
-        <li><a href="{% url 'cabinet_home' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'crm:cabinet_calls' %}"><i class="fa fa-home"></i> Главная</a></li>
         <li class="active">Вызов мастера</li>
     </ul>
 </section>
@@ -15,78 +15,54 @@
 <section class="content">
     <div class="row">
         <div class="col-xs-12">
-            <div class="pull-right margin-bottom">
-                <a class="btn btn-success" href="{% url 'cabinet_master_request_create' %}">Создать заявку</a>
+            <div class="pull-right" style="margin-bottom: 15px;">
+                <a href="{% url 'crm:cabinet_call_create' %}" class="btn btn-success">Создать заявку</a>
             </div>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="box">
-                <div id="w0" class="grid-view">
-                    <div class="box-body table-responsive no-padding">
-                        <table class="table table-bordered table-hover table-striped">
-                            <thead>
+            <div class="box" style="clear: both;">
+                <div class="box-body table-responsive no-padding">
+                    <table class="table table-hover table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>№ заявки</th>
+                                <th>Тип мастера</th>
+                                <th>Описание</th>
+                                <th>Удобное время</th>
+                                <th>Статус</th>
+                                <th style="width: 40px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for call in calls %}
                                 <tr>
-                                    <th style="width: 80px">№ заявки</th>
-                                    <th>Тип мастера</th>
-                                    <th>Описание</th>
-                                    <th style="width: 125px; min-width: 125px;">Удобное время</th>
-                                    <th style="width: 60px; min-width: 60px">Статус</th>
-                                    <th style="width: 48px; min-width: 48px">&nbsp;</th>
+                                    <td>{{ call.id }}</td>
+                                    <td>{{ call.master_type.name }}</td>
+                                    <td>{{ call.description|truncatechars:50 }}</td>
+                                    <td>{{ call.date|date:"d.m.Y" }} - {{ call.time|time:"H:i" }}</td>
+                                    <td>
+                                        {% if call.status == 'N' %}
+                                            <span class="label label-primary">Новое</span>
+                                        {% elif call.status == 'W' %}
+                                            <span class="label label-warning">В работе</span>
+                                        {% elif call.status == 'C' %}
+                                            <span class="label label-success">Выполнено</span>
+                                        {% else %}
+                                            <span class="label label-default">{{ call.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-default btn-sm delete-call-btn" data-id="{{ call.id }}" title="Удалить">
+                                            <i class="fa fa-trash-o"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {% for req in master_requests %}
-                                    <tr>
-                                        <td>{{ req.id }}</td>
-                                        <td>
-                                            {% if req.master_type == 'plumber' %}Сантехник
-                                            {% elif req.master_type == 'electrician' %}Электрик
-                                            {% elif req.master_type == 'locksmith' %}Слесарь
-                                            {% else %}Любой специалист{% endif %}
-                                        </td>
-                                        <td>{{ req.description|truncatechars:50 }}</td>
-                                        <td>{{ req.convenient_time|date:"d.m.Y - H:i" }}</td>
-                                        <td>
-                                            {% if req.status == 'new' %}
-                                                <small class="label label-warning">Новое</small>
-                                            {% elif req.status == 'in_progress' %}
-                                                <small class="label label-primary">В работе</small>
-                                            {% elif req.status == 'done' %}
-                                                <small class="label label-success">Выполнено</small>
-                                            {% elif req.status == 'canceled' %}
-                                                <small class="label label-danger">Отменено</small>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <a class="btn btn-default btn-sm"
-                                                   href="{% url 'cabinet_master_request_delete' req.id %}"
-                                                   title="Удалить"
-                                                   data-toggle="tooltip"
-                                                   data-method="post"
-                                                   data-confirm="Вы уверены, что хотите удалить эту заявку?">
-                                                    <i class="fa fa-trash"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% empty %}
-                                    <tr>
-                                        <td colspan="6">
-                                            <div class="empty text-center" style="padding: 20px; color: #777;">
-                                                Ничего не найдено.
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="box-footer clearfix">
-                        </div>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center" style="padding: 20px;">У вас пока нет заявок.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -96,8 +72,35 @@
 
 {% block extra_js %}
 <script>
-$(function () {
-    $('[data-toggle="tooltip"]').tooltip();
+$(document).ready(function() {
+    $('.delete-call-btn').click(function() {
+        if (!confirm('Вы уверены, что хотите удалить эту заявку?')) {
+            return;
+        }
+
+        var callId = $(this).data('id');
+
+        $.ajax({
+            url: "/cabinet/api/calls/delete",
+            type: 'POST',
+            contentType: 'application/json',
+            headers: {
+                'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
+            },
+            data: JSON.stringify({ call_id: callId }),
+
+            success: function(response) {
+                if (response.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Ошибка: ' + response.message);
+                }
+            },
+            error: function() {
+                alert('Произошла ошибка при удалении на сервере.');
+            }
+        });
+    });
 });
 </script>
 {% endblock %}

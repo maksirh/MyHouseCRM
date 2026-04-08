@@ -3,12 +3,14 @@ import json
 
 from django.db.models import Q, Sum
 from django.db.models.functions import ExtractMonth
+from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic import CreateView, DetailView, ListView, TemplateView
 
-from src.crm.models import Message, Receipt, ReceiptItem
+from src.crm.models import CallMaster, Message, Receipt, ReceiptItem
 from src.house.models import Apartment
 
+from .forms import CallMasterCabinetForm
 from .mixins import CabinetLoginRequiredMixin
 
 
@@ -194,3 +196,30 @@ class CabinetMessageDetailView(CabinetLoginRequiredMixin, DetailView):
             obj.is_read = True
             obj.save(update_fields=["is_read"])
         return obj
+
+
+class CabinetCallListView(CabinetLoginRequiredMixin, ListView):
+    model = CallMaster
+    template_name = "crm/master_call_list.html"
+    context_object_name = "calls"
+    paginate_by = 10
+
+    def get_queryset(self):
+        return CallMaster.objects.filter(apartment__owner=self.request.user).order_by(
+            "-date", "-time"
+        )
+
+
+class CabinetCallCreateView(CabinetLoginRequiredMixin, CreateView):
+    model = CallMaster
+    template_name = "crm/master_call_create.html"
+    form_class = CallMasterCabinetForm
+    success_url = reverse_lazy("crm:cabinet_calls")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        return super().form_valid(form)

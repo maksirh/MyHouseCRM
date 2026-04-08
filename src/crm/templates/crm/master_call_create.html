@@ -1,0 +1,64 @@
+{% extends 'cabinet_base.html' %}
+{% load static %}
+
+{% block title %}Новая заявка{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Новая заявка</h1>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'crm:summary' %}"><i class="fa fa-home"></i> Главная</a></li>
+        <li><a href="{% url 'crm:cabinet_calls' %}">Вызов мастера</a></li>
+        <li class="active">Новая заявка</li>
+    </ul>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-body" style="padding: 20px;">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label>Тип мастера</label>
+                                {{ form.master_type }}
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <label>Квартира</label>
+                                {{ form.apartment }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Дата работ</label>
+                                {{ form.date }}
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Время работ</label>
+                                {{ form.time }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label>Описание</label>
+                                {{ form.description }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 text-right mt-3">
+                                <button type="submit" class="btn btn-success">Отправить заявку</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

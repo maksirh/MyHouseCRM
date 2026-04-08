@@ -165,7 +165,7 @@
                 </li>
 
                 <li class="{% if 'master-request' in request.path %}active{% endif %}">
-                    <a href="#"><i class="fa fa-wrench"></i> <span>Вызов мастера</span></a>
+                    <a href="{% url 'crm:cabinet_calls' %}"><i class="fa fa-wrench"></i> <span>Вызов мастера</span></a>
                 </li>
 
                 <li class="{% if 'profile' in request.path or 'user/view' in request.path %}active{% endif %}">
