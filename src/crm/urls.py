@@ -5,6 +5,8 @@ from src.crm.views import (
     CabinetCallListView,
     CabinetMessageDetailView,
     CabinetMessageListView,
+    CabinetProfileUpdateView,
+    CabinetProfileView,
     CabinetReceiptDetailView,
     CabinetReceiptListView,
     CabinetSummaryView,
@@ -30,4 +32,10 @@ urlpatterns = [
     ),
     path("calls/", CabinetCallListView.as_view(), name="cabinet_calls"),
     path("calls/create/", CabinetCallCreateView.as_view(), name="cabinet_call_create"),
+    path("profile/", CabinetProfileView.as_view(), name="cabinet_profile"),
+    path(
+        "profile/edit/",
+        CabinetProfileUpdateView.as_view(),
+        name="cabinet_profile_update",
+    ),
 ]

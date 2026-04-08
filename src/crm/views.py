@@ -1,16 +1,24 @@
 import datetime
 import json
 
+from django.contrib.auth import update_session_auth_hash
 from django.db.models import Q, Sum
 from django.db.models.functions import ExtractMonth
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import CreateView, DetailView, ListView, TemplateView
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    ListView,
+    TemplateView,
+    UpdateView,
+)
 
 from src.crm.models import CallMaster, Message, Receipt, ReceiptItem
 from src.house.models import Apartment
+from src.user.models import User
 
-from .forms import CallMasterCabinetForm
+from .forms import CabinetProfileUpdateForm, CallMasterCabinetForm
 from .mixins import CabinetLoginRequiredMixin
 
 
@@ -222,4 +230,37 @@ class CabinetCallCreateView(CabinetLoginRequiredMixin, CreateView):
         return kwargs
 
     def form_valid(self, form):
+        return super().form_valid(form)
+
+
+class CabinetProfileView(CabinetLoginRequiredMixin, TemplateView):
+    template_name = "crm/profile.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["apartments"] = Apartment.objects.filter(owner=self.request.user)
+        return context
+
+
+class CabinetProfileUpdateView(CabinetLoginRequiredMixin, UpdateView):
+    model = User
+    form_class = CabinetProfileUpdateForm
+    template_name = "crm/profile_update.html"
+    success_url = reverse_lazy("crm:cabinet_profile")
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        password = form.cleaned_data.get("password")
+
+        if password:
+            user.set_password(password)
+
+        user.save()
+
+        if password:
+            update_session_auth_hash(self.request, user)
+
         return super().form_valid(form)

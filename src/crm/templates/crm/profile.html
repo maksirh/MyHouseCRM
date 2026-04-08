@@ -1,157 +1,85 @@
 {% extends 'cabinet_base.html' %}
 {% load static %}
 
-{% block title %}Профиль - {{ request.user.get_full_name }}{% endblock %}
+{% block title %}Профіль{% endblock %}
 
 {% block content %}
 <section class="content-header">
-    <h1>Профиль</h1>
+    <h1>Профіль</h1>
     <ul class="breadcrumb">
-        <li><a href="{% url 'cabinet_home' %}"><i class="fa fa-home"></i> Главная</a></li>
-        <li class="active">Профиль</li>
+        <li><a href="{% url 'crm:summary' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li class="active">Профіль</li>
     </ul>
 </section>
 
 <section class="content">
     <div class="row">
-        <div class="col-lg-3">
-            <div class="row">
-                <div class="col-md-6 col-lg-12">
-                    <div class="box">
-                        <div class="box-body box-profile">
-                            {% if request.user.avatar %}
-                                <img class="profile-user-img img-responsive img-circle" src="{{ request.user.avatar.url }}" alt="Аватар">
-                            {% else %}
-                                <img class="profile-user-img img-responsive img-circle" src="{% static 'cabinet/dist/img/avatar.png' %}" alt="Аватар">
-                            {% endif %}
+        <div class="col-md-3">
+            <div class="box box-primary">
+                <div class="box-body box-profile">
+                    {% if user.avatar %}
+                        <img class="profile-user-img img-responsive img-circle" src="{{ user.avatar.url }}" alt="Аватар користувача">
+                    {% else %}
+                        <img class="profile-user-img img-responsive img-circle" src="{% static 'cabinet/dist/img/avatar.png' %}" alt="Аватар">
+                    {% endif %}
 
-                            <h3 class="profile-username text-center">{{ request.user.get_full_name }}</h3>
-                            <p class="text-muted text-center">Владелец квартиры</p>
+                    <h3 class="profile-username text-center">{{ user.first_name }} {{ user.last_name }}</h3>
+                    <p class="text-muted text-center">Власник квартири</p>
 
-                            <ul class="list-group list-group-unbordered">
-                                <li class="list-group-item">
-                                    <span>Телефон</span>
-                                    <span class="pull-right">{{ request.user.phone|default:"-" }}</span>
-                                </li>
-                                <li class="list-group-item">
-                                    <span>Viber</span>
-                                    <span class="pull-right">{{ request.user.viber|default:"-" }}</span>
-                                </li>
-                                <li class="list-group-item">
-                                    <span>Telegram</span>
-                                    <span class="pull-right">{{ request.user.telegram|default:"-" }}</span>
-                                </li>
-                                <li class="list-group-item">
-                                    <span>Email</span>
-                                    <span class="pull-right">{{ request.user.email }}</span>
-                                </li>
-                            </ul>
+                    <ul class="list-group list-group-unbordered">
+                        <li class="list-group-item"><b>Телефон</b> <a class="pull-right">{{ user.phone_number|default:"-" }}</a></li>
+                        <li class="list-group-item"><b>Viber</b> <a class="pull-right">{{ user.viber|default:"-" }}</a></li>
+                        <li class="list-group-item"><b>Telegram</b> <a class="pull-right">{{ user.telegram|default:"-" }}</a></li>
+                        <li class="list-group-item"><b>Email</b> <a class="pull-right">{{ user.email|default:"-" }}</a></li>
+                    </ul>
 
-                            <a href="{% url 'cabinet_profile_update' %}" class="btn btn-primary btn-block">Изменить</a>
-                        </div>
-                    </div>
+                    <a href="{% url 'crm:cabinet_profile_update' %}" class="btn btn-primary btn-block"><b>Змінити</b></a>
                 </div>
+            </div>
 
-                <div class="col-md-6 col-lg-12">
-                    <h3 class="page-header">Обо мне (заметки)</h3>
-                    <div class="box">
-                        <div class="box-body box-profile">
-                            {{ request.user.notes|default:"Заметки отсутствуют"|safe }}
-                        </div>
-                    </div>
-                </div>
+            <div class="box box-primary">
+                <div class="box-header with-border"><h3 class="box-title">Про мене (нотатки)</h3></div>
+                <div class="box-body"><p class="text-muted">{{ user.notes|default:"Немає нотаток" }}</p></div>
             </div>
         </div>
 
-        <div class="col-lg-9">
-            <h2 class="page-header">Мои квартиры</h2>
-
-            {% for flat in user_flats %}
-                <div class="box">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Описание квартиры</h3>
-                    </div>
-                    <div class="box-body">
-                        <p><strong>{{ flat.house.name }}.</strong> {{ flat.house.address }}, кв. {{ flat.number }}</p>
-
-                        <div class="row">
-                            <div class="col-xs-12 col-md-6">
-                                {% if flat.house.image1 %}
-                                    <img src="{{ flat.house.image1.url }}" class="img-responsive largeImg margin-bottom-30" alt="">
-                                {% else %}
-                                    <img src="{% static 'cabinet/dist/img/placeholder.jpg' %}" class="img-responsive largeImg margin-bottom-30" alt="">
-                                {% endif %}
-                            </div>
-
-                            <div class="col-xs-6 col-md-3">
-                                <div class="row">
-                                    <div class="col-xs-12">
-                                        {% if flat.house.image2 %}<img src="{{ flat.house.image2.url }}" class="img-responsive smallImg margin-bottom-30" alt="">{% endif %}
-                                    </div>
-                                    <div class="col-xs-12">
-                                        {% if flat.house.image3 %}<img src="{{ flat.house.image3.url }}" class="img-responsive smallImg margin-bottom-30" alt="">{% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-6 col-md-3">
-                                <div class="row">
-                                    <div class="col-xs-12">
-                                        {% if flat.house.image4 %}<img src="{{ flat.house.image4.url }}" class="img-responsive smallImg margin-bottom-30" alt="">{% endif %}
-                                    </div>
-                                    <div class="col-xs-12">
-                                        {% if flat.house.image5 %}<img src="{{ flat.house.image5.url }}" class="img-responsive smallImg margin-bottom-30" alt="">{% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th colspan="2">Описание</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th style="min-width: 200px; font-weight:normal;">Название дома</th>
-                                        <th style="font-weight:normal;">{{ flat.house.name }}</th>
-                                    </tr>
-                                    <tr>
-                                        <td>Адрес</td>
-                                        <td>{{ flat.house.address }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>№ квартиры</td>
-                                        <td>{{ flat.number }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Площадь</td>
-                                        <td>{{ flat.square|default:"0.00" }} м<sup>2</sup></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Этаж</td>
-                                        <td>{{ flat.floor.name|default:"-" }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Секция</td>
-                                        <td>{{ flat.section.name|default:"-" }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Лицевой счет</td>
-                                        <td>{{ flat.account.number|default:"<span class='text-red'>Не привязан</span>"|safe }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+        <div class="col-md-9">
+            <h3 style="margin-top: 0;">Мої квартири</h3>
+            {% for apartment in apartments %}
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Опис квартири</h3>
+                    <div class="box-tools pull-right">
+                        <span class="text-muted">{{ apartment.house.name }}, {{ apartment.house.address }}, кв. {{ apartment.number }}</span>
                     </div>
                 </div>
+                <div class="box-body">
+                    <div class="row" style="margin-bottom: 20px;">
+                        {% for image in apartment.images.all|slice:":5" %}
+                            <div class="col-md-{% if forloop.first %}6{% else %}3{% endif %}" style="margin-bottom: 10px;">
+                                <img src="{{ image.image.url }}" alt="Фото" class="img-responsive" style="height: {% if forloop.first %}200px{% else %}95px{% endif %}; width: 100%; object-fit: cover;">
+                            </div>
+                        {% empty %}
+                            <div class="col-xs-12 text-muted">Немає завантажених фотографій</div>
+                        {% endfor %}
+                    </div>
+
+                    <table class="table table-bordered table-striped">
+                        <thead><tr><th colspan="2" class="text-center">Опис</th></tr></thead>
+                        <tbody>
+                            <tr><td>Назва будинку</td><td>{{ apartment.house.name }}</td></tr>
+                            <tr><td>Адреса</td><td>{{ apartment.house.address }}</td></tr>
+                            <tr><td>№ квартири</td><td>{{ apartment.number }}</td></tr>
+                            <tr><td>Площа</td><td>{{ apartment.area|default:"-" }} м²</td></tr>
+                            <tr><td>Поверх</td><td>{{ apartment.floor.name|default:"-" }}</td></tr>
+                            <tr><td>Секція</td><td>{{ apartment.section.name|default:"-" }}</td></tr>
+                            <tr><td>Особовий рахунок</td><td>{{ apartment.account.number|default:"Не призначено" }}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             {% empty %}
-                <div class="box">
-                    <div class="box-body text-center">
-                        <p class="text-muted">У вас пока нет привязанных квартир.</p>
-                    </div>
-                </div>
+                <div class="alert alert-info">У вас поки немає прикріплених квартир.</div>
             {% endfor %}
         </div>
     </div>
