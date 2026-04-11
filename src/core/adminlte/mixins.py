@@ -8,41 +8,32 @@ def get_user_home_url(user):
     if user.is_superuser:
         return reverse("adminlte:statistic")
 
-    if not user.role:
+    if not getattr(user, "role", None):
         return reverse("adminlte:user_profile")
 
-    role = user.role
-    if role.has_statistics:
-        return reverse("adminlte:statistic")
-    if role.has_cashbox:
-        return reverse("adminlte:cashbox_list")
-    if role.has_receipt:
-        return reverse("adminlte:receipt_list")
-    if role.has_account_detail:
-        return reverse("adminlte:account_list")
-    if role.has_apartment:
-        return reverse("adminlte:apartment_list")
-    if role.has_owner_apartments:
-        return reverse("adminlte:owners_list")
-    if role.has_message:
-        return reverse("adminlte:message_list")
-    if role.has_call_master:
-        return reverse("adminlte:callmaster_list")
-    if role.has_counter:
-        return reverse("adminlte:counter_reading_history")
+    role_urls = {
+        "has_statistics": "adminlte:statistic",
+        "has_cashbox": "adminlte:cashbox_list",
+        "has_receipt": "adminlte:receipt_list",
+        "has_account_detail": "adminlte:account_list",
+        "has_apartment": "adminlte:apartment_list",
+        "has_owner_apartments": "adminlte:owners_list",
+        "has_message": "adminlte:message_list",
+        "has_call_master": "adminlte:callmaster_list",
+        "has_counter": "adminlte:counter_reading_history",
+        "has_manage_site": "adminlte:edit_main_page",
+        "has_service": "adminlte:service_edit",
+        "has_tariffs": "adminlte:tariff_list",
+        "has_roles": "adminlte:roles_update",
+        "has_user": "adminlte:users_list",
+    }
 
-    if role.has_manage_site:
-        return reverse("adminlte:edit_main_page")
-    if role.has_service:
-        return reverse("adminlte:service_edit")
-    if role.has_tariffs:
-        return reverse("adminlte:tariff_list")
-    if role.has_roles:
-        return reverse("adminlte:roles_update")
-    if role.has_user:
-        return reverse("adminlte:users_list")
+    url_name = next(
+        (url for attr, url in role_urls.items() if getattr(user.role, attr, False)),
+        "adminlte:user_profile",
+    )
 
-    return reverse("adminlte:user_profile")
+    return reverse(url_name)
 
 
 class RolePermissionMixin(UserPassesTestMixin):

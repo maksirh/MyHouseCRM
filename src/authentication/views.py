@@ -22,3 +22,6 @@ class CabinetLoginView(LoginView):
         context = super().get_context_data(**kwargs)
         context["is_admin_login"] = False
         return context
+
+    def get_success_url(self):
+        return reverse_lazy("crm:summary")

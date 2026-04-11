@@ -13,12 +13,12 @@ environ.Env.read_env(BASE_DIR / ".env")
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-yn44zbcqc+i)+vu7oyi_vl#*2s71oygo2s^ua0y7fso+ww$0ke"
+SECRET_KEY = env("SECRET_KEY", default="django-insecure-default-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG", default=False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
 
 # Application definition
@@ -108,8 +108,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = env("EMAIL_HOST")
-EMAIL_PORT = env("EMAIL_PORT")
-EMAIL_USE_TLS = env("EMAIL_USE_TLS")
+EMAIL_PORT = env("EMAIL_PORT", default=587)
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
@@ -135,6 +135,8 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     BASE_DIR / "src" / "core" / "static",
 ]
+
+STATIC_ROOT = BASE_DIR / "static"
 
 MEDIA_URL = "/media/"
 
