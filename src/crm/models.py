@@ -167,6 +167,9 @@ class CashBox(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Сума")
     comment = models.TextField(null=True, blank=True, verbose_name="Коментар")
 
+    class Meta:
+        ordering = ["-id"]
+
     def __str__(self):
         return f"Ордер №{self.number} від {self.date}"
 

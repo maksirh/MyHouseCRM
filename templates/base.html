@@ -27,7 +27,7 @@
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menuBtn" aria-expanded="false">
-                    <span class="sr-only">Toggle navigation</span>
+                    <span class="sr-only">Перемкнути навігацію</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
@@ -41,9 +41,9 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li class="active"><a href="/">Головна</a></li>
                     <li><a href="{% url 'website:about_page' %}">Про нас</a></li>
-                    <li><a href="{% url 'website:services_page' %}">Услуги</a></li>
+                    <li><a href="{% url 'website:services_page' %}">Послуги</a></li>
                     <li><a href="#">Умови придбання</a></li>
-                    <li><a href="{% url 'website:contacts_page' %}">Контакты</a></li>
+                    <li><a href="{% url 'website:contacts_page' %}">Контакти</a></li>
                     <li><a href="{% url 'authentication:cabinet_login' %}"><i class="fas fa-sign-in-alt"></i> Вхід</a></li>
                 </ul>
             </div>
@@ -53,15 +53,6 @@
     {% block content %}
     {% endblock %}
 
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-12 text-center">
-                    <p class="text-muted">Розроблено <a href="https://avada-media.ua/">AVADA-MEDIA</a>.</p>
-                </div>
-            </div>
-        </div>
-    </footer>
 
     <script src="{% static '/assets/137cc266/jquery.js' %}"></script>
     <script src="{% static '/assets/4da2ea81/yii.js' %}"></script>

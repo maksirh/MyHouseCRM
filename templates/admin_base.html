@@ -1,13 +1,13 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="ru-RU">
+<html lang="uk-UA">
 <head>
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
 
-    <title>{% block title %}Панель администратора{% endblock %}</title>
+    <title>{% block title %}Панель адміністратора{% endblock %}</title>
 
     <link href="{% static 'admin/bower_components/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'admin/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
@@ -39,10 +39,10 @@
 
             <nav class="navbar navbar-static-top">
                 <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-                    <span class="sr-only">Toggle navigation</span>
+                    <span class="sr-only">Перемкнути навігацію</span>
                 </a>
 
-                <div class="header-title">Панель администратора</div>
+                <div class="header-title">Панель адміністратора</div>
 
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
@@ -52,7 +52,7 @@
                                 <span class="label label-warning">1</span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li class="header">Новых пользователей: 1</li>
+                                <li class="header">Нових користувачів: 1</li>
                                 <li>
                                     <ul class="menu">
                                         <li>
@@ -62,7 +62,7 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="footer"><a href="#">Перейти в раздел пользователей</a></li>
+                                <li class="footer"><a href="#">Перейти до розділу користувачів</a></li>
                             </ul>
                         </li>
 
@@ -81,10 +81,10 @@
                                 </li>
                                 <li class="user-footer">
                                     <div class="pull-left">
-                                        <a class="btn btn-default btn-flat" href="#">Профиль</a>
+                                        <a class="btn btn-default btn-flat" href="#">Профіль</a>
                                     </div>
                                     <div class="pull-right">
-                                        <a class="btn btn-default btn-flat" href="#" data-method="post">Выход</a>
+                                        <a class="btn btn-default btn-flat" href="#" data-method="post">Вихід</a>
                                     </div>
                                 </li>
                             </ul>
@@ -103,7 +103,7 @@
                     {% endif %}
 
                     {% if request.user.is_superuser or request.user.role.has_cashbox %}
-                        <li><a href="{% url 'adminlte:cashbox_list' %}"><i class="fa fa-dollar"></i> <span>Касса</span></a></li>
+                        <li><a href="{% url 'adminlte:cashbox_list' %}"><i class="fa fa-dollar"></i> <span>Каса</span></a></li>
                     {% endif %}
 
                     {% if request.user.is_superuser or request.user.role.has_receipt %}
@@ -116,11 +116,11 @@
 
                     {% if request.user.is_superuser or request.user.role.has_apartment %}
                         <li><a href="{% url 'adminlte:apartment_list' %}"><i class="fa fa-key"></i> <span>Квартири</span></a></li>
-                        <li><a href="{% url 'adminlte:house_list' %}"><i class="fa fa-building"></i> <span>Дома</span></a></li>
+                        <li><a href="{% url 'adminlte:house_list' %}"><i class="fa fa-building"></i> <span>Будинки</span></a></li>
                     {% endif %}
 
                     {% if request.user.is_superuser or request.user.role.has_owner_apartments %}
-                        <li><a href="{% url 'adminlte:owners_list' %}"><i class="fa fa-users"></i> <span>Влаcники квартир</span></a></li>
+                        <li><a href="{% url 'adminlte:owners_list' %}"><i class="fa fa-users"></i> <span>Власники квартир</span></a></li>
                     {% endif %}
 
                     {% if request.user.is_superuser or request.user.role.has_message %}
@@ -132,43 +132,43 @@
                     {% endif %}
 
                     {% if request.user.is_superuser or request.user.role.has_counter %}
-                        <li><a href="{% url 'adminlte:counter_reading_history' %}"><i class="fa fa-dashboard"></i> <span>Показання Лічільників</span></a></li>
+                        <li><a href="{% url 'adminlte:counter_reading_history' %}"><i class="fa fa-dashboard"></i> <span>Показання лічильників</span></a></li>
                     {% endif %}
 
                     {% if request.user.is_superuser or request.user.role.has_manage_site %}
                         <li class="treeview">
-                            <a href="#!"><i class="fa fa-desktop"></i> <span>Управление сайтом</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+                            <a href="#!"><i class="fa fa-desktop"></i> <span>Керування сайтом</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
                             <ul class="treeview-menu">
-                                <li><a href="{% url 'adminlte:edit_main_page' %}"><i class="fa fa-circle-o"></i> <span>Главная страница</span></a></li>
-                                <li><a href="{% url 'adminlte:edit_about_us_page' %}"><i class="fa fa-circle-o"></i> <span>О нас</span></a></li>
-                                <li><a href="{% url 'adminlte:edit_service_page' %}"><i class="fa fa-circle-o"></i> <span>Услуги</span></a></li>
-                                <li><a href="{% url 'adminlte:contacts_edit' %}"><i class="fa fa-circle-o"></i> <span>Контакты</span></a></li>
+                                <li><a href="{% url 'adminlte:edit_main_page' %}"><i class="fa fa-circle-o"></i> <span>Головна сторінка</span></a></li>
+                                <li><a href="{% url 'adminlte:edit_about_us_page' %}"><i class="fa fa-circle-o"></i> <span>Про нас</span></a></li>
+                                <li><a href="{% url 'adminlte:edit_service_page' %}"><i class="fa fa-circle-o"></i> <span>Послуги</span></a></li>
+                                <li><a href="{% url 'adminlte:contacts_edit' %}"><i class="fa fa-circle-o"></i> <span>Контакти</span></a></li>
                             </ul>
                         </li>
                     {% endif %}
 
                     {% if request.user.is_superuser or request.user.role.has_service or request.user.role.has_tariffs or request.user.role.has_roles or request.user.role.has_user %}
                         <li class="treeview">
-                            <a href="#!"><i class="fa fa-cogs"></i> <span>Настройки системы</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+                            <a href="#!"><i class="fa fa-cogs"></i> <span>Налаштування системи</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
                             <ul class="treeview-menu">
                                 {% if request.user.is_superuser or request.user.role.has_service %}
-                                    <li><a href="{% url 'adminlte:service_edit' %}"><i class="fa fa-briefcase"></i> <span>Услуги</span></a></li>
+                                    <li><a href="{% url 'adminlte:service_edit' %}"><i class="fa fa-briefcase"></i> <span>Послуги</span></a></li>
                                 {% endif %}
 
                                 {% if request.user.is_superuser or request.user.role.has_tariffs %}
-                                    <li><a href="{% url 'adminlte:tariff_list' %}"><i class="fa fa-money"></i> <span>Тарифы</span></a></li>
+                                    <li><a href="{% url 'adminlte:tariff_list' %}"><i class="fa fa-money"></i> <span>Тарифи</span></a></li>
                                 {% endif %}
 
                                 {% if request.user.is_superuser or request.user.role.has_roles %}
-                                    <li><a href="{% url 'adminlte:roles_update' %}"><i class="fa fa-user"></i> <span>Роли</span></a></li>
+                                    <li><a href="{% url 'adminlte:roles_update' %}"><i class="fa fa-user"></i> <span>Ролі</span></a></li>
                                 {% endif %}
 
                                 {% if request.user.is_superuser or request.user.role.has_user %}
-                                    <li><a href="{% url 'adminlte:users_list' %}"><i class="fa fa-user-plus"></i> <span>Пользователи</span></a></li>
+                                    <li><a href="{% url 'adminlte:users_list' %}"><i class="fa fa-user-plus"></i> <span>Користувачі</span></a></li>
                                 {% endif %}
 
-                                <li><a href="{% url 'adminlte:payment_detail' %}"><i class="fa fa-credit-card"></i> <span>Платежные реквизиты</span></a></li>
-                                <li><a href="{% url 'adminlte:article_list' %}"><i class="fa fa-list-ol"></i> <span>Статьи платежей</span></a></li>
+                                <li><a href="{% url 'adminlte:payment_detail' %}"><i class="fa fa-credit-card"></i> <span>Платіжні реквізити</span></a></li>
+                                <li><a href="{% url 'adminlte:article_list' %}"><i class="fa fa-list-ol"></i> <span>Статті платежів</span></a></li>
                             </ul>
                         </li>
                     {% endif %}
@@ -215,10 +215,6 @@
             </section>
         </div>
 
-        <footer class="main-footer">
-            Разработано <a href="https://avada-media.ua/">AVADA-MEDIA</a>. На базе системы управления <a href="https://avada-media.ua/moydom24/">"МойДом24"</a>.
-            Документация API доступна <a href="#">по ссылке</a>.
-        </footer>
     </div>
 
     <script src="{% static 'admin/assets/137cc266/jquery.js' %}"></script>

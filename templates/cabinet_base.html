@@ -1,13 +1,13 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="ru-RU">
+<html lang="uk-UA">
 <head>
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
 
-    <title>{% block title %}Личный кабинет{% endblock %}</title>
+    <title>{% block title %}Особистий кабінет{% endblock %}</title>
 
     <link href="{% static 'cabinet/bower_components/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'cabinet/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
@@ -38,10 +38,10 @@
 
         <nav class="navbar navbar-static-top">
             <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-                <span class="sr-only">Toggle navigation</span>
+                <span class="sr-only">Перемкнути навігацію</span>
             </a>
 
-            <div class="header-title">Личный кабинет</div>
+            <div class="header-title">Особистий кабінет</div>
 
             <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
@@ -55,12 +55,12 @@
                         <ul class="dropdown-menu">
                             <li class="header">
                                 {% if unread_messages_count %}
-                                    Новых сообщений: {{ unread_messages_count }}
+                                    Нових повідомлень: {{ unread_messages_count }}
                                 {% else %}
-                                    Нет новых сообщений
+                                    Немає нових повідомлень
                                 {% endif %}
                             </li>
-                            <li class="footer"><a href="#">Перейти в раздел сообщений</a></li>
+                            <li class="footer"><a href="#">Перейти до розділу повідомлень</a></li>
                         </ul>
                     </li>
 
@@ -71,7 +71,7 @@
                             {% else %}
                                 <img src="{% static 'cabinet/dist/img/avatar.png' %}" class="user-image" alt="Avatar">
                             {% endif %}
-                            <span class="hidden-xs">{{ request.user.get_full_name|default:"Пользователь" }}</span>
+                            <span class="hidden-xs">{{ request.user.get_full_name|default:"Користувач" }}</span>
                         </a>
                         <ul class="dropdown-menu">
                             <li class="user-header">
@@ -80,16 +80,16 @@
                                 {% else %}
                                     <img src="{% static 'cabinet/dist/img/avatar.png' %}" class="img-circle" alt="Avatar">
                                 {% endif %}
-                                <p>{{ request.user.get_full_name|default:"Пользователь" }}</p>
+                                <p>{{ request.user.get_full_name|default:"Користувач" }}</p>
                             </li>
                             <li class="user-footer">
                                 <div class="pull-left">
-                                    <a class="btn btn-default btn-flat" href="#">Профиль</a>
+                                    <a class="btn btn-default btn-flat" href="#">Профіль</a>
                                 </div>
                                 <div class="pull-right">
                                     <form action="#" method="post" style="display:inline;">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-default btn-flat">Выход</button>
+                                        <button type="submit" class="btn btn-default btn-flat">Вихід</button>
                                     </form>
                                 </div>
                             </li>
@@ -105,21 +105,21 @@
             <ul class="sidebar-menu" data-widget="tree">
 
                 <li class="{% if 'cabinet/' == request.path or 'summary' in request.path %}active{% endif %} treeview">
-                    <a href="#!"><i class="fa fa-line-chart"></i> <span>Сводка</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+                    <a href="#!"><i class="fa fa-line-chart"></i> <span>Зведення</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
                     <ul class="treeview-menu" {% if 'cabinet/' == request.path or 'summary' in request.path %}style="display: block"{% endif %}>
                         {% for flat in user_flats %}
                             <li class="{% if request.GET.flat_id == flat.id|stringformat:'s' %}active{% endif %}">
                                 <a href="?flat_id={{ flat.id }}"><i class="fa fa-building-o"></i> <span>{{ flat.house.name }}, кв.{{ flat.number }}</span></a>
                             </li>
                         {% empty %}
-                            <li><a href="#"><i class="fa fa-building-o"></i> <span>Квартиры не найдены</span></a></li>
+                            <li><a href="#"><i class="fa fa-building-o"></i> <span>Квартири не знайдено</span></a></li>
                         {% endfor %}
                     </ul>
                 </li>
 
                <li class="{% if 'invoice' in request.path %}active{% endif %} treeview">
     <a href="#!">
-        <i class="fa fa-files-o"></i> <span>Квитанции</span>
+        <i class="fa fa-files-o"></i> <span>Квитанції</span>
         <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
     </a>
 
@@ -127,7 +127,7 @@
 
         <li class="{% if not request.GET.flat_id and 'invoice' in request.path %}active{% endif %}">
             <a href="{% url 'crm:cabinet_invoices' %}">
-                <i class="fa fa-files-o"></i> <span>Все квитанции</span>
+                <i class="fa fa-files-o"></i> <span>Всі квитанції</span>
             </a>
         </li>
 
@@ -145,7 +145,7 @@
                 <li class="{% if 'tariff' in request.path %}active{% endif %} treeview">
 
     <a href="#!">
-        <i class="fa fa-money"></i> <span>Тарифы</span>
+        <i class="fa fa-money"></i> <span>Тарифи</span>
         <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
     </a>
 
@@ -161,15 +161,15 @@
 </li>
 
                 <li class="{% if 'message' in request.path %}active{% endif %}">
-                    <a href="{% url 'crm:cabinet_messages' %}"><i class="fa fa-envelope-o"></i> <span>Сообщения</span></a>
+                    <a href="{% url 'crm:cabinet_messages' %}"><i class="fa fa-envelope-o"></i> <span>Повідомлення</span></a>
                 </li>
 
                 <li class="{% if 'master-request' in request.path %}active{% endif %}">
-                    <a href="{% url 'crm:cabinet_calls' %}"><i class="fa fa-wrench"></i> <span>Вызов мастера</span></a>
+                    <a href="{% url 'crm:cabinet_calls' %}"><i class="fa fa-wrench"></i> <span>Виклик майстра</span></a>
                 </li>
 
                 <li class="{% if 'profile' in request.path or 'user/view' in request.path %}active{% endif %}">
-                    <a href="{% url 'crm:cabinet_profile' %}"><i class="fa fa-user-circle-o"></i> <span>Профиль</span></a>
+                    <a href="{% url 'crm:cabinet_profile' %}"><i class="fa fa-user-circle-o"></i> <span>Профіль</span></a>
                 </li>
 
             </ul>
