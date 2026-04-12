@@ -319,7 +319,7 @@ $(document).ready(function() {
         var roleLabelField = selectField.closest('.item-row').find('.user-role-label');
 
         if (userId) {
-            var url = "adminpanel/api/user-role?user_id=" + userId;
+            var url = "/adminpanel/api/user-role?user_id=" + userId;
 
             $.ajax({
                 url: url,

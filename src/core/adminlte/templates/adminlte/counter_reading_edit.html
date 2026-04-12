@@ -138,7 +138,7 @@ $(function () {
         var houseId = $('#id_house').val();
         if(sectionId || houseId) {
             $.ajax({
-                url: "aminpanel/api/get_lists_by_house",
+                url: "/aminpanel/api/get_lists_by_house",
                 data: { 'house_id': houseId, 'section_id': sectionId },
                 success: function(data) {
                     $("#id_apartment").html(data.flats);
