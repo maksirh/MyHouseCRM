@@ -45,4 +45,5 @@ class User(AbstractUser):
     notes = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return self.first_name + " " + self.last_name
+        full_name = f"{self.first_name or ''} {self.last_name or ''}".strip()
+        return full_name if full_name else self.email or self.username

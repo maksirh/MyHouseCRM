@@ -2,16 +2,16 @@
 {% load static %}
 
 {% block title %}
-    {% if form.instance.pk %}Редактирование квартиры{% else %}Новая квартира{% endif %}
+    {% if form.instance.pk %}Редагування квартири{% else %}Нова квартира{% endif %}
 {% endblock %}
 
 {% block content %}
 <section class="content-header">
-    <h1>{% if form.instance.pk %}Редактирование квартиры{% else %}Новая квартира{% endif %}</h1>
+    <h1>{% if form.instance.pk %}Редагування квартири{% else %}Нова квартира{% endif %}</h1>
     <ul class="breadcrumb">
-        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Главная</a></li>
-        <li><a href="{% url 'adminlte:apartment_list' %}">Квартиры</a></li>
-        <li class="active">{% if form.instance.pk %}Редактирование{% else %}Новая квартира{% endif %}</li>
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li><a href="{% url 'adminlte:apartment_list' %}">Квартири</a></li>
+        <li class="active">{% if form.instance.pk %}Редагування{% else %}Нова квартира{% endif %}</li>
     </ul>
 </section>
 
@@ -24,37 +24,37 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-6 col-lg-4">
                         <div class="form-group {% if form.number.errors %}has-error{% endif %}">
-                            <label>Номер квартиры</label>
+                            <label>Номер квартири</label>
                             {{ form.number }}
                             <div class="help-block text-danger">{{ form.number.errors }}</div>
                         </div>
 
                         <div class="form-group {% if form.area.errors %}has-error{% endif %}">
-                            <label>Площадь (кв.м.)</label>
+                            <label>Площа (кв.м.)</label>
                             {{ form.area }}
                             <div class="help-block text-danger">{{ form.area.errors }}</div>
                         </div>
 
                         <div class="form-group {% if form.house.errors %}has-error{% endif %}">
-                            <label>Дом</label>
+                            <label>Будинок</label>
                             {{ form.house }}
                             <div class="help-block text-danger">{{ form.house.errors }}</div>
                         </div>
 
                         <div class="form-group {% if form.section.errors %}has-error{% endif %}">
-                            <label>Секция</label>
+                            <label>Секція</label>
                             {{ form.section }}
                             <div class="help-block text-danger">{{ form.section.errors }}</div>
                         </div>
 
                         <div class="form-group {% if form.floor.errors %}has-error{% endif %}">
-                            <label>Этаж</label>
+                            <label>Поверх</label>
                             {{ form.floor }}
                             <div class="help-block text-danger">{{ form.floor.errors }}</div>
                         </div>
 
                         <div class="form-group {% if form.owner.errors %}has-error{% endif %}">
-                            <label>Владелец</label>
+                            <label>Власник</label>
                             {{ form.owner }}
                             <div class="help-block text-danger">{{ form.owner.errors }}</div>
                         </div>
@@ -68,7 +68,7 @@
 
                     <div class="col-xs-12 col-sm-6 col-lg-4 col-lg-offset-1">
                         <div class="form-group {% if form.account.errors %}has-error{% endif %}">
-                            <label>Лицевой счет</label>
+                            <label>Особовий рахунок</label>
                             {{ form.account }}
                             <div class="help-block text-danger">{{ form.account.errors }}</div>
                         </div>
@@ -78,9 +78,9 @@
                 <div class="row">
                     <div class="col-xs-12 text-right">
                         <div class="form-group margin-top-15">
-                            <a href="{% url 'adminlte:apartment_list' %}" class="btn btn-default">Отменить</a>
-                            <button type="submit" class="btn btn-success">Сохранить</button>
-                            <button type="submit" name="save_and_add" class="btn btn-success">Сохранить и добавить новую</button>
+                            <a href="{% url 'adminlte:apartment_list' %}" class="btn btn-default">Скасувати</a>
+                            <button type="submit" class="btn btn-success">Зберегти</button>
+                            <button type="submit" name="save_and_add" class="btn btn-success">Зберегти та додати нову</button>
                         </div>
                     </div>
                 </div>
@@ -102,8 +102,8 @@ $(document).ready(function() {
         var houseId = $(this).val();
 
         if (!houseId) {
-            sectionSelect.html('<option value="">Выберите...</option>');
-            floorSelect.html('<option value="">Выберите...</option>');
+            sectionSelect.html('<option value="">Виберіть...</option>');
+            floorSelect.html('<option value="">Виберіть...</option>');
             return;
         }
 
@@ -112,8 +112,8 @@ $(document).ready(function() {
             type: 'GET',
             dataType: 'json',
             success: function(data) {
-                sectionSelect.empty().append('<option value="">Выберите...</option>');
-                floorSelect.empty().append('<option value="">Выберите...</option>');
+                sectionSelect.empty().append('<option value="">Виберіть...</option>');
+                floorSelect.empty().append('<option value="">Виберіть...</option>');
 
                 $.each(data.sections, function(index, item) {
                     sectionSelect.append('<option value="' + item.id + '">' + item.name + '</option>');
@@ -124,7 +124,7 @@ $(document).ready(function() {
                 });
             },
             error: function() {
-                alert('Ошибка при загрузке данных дома.');
+                alert('Помилка при завантаженні даних будинку.');
             }
         });
     });
