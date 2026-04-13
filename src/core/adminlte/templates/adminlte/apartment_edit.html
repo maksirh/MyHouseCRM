@@ -98,14 +98,22 @@ $(document).ready(function() {
     var sectionSelect = $('#id_section');
     var floorSelect = $('#id_floor');
 
+    if (!houseSelect.val()) {
+        sectionSelect.prop('disabled', true);
+        floorSelect.prop('disabled', true);
+    }
+
     houseSelect.change(function() {
         var houseId = $(this).val();
 
         if (!houseId) {
-            sectionSelect.html('<option value="">Виберіть...</option>');
-            floorSelect.html('<option value="">Виберіть...</option>');
+            sectionSelect.prop('disabled', true).html('<option value="">Виберіть...</option>');
+            floorSelect.prop('disabled', true).html('<option value="">Виберіть...</option>');
             return;
         }
+
+        sectionSelect.prop('disabled', false);
+        floorSelect.prop('disabled', false);
 
         $.ajax({
             url: "/adminpanel/api/sections-and-floors?house_id=" + houseId,
@@ -125,10 +133,11 @@ $(document).ready(function() {
             },
             error: function() {
                 alert('Помилка при завантаженні даних будинку.');
+                sectionSelect.prop('disabled', true);
+                floorSelect.prop('disabled', true);
             }
         });
     });
-
 });
 </script>
 {% endblock %}

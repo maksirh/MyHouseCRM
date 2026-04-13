@@ -282,7 +282,7 @@
 {% block extra_js %}
 <script>
 $(document).ready(function() {
-    function addForm(btnClass, containerId, emptyFormId, prefix) {
+    function addForm(btnClass, containerId, emptyFormId, prefix, namePrefix) {
         $(btnClass).click(function(e) {
             e.preventDefault();
 
@@ -293,12 +293,19 @@ $(document).ready(function() {
 
             $(containerId).append(newForm);
             totalFormsInput.val(formCount + 1);
+
+            if (namePrefix) {
+                var nextNumber = formCount + 1;
+                var inputName = prefix + '-' + formCount + '-name';
+                $('input[name="' + inputName + '"]').val(namePrefix + nextNumber);
+            }
         });
     }
 
-    addForm('.add-section-btn', '#form-section-rows', '#empty-section-form', 'sections');
-    addForm('.add-floor-btn', '#form-floor-rows', '#empty-floor-form', 'floors');
-    addForm('.add-user-btn', '#form-user-rows', '#empty-user-form', 'users');
+    addForm('.add-section-btn', '#form-section-rows', '#empty-section-form', 'sections', 'Секція ');
+    addForm('.add-floor-btn', '#form-floor-rows', '#empty-floor-form', 'floors', 'Поверх ');
+
+    addForm('.add-user-btn', '#form-user-rows', '#empty-user-form', 'users', null);
 
     $(document).on('click', '.form-row-remove-btn', function(e) {
         e.preventDefault();

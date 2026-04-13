@@ -1,14 +1,14 @@
 {% extends 'cabinet_base.html' %}
 {% load static %}
 
-{% block title %}Квитанции на оплату{% endblock %}
+{% block title %}Квитанції на оплату{% endblock %}
 
 {% block content %}
 <section class="content-header">
-    <h1>Квитанции на оплату</h1>
+    <h1>Квитанції на оплату</h1>
     <ul class="breadcrumb">
-        <li><a href="{% url 'cabinet_home' %}"><i class="fa fa-home"></i> Главная</a></li>
-        <li class="active">Квитанции на оплату</li>
+        <li><a href="{% url 'cabinet_home' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li class="active">Квитанції на оплату</li>
     </ul>
 </section>
 
@@ -20,7 +20,7 @@
                     <h3 class="box-title"></h3>
                     <div class="box-tools">
                         <a href="{% url 'cabinet_invoices' %}{% if request.GET.flat_id %}?flat_id={{ request.GET.flat_id }}{% endif %}" class="btn btn-default btn-sm">
-                            <span class="hidden-xs">Очистить</span><i class="fa fa-eraser visible-xs" aria-hidden="true"></i>
+                            <span class="hidden-xs">Очистити</span><i class="fa fa-eraser visible-xs" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                                     <th>№</th>
                                     <th><a href="?sort=-date{% if request.GET.flat_id %}&flat_id={{ request.GET.flat_id }}{% endif %}">Дата</a></th>
                                     <th>Статус</th>
-                                    <th>Сумма</th>
+                                    <th>Сума</th>
                                 </tr>
                                 <tr id="w0-filters" class="filters">
                                     <form method="GET">
@@ -43,14 +43,14 @@
 
                                         <td>&nbsp;</td>
                                         <td>
-                                            <input type="text" id="invoicesearch-searchuiddate" class="form-control" name="date" value="{{ request.GET.date }}" placeholder="дд.мм.гггг">
+                                            <input type="text" id="invoicesearch-searchuiddate" class="form-control" name="date" value="{{ request.GET.date }}" placeholder="дд.мм.рррр">
                                         </td>
                                         <td>
-                                            <select id="invoicesearch-status" class="form-control" name="status">
+                                            <select id="invoicesearch-status" class="form-control" name="status" onchange="this.form.submit()">
                                                 <option value=""></option>
-                                                <option value="paid" {% if request.GET.status == 'paid' %}selected{% endif %}>Оплачена</option>
-                                                <option value="partially_paid" {% if request.GET.status == 'partially_paid' %}selected{% endif %}>Частично оплачена</option>
-                                                <option value="unpaid" {% if request.GET.status == 'unpaid' %}selected{% endif %}>Неоплачена</option>
+                                                <option value="PAID" {% if request.GET.status == 'PAID' %}selected{% endif %}>Оплачена</option>
+                                                <option value="PART" {% if request.GET.status == 'PART' %}selected{% endif %}>Частково оплачена</option>
+                                                <option value="UNPD" {% if request.GET.status == 'UNPD' %}selected{% endif %}>Неоплачена</option>
                                             </select>
                                         </td>
                                         <td>
@@ -65,20 +65,20 @@
                                         <td>{{ invoice.number }}</td>
                                         <td>{{ invoice.date|date:"d.m.Y" }}</td>
                                         <td>
-                                            {% if invoice.status == 'paid' %}
+                                            {% if invoice.status == 'PAID' %}
                                                 <small class="label label-success">Оплачена</small>
-                                            {% elif invoice.status == 'partially_paid' %}
-                                                <small class="label label-warning">Частично оплачена</small>
+                                            {% elif invoice.status == 'PART' %}
+                                                <small class="label label-warning">Частково оплачена</small>
                                             {% else %}
                                                 <small class="label label-danger">Неоплачена</small>
                                             {% endif %}
                                         </td>
-                                        <td>{{ invoice.total_amount|default:"0.00" }}</td>
+                                        <td>{{ invoice.total_sum|default:"0.00" }}</td>
                                     </tr>
                                 {% empty %}
                                     <tr>
                                         <td colspan="4">
-                                            <div class="empty text-center" style="padding: 20px; color: #777;">Ничего не найдено.</div>
+                                            <div class="empty text-center" style="padding: 20px; color: #777;">Нічого не знайдено.</div>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -121,11 +121,10 @@
 {% block extra_js %}
 <script>
 jQuery(function ($) {
-    // Ініціалізація Datepicker для поля "Дата"
     $('#invoicesearch-searchuiddate').datepicker({
         format: 'dd.mm.yyyy',
         autoclose: true,
-        language: 'ru'
+        language: 'uk'
     });
 });
 </script>

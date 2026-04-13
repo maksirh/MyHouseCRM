@@ -1,4 +1,5 @@
 from django import forms
+from django.core.validators import RegexValidator
 from django.forms import modelformset_factory
 from django.forms.models import inlineformset_factory
 
@@ -362,8 +363,18 @@ class ApartmentForm(forms.ModelForm):
             "tariff": forms.Select(attrs={"class": "form-control"}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "owner" in self.fields:
+            self.fields["owner"].queryset = User.objects.filter(is_staff=False)
+
 
 class PersonalAccountForm(forms.ModelForm):
+    number = forms.CharField(
+        validators=[RegexValidator(r"^\d+$", "Номер рахунку має містити лише цифри")],
+        widget=forms.TextInput(attrs={"class": "form-control"}),
+    )
+
     house = forms.ModelChoiceField(
         queryset=House.objects.all(),
         required=False,
@@ -388,7 +399,6 @@ class PersonalAccountForm(forms.ModelForm):
         fields = ["number", "status"]
 
         widgets = {
-            "number": forms.TextInput(attrs={"class": "form-control"}),
             "status": forms.Select(attrs={"class": "form-control"}),
         }
 

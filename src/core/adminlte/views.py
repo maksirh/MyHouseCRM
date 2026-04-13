@@ -918,8 +918,12 @@ class OwnerListView(LoginRequiredMixin, RolePermissionMixin, ListView):
     required_permission = "has_owner_apartments"
 
     def get_queryset(self):
-        qs = User.objects.prefetch_related("apartment_set__house").annotate(
-            debt_flats=Count(Case(When(apartment__account__balance__lt=0, then=1)))
+        qs = (
+            User.objects.filter(is_staff=False)
+            .prefetch_related("apartment_set__house")
+            .annotate(
+                debt_flats=Count(Case(When(apartment__account__balance__lt=0, then=1)))
+            )
         )
 
         uid = self.request.GET.get("uid")

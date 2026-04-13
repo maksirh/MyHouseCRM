@@ -11,6 +11,17 @@ class CabinetLoginForm(AuthenticationForm):
         error_messages={"required": "Будь ласка, підтвердіть, що ви не робот."},
     )
 
+    def clean(self):
+        cleaned_data = super().clean()
+        user = self.get_user()
+
+        if user is not None and user.is_staff:
+            raise forms.ValidationError(
+                "Персоналу вхід через панель адміністратора.",
+                code="invalid_login",
+            )
+        return cleaned_data
+
 
 class AdminAuthForm(AuthenticationForm):
     captcha = ReCaptchaField(
@@ -21,13 +32,11 @@ class AdminAuthForm(AuthenticationForm):
 
     def clean(self):
         cleaned_data = super().clean()
-
         user = self.get_user()
 
-        if user is not None and not user.is_superuser:
+        if user is not None and not (user.is_staff or user.is_superuser):
             raise forms.ValidationError(
                 "У вас немає прав доступу до панелі адміністратора.",
                 code="invalid_login",
             )
-
         return cleaned_data

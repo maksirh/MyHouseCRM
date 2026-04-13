@@ -58,8 +58,8 @@ class Tariffs(models.Model):
 
 
 class TariffService(models.Model):
-    tariff = models.ForeignKey(Tariffs, on_delete=models.CASCADE)
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    tariff = models.ForeignKey(Tariffs, on_delete=models.PROTECT)
+    service = models.ForeignKey(Service, on_delete=models.PROTECT)
     price_per_unit = models.FloatField()
 
 
@@ -74,7 +74,7 @@ class CounterReadings(models.Model):
         Apartment, on_delete=models.CASCADE, related_name="readings", null=True
     )
     service = models.ForeignKey(
-        Service, on_delete=models.CASCADE, related_name="readings", null=True
+        Service, on_delete=models.PROTECT, related_name="readings", null=True
     )
 
     number = models.CharField(max_length=50, unique=True, null=True)
@@ -114,6 +114,27 @@ class Receipt(models.Model):
 
     def __str__(self):
         return f"Квитанція №{self.number} від {self.date}"
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old_receipt = Receipt.objects.get(pk=self.pk)
+            if self.is_made_payment and not old_receipt.is_made_payment:
+                if hasattr(self.apartment, "account") and self.apartment.account:
+                    self.apartment.account.balance -= self.total_sum
+                    self.apartment.account.save()
+
+            elif not self.is_made_payment and old_receipt.is_made_payment:
+                if hasattr(self.apartment, "account") and self.apartment.account:
+                    self.apartment.account.balance += self.total_sum
+                    self.apartment.account.save()
+
+        else:
+            if self.is_made_payment:
+                if hasattr(self.apartment, "account") and self.apartment.account:
+                    self.apartment.account.balance -= self.total_sum
+                    self.apartment.account.save()
+
+        super().save(*args, **kwargs)
 
 
 class ReceiptItem(models.Model):
@@ -236,8 +257,8 @@ class CallMaster(models.Model):
     time = models.TimeField(default=timezone.now, verbose_name="Час")
     status = models.CharField(choices=STATUSES, max_length=2, default="N")
     apartment = ForeignKey(Apartment, on_delete=models.CASCADE)
-    master_type = ForeignKey(Roles, on_delete=models.CASCADE)
-    master = ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    master_type = ForeignKey(Roles, on_delete=models.PROTECT)
+    master = ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField()
     comment = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
