@@ -44,6 +44,7 @@ from .views import (
     MessageListView,
     OwnerListView,
     PaymentDetailView,
+    PersonalAccountExportExcelView,
     ReceiptCopyView,
     ReceiptCreateView,
     ReceiptDeleteView,
@@ -213,4 +214,9 @@ urlpatterns = [
     ),
     path("receipt/<int:pk>/copy/", ReceiptCopyView.as_view(), name="receipt_copy"),
     path("receipt/<int:pk>/pdf/", ReceiptPDFView.as_view(), name="receipt_pdf"),
+    path(
+        "account/export/excel/",
+        PersonalAccountExportExcelView.as_view(),
+        name="account_export_excel",
+    ),
 ]

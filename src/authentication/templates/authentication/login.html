@@ -108,6 +108,16 @@
                             </div>
                         </div>
 
+                        <div class="row" style="margin-top: 20px;">
+                            <div class="col-xs-12 text-center">
+                                <a href="{% url 'authentication:password_reset' %}">Я забув пароль</a><br>
+
+                                {% if not is_admin_login %}
+                                    <a href="{% url 'authentication:cabinet_register' %}" style="display: inline-block; margin-top: 10px;"><b>Реєстрація</b></a>
+                                {% endif %}
+                            </div>
+                        </div>
+
                     </form>
                 </div>
             </div>

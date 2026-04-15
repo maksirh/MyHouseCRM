@@ -58,7 +58,7 @@
                 </button>
                 <ul class="dropdown-menu">
                     <li><a href="{% url 'adminlte:account_create' %}">Додати особовий рахунок</a></li>
-                    <li><a href="#">Вивантажити в Excel</a></li>
+                    <li><a href="{% url 'adminlte:account_export_excel' %}">Вивантажити в Excel</a></li>
                 </ul>
             </div>
         </div>
@@ -140,7 +140,11 @@
                                     {% for account in accounts %}
                                         {% with flat=account.apartment_set.first %}
                                         <tr data-href="{% url 'adminlte:account_detail' account.id %}" style="cursor: pointer;">
-                                            <td>{{ account.number }}</td>
+                                            <td>
+                                                <a href="{% url 'adminlte:account_detail' account.id %}">
+                                                    {{ account.number }}
+                                                </a>
+                                            </td>
                                             <td>
                                                 {% if account.status %}
                                                     <small class="label label-success">Активний</small>

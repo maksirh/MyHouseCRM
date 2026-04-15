@@ -32,12 +32,12 @@
         <div class="box-header with-border">
             <h3 class="box-title">Перегляд особового рахунку</h3>
             <div class="box-tools">
-                <a href="{% url 'adminlte:transaction_create' %}?type=in&account_id={{ account.id }}" class="btn btn-default btn-sm">
+                <a href="{% url 'adminlte:cashbox_income_create' %}?type=in&account_id={{ account.id }}" class="btn btn-default btn-sm">
                     <span class="hidden-xs"><i class="fa fa-dollar"></i> Прийняти платіж</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
                 </a>
 
                 {% if flat %}
-                    <a href="{% url 'adminlte:invoice_create' %}?flat_id={{ flat.id }}" class="btn btn-default btn-sm">
+                    <a href="{% url 'adminlte:receipt_create' %}?flat_id={{ flat.id }}" class="btn btn-default btn-sm">
                         <span class="hidden-xs"><i class="fa fa-files-o"></i> Оформити квитанцію</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
                     </a>
                 {% else %}
@@ -121,17 +121,17 @@
                         </tbody>
                     </table>
 
-                    <div class="margin-top-15">
-                        {% if flat %}
-                            <p><a href="{% url 'adminlte:counter_list' %}?flat_id={{ flat.id }}">Переглянути показання лічильників</a></p>
-                        {% endif %}
+                  <div class="margin-top-15">
+    {% if flat %}
+        <p><a href="{% url 'adminlte:counter_reading_history' %}?flat_id={{ flat.id }}">Переглянути показання лічильників</a></p>
+    {% endif %}
 
-                        <p><a href="{% url 'adminlte:transaction_list' %}?account_id={{ account.id }}&type=in">Переглянути надходження</a></p>
+    <p><a href="{% url 'adminlte:cashbox_list' %}?account_id={{ account.id }}&type=in">Переглянути надходження</a></p>
 
-                        {% if flat %}
-                            <p><a href="{% url 'adminlte:invoice_list' %}?flat_id={{ flat.id }}">Переглянути квитанції</a></p>
-                        {% endif %}
-                    </div>
+    {% if flat %}
+        <p><a href="{% url 'adminlte:receipt_list' %}?flat_id={{ flat.id }}">Переглянути квитанції</a></p>
+    {% endif %}
+</div>
 
                 </div>
             </div>

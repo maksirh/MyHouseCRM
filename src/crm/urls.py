@@ -13,7 +13,7 @@ from src.crm.views import (
     CabinetTariffView,
 )
 
-app_name = "src.crm"
+app_name = "crm"
 
 urlpatterns = [
     path("summary/", CabinetSummaryView.as_view(), name="summary"),
@@ -34,7 +34,7 @@ urlpatterns = [
     path("calls/create/", CabinetCallCreateView.as_view(), name="cabinet_call_create"),
     path("profile/", CabinetProfileView.as_view(), name="cabinet_profile"),
     path(
-        "profile/edit/",
+        "profile/update/",
         CabinetProfileUpdateView.as_view(),
         name="cabinet_profile_update",
     ),

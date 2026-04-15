@@ -54,32 +54,70 @@
                     </div>
                 </div>
                 <div class="box-body">
+
                     <div class="row" style="margin-bottom: 20px;">
-                        {% for image in apartment.images.all|slice:":5" %}
-                            <div class="col-md-{% if forloop.first %}6{% else %}3{% endif %}" style="margin-bottom: 10px;">
-                                <img src="{{ image.image.url }}" alt="Фото" class="img-responsive" style="height: {% if forloop.first %}200px{% else %}95px{% endif %}; width: 100%; object-fit: cover;">
+                        {% if apartment.house.main_image or apartment.house.image1 or apartment.house.image2 or apartment.house.image3 or apartment.house.image4 %}
+
+                            {% if apartment.house.main_image %}
+                            <div class="col-md-6" style="margin-bottom: 10px;">
+                                <img src="{{ apartment.house.main_image.url }}" alt="Головне фото" class="img-responsive img-rounded" style="height: 200px; width: 100%; object-fit: cover; border: 1px solid #ddd;">
                             </div>
-                        {% empty %}
-                            <div class="col-xs-12 text-muted">Немає завантажених фотографій</div>
-                        {% endfor %}
+                            {% endif %}
+
+                            <div class="col-md-{% if apartment.house.main_image %}6{% else %}12{% endif %}">
+                                <div class="row">
+                                    {% if apartment.house.image1 %}
+                                    <div class="col-md-6 col-xs-6" style="margin-bottom: 10px;">
+                                        <img src="{{ apartment.house.image1.url }}" alt="Фото 1" class="img-responsive img-rounded" style="height: 95px; width: 100%; object-fit: cover; border: 1px solid #ddd;">
+                                    </div>
+                                    {% endif %}
+                                    {% if apartment.house.image2 %}
+                                    <div class="col-md-6 col-xs-6" style="margin-bottom: 10px;">
+                                        <img src="{{ apartment.house.image2.url }}" alt="Фото 2" class="img-responsive img-rounded" style="height: 95px; width: 100%; object-fit: cover; border: 1px solid #ddd;">
+                                    </div>
+                                    {% endif %}
+                                    {% if apartment.house.image3 %}
+                                    <div class="col-md-6 col-xs-6" style="margin-bottom: 10px;">
+                                        <img src="{{ apartment.house.image3.url }}" alt="Фото 3" class="img-responsive img-rounded" style="height: 95px; width: 100%; object-fit: cover; border: 1px solid #ddd;">
+                                    </div>
+                                    {% endif %}
+                                    {% if apartment.house.image4 %}
+                                    <div class="col-md-6 col-xs-6" style="margin-bottom: 10px;">
+                                        <img src="{{ apartment.house.image4.url }}" alt="Фото 4" class="img-responsive img-rounded" style="height: 95px; width: 100%; object-fit: cover; border: 1px solid #ddd;">
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                        {% else %}
+                            <div class="col-xs-12">
+                                <div class="alert alert-default text-center" style="background-color: #f9f9f9; border: 1px dashed #ccc; color: #777;">
+                                    <i class="fa fa-camera fa-2x" style="margin-bottom: 10px;"></i><br>
+                                    Фотографії будинку ще не завантажені
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
 
                     <table class="table table-bordered table-striped">
-                        <thead><tr><th colspan="2" class="text-center">Опис</th></tr></thead>
+                        <thead><tr><th colspan="2" class="text-center">Характеристики</th></tr></thead>
                         <tbody>
-                            <tr><td>Назва будинку</td><td>{{ apartment.house.name }}</td></tr>
+                            <tr><td style="width: 40%;">Назва будинку</td><td><b>{{ apartment.house.name }}</b></td></tr>
                             <tr><td>Адреса</td><td>{{ apartment.house.address }}</td></tr>
                             <tr><td>№ квартири</td><td>{{ apartment.number }}</td></tr>
                             <tr><td>Площа</td><td>{{ apartment.area|default:"-" }} м²</td></tr>
                             <tr><td>Поверх</td><td>{{ apartment.floor.name|default:"-" }}</td></tr>
                             <tr><td>Секція</td><td>{{ apartment.section.name|default:"-" }}</td></tr>
-                            <tr><td>Особовий рахунок</td><td>{{ apartment.account.number|default:"Не призначено" }}</td></tr>
+                            <tr><td>Особовий рахунок</td><td><span class="label label-primary" style="font-size: 13px;">{{ apartment.account.number|default:"Не призначено" }}</span></td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
             {% empty %}
-                <div class="alert alert-info">У вас поки немає прикріплених квартир.</div>
+                <div class="alert alert-info">
+                    <h4><i class="icon fa fa-info"></i> Увага!</h4>
+                    У вас поки немає прикріплених квартир. Зверніться до адміністрації.
+                </div>
             {% endfor %}
         </div>
     </div>

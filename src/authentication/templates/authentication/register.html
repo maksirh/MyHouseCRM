@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk-UA">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>Реєстрація - Особистий кабінет мешканця</title>
+
+    <link href="{% static 'cabinet/bower_components/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'cabinet/bower_components/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'cabinet/dist/css/AdminLTE.min.css' %}" rel="stylesheet">
+    <link href="{% static 'cabinet/custom.css' %}" rel="stylesheet">
+    <style>
+        .login-box { width: 400px; margin: 7% auto; }
+    </style>
+</head>
+<body class="hold-transition login-page">
+
+<div class="login-box">
+    <div class="login-logo">
+        <a href="{% url 'website:home_page' %}"><b>CRM</b> Мій Дім</a>
+    </div>
+
+    <div class="box box-primary">
+        <div class="box-body login-box-body">
+            <p class="login-box-msg">Реєстрація в особистому кабінеті</p>
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors|join:", " }}</div>
+                {% endif %}
+
+                <div class="form-group has-feedback {% if form.first_name.errors %}has-error{% endif %}">
+                    {{ form.first_name }}
+                    <span class="fa fa-user form-control-feedback"></span>
+                    <div class="help-block text-danger">{{ form.first_name.errors|join:", " }}</div>
+                </div>
+
+                <div class="form-group has-feedback {% if form.last_name.errors %}has-error{% endif %}">
+                    {{ form.last_name }}
+                    <span class="fa fa-user form-control-feedback"></span>
+                    <div class="help-block text-danger">{{ form.last_name.errors|join:", " }}</div>
+                </div>
+
+                <div class="form-group has-feedback {% if form.email.errors %}has-error{% endif %}">
+                    {{ form.email }}
+                    <span class="fa fa-envelope form-control-feedback"></span>
+                    <div class="help-block text-danger">{{ form.email.errors|join:", " }}</div>
+                </div>
+
+                <div class="form-group has-feedback {% if form.phone_number.errors %}has-error{% endif %}">
+                    {{ form.phone_number }}
+                    <span class="fa fa-phone form-control-feedback"></span>
+                    <div class="help-block text-danger">{{ form.phone_number.errors|join:", " }}</div>
+                </div>
+
+                <hr>
+                <p class="text-muted text-center"><small>Для прив'язки до квартири вкажіть ваш рахунок</small></p>
+
+                <div class="form-group has-feedback {% if form.account_number.errors %}has-error{% endif %}">
+                    {{ form.account_number }}
+                    <span class="fa fa-credit-card form-control-feedback"></span>
+                    <div class="help-block text-danger">{{ form.account_number.errors|join:", " }}</div>
+                </div>
+
+                <div class="form-group has-feedback {% if form.password.errors %}has-error{% endif %}">
+                    {{ form.password }}
+                    <span class="fa fa-lock form-control-feedback"></span>
+                    <div class="help-block text-danger">{{ form.password.errors|join:", " }}</div>
+                </div>
+
+                <div class="form-group has-feedback {% if form.password_confirm.errors %}has-error{% endif %}">
+                    {{ form.password_confirm }}
+                    <span class="fa fa-lock form-control-feedback"></span>
+                    <div class="help-block text-danger">{{ form.password_confirm.errors|join:", " }}</div>
+                </div>
+
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-xs-12">
+                        <button type="submit" class="btn btn-success btn-block btn-flat">Зареєструватися</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="row" style="margin-top: 15px;">
+                <div class="col-xs-12 text-center">
+                    <a href="{% url 'authentication:cabinet_login' %}">Вже є акаунт? Увійти</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'cabinet/assets/137cc266/jquery.js' %}"></script>
+<script src="{% static 'cabinet/bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+</body>
+</html>

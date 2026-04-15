@@ -1953,3 +1953,74 @@ class ReceiptPDFView(View):
         )
 
         return response
+
+
+class PersonalAccountExportExcelView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Особові рахунки"
+
+        headers = [
+            "№ рахунку",
+            "Статус",
+            "Будинок",
+            "Секція",
+            "Квартира",
+            "Власник",
+            "Залишок (грн)",
+        ]
+        ws.append(headers)
+
+        accounts = PersonalAccount.objects.all()
+
+        apartments = Apartment.objects.select_related(
+            "house", "section", "owner"
+        ).filter(account__isnull=False)
+
+        account_to_apartment = {apt.account_id: apt for apt in apartments}
+
+        for account in accounts:
+            apt = account_to_apartment.get(account.id)
+
+            owner_name = "Не вказано"
+            house_name = "-"
+            section_name = "-"
+            apt_number = "-"
+
+            if apt:
+                if apt.owner:
+                    owner_name = (
+                        f"{apt.owner.first_name or ''} " f"{apt.owner.last_name or ''}"
+                    ).strip()
+                house_name = apt.house.name if apt.house else "-"
+                section_name = apt.section.name if apt.section else "-"
+                apt_number = apt.number
+
+            status_display = "Активний" if account.status == "active" else "Неактивний"
+
+            row = [
+                account.number,
+                status_display,
+                house_name,
+                section_name,
+                apt_number,
+                owner_name,
+                (
+                    float(account.balance)
+                    if hasattr(account, "balance") and account.balance
+                    else 0.0
+                ),
+            ]
+            ws.append(row)
+
+        response = HttpResponse(
+            content_type="application/"
+            "vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response["Content-Disposition"] = (
+            'attachment; filename="personal_accounts.xlsx"'
+        )
+        wb.save(response)
+
+        return response

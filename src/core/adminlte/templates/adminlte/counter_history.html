@@ -3,16 +3,19 @@
 
 {% block title %}Показання лічильників{% if flat %}, кв.{{ flat.number }}{% endif %}{% endblock %}
 
-{% block content %}
-<section class="content-header">
-    <h1>Показання лічильників{% if flat %}, кв.{{ flat.number }}{% endif %}</h1>
+{% block content_header %}
+    Показання лічильників{% if flat %}, кв.{{ flat.number }}{% endif %}
+{% endblock %}
+
+{% block breadcrumbs %}
     <ul class="breadcrumb">
         <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
         <li><a href="{% url 'adminlte:service_edit' %}">Лічильники</a></li>
         <li class="active">Показання лічильників</li>
     </ul>
-</section>
+{% endblock %}
 
+{% block content %}
 <section class="content">
     <div class="row">
         <div class="col-xs-12">
@@ -56,7 +59,7 @@
                                         <th>Лічильник</th>
                                         <th style="width: 90px; min-width: 90px">Показання</th>
                                         <th style="width: 90px; min-width: 90px">Од. вим.</th>
-                                        <th style="width: 80px; min-width: 80px">&nbsp;</th>
+                                        <th style="width: 120px; min-width: 120px">&nbsp;</th>
                                     </tr>
                                     <tr id="w0-filters" class="filters">
                                         <td><input type="text" class="form-control" name="number" value="{{ request.GET.number|default:'' }}" onchange="this.form.submit()"></td>
@@ -129,10 +132,12 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group pull-right">
+                                                    <a class="btn btn-default btn-sm" href="{% url 'adminlte:counter_reading_history' %}?flat_id={{ record.apartment.id }}&service_id={{ record.service.id }}" title="Дивитися історію" data-toggle="tooltip"><i class="fa fa-eye"></i></a>
+                                                    <a class="btn btn-default btn-sm" href="{% url 'adminlte:counter_reading_create' %}?flat_id={{ record.apartment.id }}&service_id={{ record.service.id }}" title="Зняти нове показання" data-toggle="tooltip"><i class="fa fa-plus"></i></a>
                                                     <a class="btn btn-default btn-sm" href="{% url 'adminlte:counter_reading_update' record.id %}" title="Редагувати" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
-                                                    <button type="submit" form="delete-form-{{ record.id }}" class="btn btn-default btn-sm" title="Видалити" data-toggle="tooltip" onclick="return confirm('Ви впевнені, що хочете видалити цей елемент?');">
-    <i class="fa fa-trash"></i>
-</button>
+                                                    <button type="button" class="btn btn-default btn-sm delete-btn" form-id="delete-form-{{ record.id }}" title="Видалити" data-toggle="tooltip">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -192,6 +197,14 @@ $(function () {
     $('tr[data-href]').on('click', function(e) {
         if (!$(e.target).closest('a, button, input, select, form').length) {
             window.location = $(this).data('href');
+        }
+    });
+
+    $('.delete-btn').on('click', function(e) {
+        e.preventDefault();
+        var formId = $(this).attr('form-id');
+        if (confirm('Ви впевнені, що хочете видалити цей елемент?')) {
+            $('#' + formId).submit();
         }
     });
 });
