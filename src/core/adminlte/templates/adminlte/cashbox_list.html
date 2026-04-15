@@ -59,7 +59,9 @@
                 <ul class="dropdown-menu">
                     <li><a href="{% url 'adminlte:cashbox_income_create' %}">Створити прибуток</a></li>
                     <li><a href="{% url 'adminlte:cashbox_expense_create' %}">Створити витрату</a></li>
-                    <li><a href="#">Вивантажити в Excel</a></li>
+                    <li><a href="{% url 'adminlte:cashbox_export_excel' %}" class="btn btn-default">
+                        Вивантажити в Excel
+                    </a></li>
                 </ul>
             </div>
         </div>

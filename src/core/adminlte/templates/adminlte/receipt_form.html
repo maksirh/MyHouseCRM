@@ -156,6 +156,28 @@
             </div>
         </div>
     </form>
+
+<div class="box box-info margin-top-15" id="counters-reference-box" style="display: none;">
+    <div class="box-header with-border">
+        <h3 class="box-title">Показання лічильників для обраної квартири</h3>
+    </div>
+    <div class="box-body table-responsive no-padding">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>№ Лічильника</th>
+                    <th>Послуга</th>
+                    <th>Дата</th>
+                    <th>Показання</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody id="counters-tbody">
+                </tbody>
+        </table>
+    </div>
+</div>
+
 </section>
 
 <table style="display: none;">
@@ -233,10 +255,38 @@ $(document).ready(function() {
                     }
                 }
             });
+
+            $.ajax({
+                url: "/adminpanel/api/counter-readings",
+                data: { 'apartment_id': apartmentId, 'date_from': '2000-01-01', 'date_to': '2100-01-01' },
+                success: function(data) {
+                    var tbody = $('#counters-tbody');
+                    tbody.empty();
+
+                    if (data && data.length > 0) {
+                        $('#counters-reference-box').show(); // Показуємо таблицю
+                        $.each(data, function(i, item) {
+                            tbody.append(
+                                '<tr>' +
+                                '<td>' + (item.number || '-') + '</td>' +
+                                '<td>Послуга ID: ' + item.service_id + '</td>' +
+                                '<td>' + (item.date || '-') + '</td>' +
+                                '<td><b>' + item.quantity + '</b></td>' +
+                                '<td><span class="label label-warning">Нове</span></td>' +
+                                '</tr>'
+                            );
+                        });
+                    } else {
+                        $('#counters-reference-box').hide(); // Ховаємо, якщо порожньо
+                    }
+                }
+            });
+
         } else {
             $('#owner-info').text('не обрано');
             $('#phone-info').text('не обрано');
             $('#account-info').text('не обрано');
+            $('#counters-reference-box').hide(); // Ховаємо, якщо не обрано квартиру
         }
     });
 
@@ -293,12 +343,12 @@ $(document).ready(function() {
                 'date_to': dateTo
             },
             success: function(data) {
-                if(data.readings.length === 0) {
+                if(data.length === 0) {
                     alert('За вказаний період показань для цієї квартири не знайдено.');
                     return;
                 }
 
-                $.each(data.readings, function(index, item) {
+                $.each(data, function(index, item) {
                     var existingSelect = $('.formset-row:visible .service-select').filter(function() {
                         return $(this).val() == item.service_id;
                     });
@@ -334,12 +384,12 @@ $(document).ready(function() {
                 url: "/adminpanel/api/tariff-services",
                 data: { 'tariff_id': tariffId },
                 success: function(data) {
-                    if(data.services.length === 0) {
+                    if(data.length === 0) {
                         alert('У цьому тарифі немає жодної послуги.');
                         return;
                     }
 
-                    $.each(data.services, function(index, item) {
+                    $.each(data, function(index, item) {
                         var existingSelect = $('.formset-row:visible .service-select').filter(function() {
                             return $(this).val() == item.service_id;
                         });

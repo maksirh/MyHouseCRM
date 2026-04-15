@@ -1,5 +1,7 @@
 import json
+import uuid
 
+import openpyxl
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -7,8 +9,9 @@ from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import Case, Count, Q, Sum, When
 from django.db.models.functions import ExtractMonth
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
@@ -21,6 +24,7 @@ from django.views.generic import (
     TemplateView,
     UpdateView,
 )
+from weasyprint import HTML
 
 from src.core.adminlte.forms import (
     AboutUsPageForm,
@@ -1849,3 +1853,103 @@ class MessageDeleteView(LoginRequiredMixin, RolePermissionMixin, DeleteView):
     model = Message
     success_url = reverse_lazy("adminlte:message_list")
     required_permission = "has_message"
+
+
+class CashboxExportExcelView(View):
+    def get(self, request, *args, **kwargs):
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Каса"
+
+        headers = [
+            "№ ордера",
+            "Дата",
+            "Тип",
+            "Стаття",
+            "Власник",
+            "Особовий рахунок",
+            "Сума",
+            "Проведена",
+        ]
+        ws.append(headers)
+
+        queryset = CashBox.objects.select_related("article", "personal_account").all()
+
+        for item in queryset:
+            owner_name = ""
+            if item.personal_account and hasattr(item.personal_account, "apartment"):
+                if item.personal_account.apartment and hasattr(
+                    item.personal_account.apartment, "owner"
+                ):
+                    if item.personal_account.apartment.owner:
+                        owner_name = (
+                            f"{item.personal_account.apartment.owner.first_name or ''} "
+                            f"{item.personal_account.apartment.owner.last_name or ''}"
+                        ).strip()
+
+            row = [
+                item.number,
+                item.date.strftime("%d.%m.%Y") if item.date else "",
+                item.article.get_article_display() if item.article else "",
+                item.article.name if item.article else "",
+                owner_name,
+                item.personal_account.number if item.personal_account else "",
+                float(item.amount) if item.amount else 0.0,
+                "Так" if item.is_completed else "Ні",
+            ]
+            ws.append(row)
+
+        response = HttpResponse(
+            content_type="application/"
+            "vnd.openxmlformats-o"
+            "fficedocument.spreadsheetml.sheet"
+        )
+        response["Content-Disposition"] = 'attachment; filename="cashbox_export.xlsx"'
+        wb.save(response)
+
+        return response
+
+
+class ReceiptCopyView(LoginRequiredMixin, View):
+    def get(self, request, pk, *args, **kwargs):
+        original = get_object_or_404(Receipt, pk=pk)
+
+        new_receipt = Receipt.objects.get(pk=pk)
+        new_receipt.pk = None
+        new_receipt.number = f"{original.number}-copy-{str(uuid.uuid4())[:4]}"
+        new_receipt.status = "UNPD"
+        new_receipt.is_made_payment = False
+        new_receipt.date = timezone.now().date()
+        new_receipt.save()
+
+        for item in original.items.all():
+            item.pk = None
+            item.receipt = new_receipt
+            item.save()
+
+        messages.success(request, "Квитанцію успішно скопійовано!")
+
+        return redirect("adminlte:receipt_update", pk=new_receipt.pk)
+
+
+class ReceiptPDFView(View):
+    def get(self, request, pk, *args, **kwargs):
+        receipt = get_object_or_404(
+            Receipt.objects.select_related(
+                "apartment__owner", "apartment__house"
+            ).prefetch_related("items__service"),
+            pk=pk,
+        )
+        context = {"receipt": receipt}
+        html_string = render_to_string("adminlte/receipt_pdf.html", context)
+
+        pdf_file = HTML(
+            string=html_string, base_url=request.build_absolute_uri()
+        ).write_pdf()
+
+        response = HttpResponse(pdf_file, content_type="application/pdf")
+        response["Content-Disposition"] = (
+            f'attachment; filename="Receipt_{receipt.number}.pdf"'
+        )
+
+        return response

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Квитанція №{{ receipt.number }}</title>
+    <style>
+        body { font-family: sans-serif; font-size: 14px; color: #333; }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .info-block { width: 100%; margin-bottom: 20px; }
+        .info-block td { padding: 5px; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .table th, .table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .table th { background-color: #f5f5f5; font-weight: bold; }
+        .total { text-align: right; font-size: 18px; font-weight: bold; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Рахунок-квитанція № {{ receipt.number }}</h1>
+        <p>від {{ receipt.date|date:"d.m.Y" }}</p>
+    </div>
+
+    <table class="info-block">
+        <tr>
+            <td><b>Власник:</b> {{ receipt.apartment.owner.get_full_name|default:"Не вказано" }}</td>
+            <td><b>Будинок:</b> {{ receipt.apartment.house.name|default:"Не вказано" }}</td>
+        </tr>
+        <tr>
+            <td><b>Особовий рахунок:</b> {{ receipt.apartment.account.number|default:"Немає" }}</td>
+            <td><b>Квартира:</b> № {{ receipt.apartment.number }}</td>
+        </tr>
+    </table>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Послуга</th>
+                <th>Кількість</th>
+                <th>Ціна за од.</th>
+                <th>Сума</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in receipt.items.all %}
+            <tr>
+                <td>{{ item.service.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price_per_unit }} грн</td>
+                <td><b>{{ item.total_price }} грн</b></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align: center;">Немає послуг у цій квитанції</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="total">
+        Разом до оплати: {{ receipt.total_sum }} грн
+    </div>
+
+</body>
+</html>

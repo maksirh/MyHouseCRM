@@ -156,7 +156,13 @@
                                             <td>{{ receipt.total_sum }}</td>
                                             <td>
                                                 <div class="btn-group pull-right">
-                                                    <a class="btn btn-default btn-sm" href="#" title="Копіювати" data-toggle="tooltip"><i class="fa fa-clone"></i></a>
+                                                   <a href="{% url 'adminlte:receipt_copy' receipt.id %}" class="btn btn-default btn-sm" title="Копіювати">
+                                                        <i class="fa fa-clone"></i>
+                                                    </a>
+                                                    <a href="{% url 'adminlte:receipt_pdf' receipt.id %}" class="btn btn-default btn-sm" title="Завантажити PDF">
+                                                        <i class="fa fa-file-pdf-o"></i>
+                                                    </a>
+
                                                     <a class="btn btn-default btn-sm" href="{% url "adminlte:receipt_update" receipt.id %}" title="Редагувати" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
                                                     <a class="btn btn-default btn-sm" href="{% url 'adminlte:receipt_delete' receipt.id %}" title="Видалити" data-toggle="tooltip"><i class="fa fa-trash"></i></a>
                                                 </div>

@@ -19,6 +19,7 @@ from .views import (
     CallMasterUpdateView,
     CashBoxDeleteView,
     CashBoxExpenseCreateView,
+    CashboxExportExcelView,
     CashBoxIncomeCreateView,
     CashBoxListView,
     CashBoxUpdateView,
@@ -43,10 +44,12 @@ from .views import (
     MessageListView,
     OwnerListView,
     PaymentDetailView,
+    ReceiptCopyView,
     ReceiptCreateView,
     ReceiptDeleteView,
     ReceiptDetailView,
     ReceiptListView,
+    ReceiptPDFView,
     ReceiptUpdateView,
     RolesUpdateView,
     ServiceEditView,
@@ -203,4 +206,11 @@ urlpatterns = [
     path(
         "messages/<int:pk>/delete/", MessageDeleteView.as_view(), name="message_delete"
     ),
+    path(
+        "cashbox/export/excel/",
+        CashboxExportExcelView.as_view(),
+        name="cashbox_export_excel",
+    ),
+    path("receipt/<int:pk>/copy/", ReceiptCopyView.as_view(), name="receipt_copy"),
+    path("receipt/<int:pk>/pdf/", ReceiptPDFView.as_view(), name="receipt_pdf"),
 ]
