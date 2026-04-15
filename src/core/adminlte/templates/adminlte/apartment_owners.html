@@ -20,9 +20,7 @@
                     Выберите действие <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a href="{% url 'adminlte:user_create' %}">Добавить владельца квартиры</a></li>
-                    <li><a href="#">Отправить сообщение должникам</a></li>
-                    <li><a href="#">Отправить приглашение</a></li>
+                    <li><a href="{% url 'adminlte:owner_create' %}">Добавить владельца квартиры</a></li>
                 </ul>
             </div>
         </div>
@@ -137,7 +135,7 @@
 
                                             <td>
                                                 <div class="btn-group pull-right">
-                                                    <a class="btn btn-default btn-sm" href="#" title="Отправить сообщение" data-toggle="tooltip"><i class="fa fa-envelope"></i></a>
+                                                    <a class="btn btn-default btn-sm" href="{% url 'adminlte:user_invite' owner.id %}" title="Отправить сообщение" data-toggle="tooltip"><i class="fa fa-envelope"></i></a>
 
                                                     <a class="btn btn-default btn-sm" href="{% url 'adminlte:user_edit' owner.id %}" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
 

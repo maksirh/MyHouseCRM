@@ -187,6 +187,16 @@ class UserForm(forms.ModelForm):
         return cleaned_data
 
 
+class OwnerForm(UserForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "role" in self.fields:
+            self.fields["role"].required = False
+
+    class Meta(UserForm.Meta):
+        pass
+
+
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User

@@ -44,6 +44,7 @@ from src.core.adminlte.forms import (
     MainPageForm,
     MeasureFormSet,
     MessageForm,
+    OwnerForm,
     PaymentDetail,
     PaymentDetailForm,
     PersonalAccountForm,
@@ -491,6 +492,7 @@ class UserCreateView(LoginRequiredMixin, RolePermissionMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.username = form.cleaned_data.get("email")
+        form.instance.is_staff = True
 
         raw_password = form.cleaned_data.get("password")
         if raw_password:
@@ -503,6 +505,26 @@ class UserCreateView(LoginRequiredMixin, RolePermissionMixin, CreateView):
         return super().form_valid(form)
 
 
+class OwnerCreateView(LoginRequiredMixin, RolePermissionMixin, CreateView):
+    model = User
+    form_class = OwnerForm
+    template_name = "adminlte/edit_owner.html"
+    success_url = reverse_lazy("adminlte:owners_list")
+    required_permission = "has_owner_apartments"
+
+    def form_valid(self, form):
+        form.instance.username = form.cleaned_data.get("email")
+
+        form.instance.role = None
+        form.instance.is_staff = False
+
+        raw_password = form.cleaned_data.get("password")
+        if raw_password:
+            form.instance.set_password(raw_password)
+
+        return super().form_valid(form)
+
+
 class UserListView(LoginRequiredMixin, RolePermissionMixin, ListView):
     model = User
     template_name = "adminlte/users_list.html"
@@ -511,7 +533,7 @@ class UserListView(LoginRequiredMixin, RolePermissionMixin, ListView):
     required_permission = "has_user"
 
     def get_queryset(self):
-        queryset = User.objects.all()
+        queryset = User.objects.filter(role__isnull=False)
 
         name_query = self.request.GET.get("name")
         if name_query:
@@ -923,7 +945,7 @@ class OwnerListView(LoginRequiredMixin, RolePermissionMixin, ListView):
 
     def get_queryset(self):
         qs = (
-            User.objects.filter(is_staff=False)
+            User.objects.filter(is_staff=False, role__isnull=True)
             .prefetch_related("apartment_set__house")
             .annotate(
                 debt_flats=Count(Case(When(apartment__account__balance__lt=0, then=1)))
