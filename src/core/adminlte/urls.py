@@ -44,6 +44,7 @@ from .views import (
     MessageListView,
     OwnerCreateView,
     OwnerListView,
+    OwnerUpdateView,
     PaymentDetailView,
     PersonalAccountExportExcelView,
     ReceiptCopyView,
@@ -221,4 +222,5 @@ urlpatterns = [
         name="account_export_excel",
     ),
     path("owners/create/", OwnerCreateView.as_view(), name="owner_create"),
+    path("owners/update/<int:pk>", OwnerUpdateView.as_view(), name="owner_update"),
 ]

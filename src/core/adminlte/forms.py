@@ -188,13 +188,20 @@ class UserForm(forms.ModelForm):
 
 
 class OwnerForm(UserForm):
+    class Meta(UserForm.Meta):
+        fields = UserForm.Meta.fields + ["avatar", "notes"]
+        widgets = {
+            **UserForm.Meta.widgets,
+            "notes": forms.Textarea(attrs={"class": "form-control", "rows": 10}),
+            "birth_date": forms.DateInput(
+                attrs={"class": "form-control", "type": "date"}
+            ),
+        }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if "role" in self.fields:
             self.fields["role"].required = False
-
-    class Meta(UserForm.Meta):
-        pass
 
 
 class UserProfileForm(forms.ModelForm):

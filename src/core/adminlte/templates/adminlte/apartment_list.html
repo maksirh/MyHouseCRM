@@ -1,14 +1,14 @@
 {% extends 'admin_base.html' %}
 {% load static %}
 
-{% block title %}Квартиры{% endblock %}
+{% block title %}Квартири{% endblock %}
 
 {% block content %}
 <section class="content-header">
-    <h1>Квартиры</h1>
+    <h1>Квартири</h1>
     <ul class="breadcrumb">
-        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Главная</a></li>
-        <li class="active">Квартиры</li>
+        <li><a href="{% url 'adminlte:statistic' %}"><i class="fa fa-home"></i> Головна</a></li>
+        <li class="active">Квартири</li>
     </ul>
 </section>
 
@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="pull-right margin-bottom">
-                <a class="btn btn-success" href="{% url 'adminlte:apartment_create' %}">Добавить квартиру</a>
+                <a class="btn btn-success" href="{% url 'adminlte:apartment_create' %}">Додати квартиру</a>
             </div>
         </div>
     </div>
@@ -28,7 +28,7 @@
                     <h3 class="box-title"></h3>
                     <div class="box-tools">
                         <a href="{% url 'adminlte:apartment_list' %}" class="btn btn-default btn-sm">
-                            <span class="hidden-xs">Очистить</span><i class="fa fa-eraser visible-xs" aria-hidden="true"></i>
+                            <span class="hidden-xs">Очистити</span><i class="fa fa-eraser visible-xs" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
@@ -41,12 +41,12 @@
                             <table class="table table-bordered table-hover table-striped linkedRow">
                                 <thead>
                                     <tr>
-                                        <th style="width: 120px; min-width: 120px"><a href="?sort={% if request.GET.sort == 'number' %}-number{% else %}number{% endif %}&house_id={{ request.GET.house_id }}&has_debt={{ request.GET.has_debt }}">№ квартиры</a></th>
-                                        <th style="min-width: 200px"><a href="?sort={% if request.GET.sort == 'house' %}-house{% else %}house{% endif %}">Дом</a></th>
-                                        <th style="width: 160px; min-width: 65px"><a href="?sort={% if request.GET.sort == 'section' %}-section{% else %}section{% endif %}">Секция</a></th>
-                                        <th style="width: 160px; min-width: 65px"><a href="?sort={% if request.GET.sort == 'floor' %}-floor{% else %}floor{% endif %}">Этаж</a></th>
-                                        <th style="min-width: 200px"><a href="?sort={% if request.GET.sort == 'owner' %}-owner{% else %}owner{% endif %}">Владелец</a></th>
-                                        <th style="width: 120px; min-width: 120px">Остаток (грн)</th>
+                                        <th style="width: 120px; min-width: 120px"><a href="?sort={% if request.GET.sort == 'number' %}-number{% else %}number{% endif %}&house_id={{ request.GET.house_id }}&has_debt={{ request.GET.has_debt }}">№ квартири</a></th>
+                                        <th style="min-width: 200px"><a href="?sort={% if request.GET.sort == 'house' %}-house{% else %}house{% endif %}">Будинок</a></th>
+                                        <th style="width: 160px; min-width: 65px"><a href="?sort={% if request.GET.sort == 'section' %}-section{% else %}section{% endif %}">Секція</a></th>
+                                        <th style="width: 160px; min-width: 65px"><a href="?sort={% if request.GET.sort == 'floor' %}-floor{% else %}floor{% endif %}">Поверх</a></th>
+                                        <th style="min-width: 200px"><a href="?sort={% if request.GET.sort == 'owner' %}-owner{% else %}owner{% endif %}">Власник</a></th>
+                                        <th style="width: 120px; min-width: 120px">Залишок (грн)</th>
                                         <th style="width: 80px; min-width: 80px">&nbsp;</th>
                                     </tr>
                                     <tr id="w0-filters" class="filters">
@@ -61,7 +61,7 @@
                                         </td>
                                         <td>
                                             <select class="form-control" name="section_id" id="filter-section" onchange="this.form.submit()">
-                                                <option value="">Выберите дом</option>
+                                                <option value="">Оберіть будинок</option>
                                                 {% for section in filter_sections %}
                                                     <option value="{{ section.id }}" {% if request.GET.section_id == section.id|stringformat:"s" %}selected{% endif %}>{{ section.name }}</option>
                                                 {% endfor %}
@@ -69,7 +69,7 @@
                                         </td>
                                         <td>
                                             <select class="form-control" name="floor_id" id="filter-floor" onchange="this.form.submit()">
-                                                <option value="">Выберите дом</option>
+                                                <option value="">Оберіть будинок</option>
                                                 {% for floor in filter_floors %}
                                                     <option value="{{ floor.id }}" {% if request.GET.floor_id == floor.id|stringformat:"s" %}selected{% endif %}>{{ floor.name }}</option>
                                                 {% endfor %}
@@ -86,14 +86,15 @@
                                         <td>
                                             <select class="form-control" name="has_debt" onchange="this.form.submit()">
                                                 <option value=""></option>
-                                                <option value="1" {% if request.GET.has_debt == '1' %}selected{% endif %}>Есть долг</option>
-                                                <option value="0" {% if request.GET.has_debt == '0' %}selected{% endif %}>Нет долга</option>
+                                                <option value="1" {% if request.GET.has_debt == '1' %}selected{% endif %}>Є борг</option>
+                                                <option value="0" {% if request.GET.has_debt == '0' %}selected{% endif %}>Немає боргу</option>
                                             </select>
                                         </td>
                                         <td>&nbsp;</td>
                                     </tr>
                                 </thead>
-                                <tbody>
+                        </form>
+                        <tbody>
                                     {% for flat in flats %}
                                         <tr data-href="{% url 'adminlte:apartment_detail' flat.id %}" style="cursor: pointer;">
                                             <td>{{ flat.number }}</td>
@@ -117,27 +118,27 @@
                                                         <span class="text-default">{{ flat.account.balance }}</span>
                                                     {% endif %}
                                                 {% else %}
-                                                    (нет счета)
+                                                    (немає рахунку)
                                                 {% endif %}
                                             </td>
                                             <td>
                                                 <div class="btn-group pull-right">
-                                                    <a class="btn btn-default btn-sm" href="{% url 'adminlte:apartment_update' flat.id %}" title="Редактировать" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
-                                                   <form action="{% url 'adminlte:apartment_delete' flat.id %}" method="post" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить этот элемент?');">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-default btn-sm" title="Удалить" data-toggle="tooltip"><i class="fa fa-trash"></i></button>
-</form>
+                                                    <a class="btn btn-default btn-sm" href="{% url 'adminlte:apartment_update' flat.id %}" title="Редагувати" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+
+                                                    <form action="{% url 'adminlte:apartment_delete' flat.id %}" method="post" style="display:inline;" onsubmit="return confirm('Ви впевнені, що хочете видалити цей елемент?');">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-default btn-sm" title="Видалити" data-toggle="tooltip"><i class="fa fa-trash"></i></button>
+                                                    </form>
                                                 </div>
                                             </td>
                                         </tr>
                                     {% empty %}
                                         <tr>
-                                            <td colspan="7" class="text-center text-muted">Квартир не найдено.</td>
+                                            <td colspan="7" class="text-center text-muted">Квартир не знайдено.</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
-                        </form>
                     </div>
 
                     <div class="box-footer clearfix">
@@ -168,33 +169,10 @@
                 </div>
 
                 <div class="box-footer">
-                    <div>Количество квартир: <span class="text-bold">{{ paginator.count|default:"0" }}</span></div>
+                    <div>Кількість квартир: <span class="text-bold">{{ paginator.count|default:"0" }}</span></div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-$(function () {
-    $('[data-toggle="tooltip"]').tooltip();
-
-    $('tr[data-href]').on('click', function(e) {
-        if (!$(e.target).closest('a, button, input, select').length) {
-            window.location = $(this).data('href');
-        }
-    });
-
-
-    $('#filter-house').change(function() {
-        var houseId = $(this).val();
-        var sectionSelect = $('#filter-section');
-        var floorSelect = $('#filter-floor');
-
-        $('#filter-form').submit();
-    });
-});
-</script>
 {% endblock %}

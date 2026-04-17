@@ -505,6 +505,7 @@ class UserCreateView(LoginRequiredMixin, RolePermissionMixin, CreateView):
         return super().form_valid(form)
 
 
+# Створення власника
 class OwnerCreateView(LoginRequiredMixin, RolePermissionMixin, CreateView):
     model = User
     form_class = OwnerForm
@@ -514,9 +515,25 @@ class OwnerCreateView(LoginRequiredMixin, RolePermissionMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.username = form.cleaned_data.get("email")
-
         form.instance.role = None
         form.instance.is_staff = False
+
+        raw_password = form.cleaned_data.get("password")
+        if raw_password:
+            form.instance.set_password(raw_password)
+
+        return super().form_valid(form)
+
+
+class OwnerUpdateView(LoginRequiredMixin, RolePermissionMixin, UpdateView):
+    model = User
+    form_class = OwnerForm
+    template_name = "adminlte/edit_owner.html"
+    success_url = reverse_lazy("adminlte:owners_list")
+    required_permission = "has_owner_apartments"
+
+    def form_valid(self, form):
+        form.instance.username = form.cleaned_data.get("email")
 
         raw_password = form.cleaned_data.get("password")
         if raw_password:
