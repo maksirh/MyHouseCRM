@@ -1,3 +1,4 @@
+import io
 import json
 import uuid
 
@@ -5,7 +6,7 @@ import openpyxl
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage, send_mail
 from django.db import transaction
 from django.db.models import Case, Count, Q, Sum, When
 from django.db.models.functions import ExtractMonth
@@ -24,6 +25,7 @@ from django.views.generic import (
     TemplateView,
     UpdateView,
 )
+from openpyxl.styles import Border, Font, Side
 from weasyprint import HTML
 
 from src.core.adminlte.forms import (
@@ -2063,3 +2065,148 @@ class PersonalAccountExportExcelView(LoginRequiredMixin, View):
         wb.save(response)
 
         return response
+
+
+class ReceiptExportExcelView(LoginRequiredMixin, View):
+    def get(self, request, pk, *args, **kwargs):
+        try:
+            receipt = Receipt.objects.select_related(
+                "account", "apartment__house", "apartment__owner"
+            ).get(pk=pk)
+        except Receipt.DoesNotExist:
+            return HttpResponse("Квитанція не знайдена", status=404)
+
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = f"Квитанція №{receipt.number}"
+
+        font_bold = Font(name="Arial", size=10, bold=True)
+        thin_border = Border(
+            left=Side(style="thin"),
+            right=Side(style="thin"),
+            top=Side(style="thin"),
+            bottom=Side(style="thin"),
+        )
+
+        ws.column_dimensions["A"].width = 20
+        ws.column_dimensions["B"].width = 25
+        ws.column_dimensions["I"].width = 15
+
+        ws["A1"] = "Отримувач / Виконувач"
+        ws["B1"] = "UA173000010000032003102901026"
+        ws["H1"] = "№ О/рахунку"
+        ws["I1"] = "ПОВІДОМЛЕННЯ"
+
+        ws["H2"] = receipt.account.number
+        ws["I2"] = f"№ {receipt.number}"
+        ws["I3"] = f"від {receipt.date.strftime('%d.%m.%Y')}"
+
+        owner = receipt.apartment.owner
+        owner_name = f"{owner.first_name} {owner.last_name}" if owner else "Не вказано"
+        address = f"{receipt.apartment.house.address}, кв. {receipt.apartment.number}"
+
+        ws["A4"] = "Платник"
+        ws.merge_cells("B4:G4")
+        ws["B4"] = f"{owner_name} {address}"
+
+        ws["A5"] = "Нараховано"
+        ws["B5"] = float(receipt.amount)
+
+        ws["A6"] = "Баланс О/р"
+        ws["B6"] = float(receipt.account.balance)
+        ws["C6"] = "на"
+        ws["D6"] = receipt.date.strftime("%d.%m.%Y")
+
+        ws["A7"] = "ДО СПЛАТИ"
+        ws["B7"] = float(receipt.amount)
+
+        start_row = 9
+        ws.cell(row=start_row, column=1, value="Отримувач / Виконувач")
+        ws.cell(row=start_row, column=8, value="№ О/рахунку")
+        ws.cell(row=start_row, column=9, value="КВИТАНЦІЯ")
+        ws.cell(row=start_row + 1, column=8, value=receipt.account.number)
+        ws.cell(row=start_row + 1, column=9, value=f"№ {receipt.number}")
+
+        ws["A17"] = "Услуга"
+        ws["C17"] = "Тариф"
+        ws["E17"] = "Ед.изм"
+        ws["G17"] = "Расход"
+        ws["I17"] = "Сумма, грн"
+
+        for col in ["A", "C", "E", "G", "I"]:
+            ws[f"{col}17"].font = font_bold
+            ws[f"{col}17"].border = thin_border
+
+        current_row = 18
+        services = receipt.services.all() if hasattr(receipt, "services") else []
+
+        for srv in services:
+            ws.cell(row=current_row, column=1, value=srv.service.name)
+            ws.cell(row=current_row, column=3, value=float(srv.price))
+            ws.cell(row=current_row, column=5, value=srv.service.unit.name)
+            ws.cell(row=current_row, column=7, value=float(srv.quantity))
+            ws.cell(row=current_row, column=9, value=float(srv.total))
+
+            for col in [1, 3, 5, 7, 9]:
+                ws.cell(row=current_row, column=col).border = thin_border
+            current_row += 1
+
+        ws.cell(row=current_row, column=7, value="РАЗОМ:")
+        ws.cell(row=current_row, column=9, value=float(receipt.amount))
+        ws.cell(row=current_row, column=9).font = font_bold
+
+        response = HttpResponse(
+            content_type="application/vnd"
+            ".openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response["Content-Disposition"] = (
+            f'attachment; filename="receipt_{receipt.number}.xlsx"'
+        )
+        wb.save(response)
+        return response
+
+
+def send_receipt_email(request, receipt_id):
+    receipt = get_object_or_404(Receipt, id=receipt_id)
+
+    if (
+        not receipt.apartment
+        or not receipt.apartment.owner
+        or not receipt.apartment.owner.email
+    ):
+        messages.error(
+            request, "Неможливо відправити: у власника відсутня email адреса."
+        )
+        return redirect("adminlte:receipt_detail", pk=receipt_id)
+
+    owner_email = receipt.apartment.owner.email
+
+    html_string = render_to_string("adminlte/receipt_print.html", {"receipt": receipt})
+
+    pdf_buffer = io.BytesIO()
+
+    HTML(string=html_string).write_pdf(target=pdf_buffer)
+
+    pdf_data = pdf_buffer.getvalue()
+
+    subject = f"Квитанція №{receipt.number} від {receipt.date.strftime('%d.%m.%Y')}"
+    message = (
+        f"Доброго дня, {receipt.apartment.owner.first_name}!\n\nУ додатку"
+        f" ви знайдете квитанцію №{receipt.number}"
+        f" на оплату комунальних послуг.\n\nЗ повагою,\nАдміністрація."
+    )
+    from_email = settings.DEFAULT_FROM_EMAIL
+
+    email = EmailMessage(subject, message, from_email, [owner_email])
+
+    email.attach(f"receipt_{receipt.number}.pdf", pdf_data, "application/pdf")
+
+    try:
+        email.send()
+        messages.success(request, f"Квитанція успішно відправлена на {owner_email}")
+    except Exception as e:
+        messages.error(request, f"Помилка при відправленні email: {str(e)}")
+
+    pdf_buffer.close()
+
+    return redirect("adminlte:receipt_detail", pk=receipt_id)

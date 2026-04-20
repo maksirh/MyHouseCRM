@@ -40,16 +40,19 @@
         <div class="box-header with-border">
             <h3 class="box-title">Перегляд квитанції</h3>
             <div class="box-tools">
-                <a href="#" class="btn btn-default btn-sm">
-                    <span class="hidden-xs">Друк</span><i class="fa fa-print visible-xs" aria-hidden="true"></i>
-                </a>
-                <a href="#" class="btn btn-default btn-sm">
-                    <span class="hidden-xs">Відправити на e-mail</span><i class="fa fa-envelope-o visible-xs" aria-hidden="true"></i>
-                </a>
-                <a href="{% url 'adminlte:receipt_update' receipt.id %}" class="btn btn-primary btn-sm">
-                    <span class="hidden-xs">Редагувати квитанцію</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
-                </a>
-            </div>
+    <a href="{% url 'adminlte:receipt_export_excel' receipt.id %}" class="btn btn-default btn-sm">
+        <span class="hidden-xs">Вивантаження в Excel</span><i class="fa fa-file-excel-o visible-xs" aria-hidden="true"></i>
+    </a>
+    <a href="{% url 'adminlte:receipt_pdf' receipt.id %}" target="_blank" class="btn btn-default btn-sm">
+        <span class="hidden-xs">Друк (PDF)</span><i class="fa fa-print visible-xs" aria-hidden="true"></i>
+    </a>
+    <a href="{% url 'adminlte:receipt_send_email' receipt.id %}" class="btn btn-default btn-sm">
+        <span class="hidden-xs">Відправити на e-mail</span><i class="fa fa-envelope-o visible-xs" aria-hidden="true"></i>
+    </a>
+    <a href="{% url 'adminlte:receipt_update' receipt.id %}" class="btn btn-primary btn-sm">
+        <span class="hidden-xs">Редагувати квитанцію</span><i class="fa fa-pencil visible-xs" aria-hidden="true"></i>
+    </a>
+</div>
         </div>
         <div class="box-body">
             <table class="table table-bordered table-striped table-view">

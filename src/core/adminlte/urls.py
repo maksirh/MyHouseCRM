@@ -51,6 +51,7 @@ from .views import (
     ReceiptCreateView,
     ReceiptDeleteView,
     ReceiptDetailView,
+    ReceiptExportExcelView,
     ReceiptListView,
     ReceiptPDFView,
     ReceiptUpdateView,
@@ -68,6 +69,7 @@ from .views import (
     UserEditView,
     UserListView,
     UserProfileView,
+    send_receipt_email,
     send_user_invite,
 )
 
@@ -217,9 +219,19 @@ urlpatterns = [
     path("receipt/<int:pk>/copy/", ReceiptCopyView.as_view(), name="receipt_copy"),
     path("receipt/<int:pk>/pdf/", ReceiptPDFView.as_view(), name="receipt_pdf"),
     path(
+        "receipt/<int:receipt_id>/export/excel/",
+        ReceiptExportExcelView.as_view(),
+        name="receipt_export_excel",
+    ),
+    path(
         "account/export/excel/",
         PersonalAccountExportExcelView.as_view(),
         name="account_export_excel",
+    ),
+    path(
+        "receipt/<int:receipt_id>/send-email/",
+        send_receipt_email,
+        name="receipt_send_email",
     ),
     path("owners/create/", OwnerCreateView.as_view(), name="owner_create"),
     path("owners/update/<int:pk>", OwnerUpdateView.as_view(), name="owner_update"),
